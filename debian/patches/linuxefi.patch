@@ -1,4 +1,4 @@
-From d79fad08a0b4dc85dc9994f9019965802469a63f Mon Sep 17 00:00:00 2001
+From 5c926a43c12f057ad58db5e0312a1240548b6be4 Mon Sep 17 00:00:00 2001
 From: Matthew Garrett <mjg@redhat.com>
 Date: Mon, 13 Jan 2014 12:13:15 +0000
 Subject: Add "linuxefi" loader which avoids ExitBootServices
@@ -21,10 +21,11 @@ diff --git a/grub-core/Makefile.core.def b/grub-core/Makefile.core.def
 index 2dfa22a92..68e47a727 100644
 --- a/grub-core/Makefile.core.def
 +++ b/grub-core/Makefile.core.def
-@@ -1734,6 +1734,14 @@ module = {
+@@ -1733,6 +1733,14 @@ module = {
+   enable = x86_64_efi;
  };
  
- module = {
++module = {
 +  name = linuxefi;
 +  efi = loader/i386/efi/linux.c;
 +  efi = lib/cmdline.c;
@@ -32,10 +33,9 @@ index 2dfa22a92..68e47a727 100644
 +  enable = x86_64_efi;
 +};
 +
-+module = {
+ module = {
    name = chain;
    efi = loader/efi/chainloader.c;
-   i386_pc = loader/i386/pc/chainloader.c;
 diff --git a/grub-core/kern/efi/mm.c b/grub-core/kern/efi/mm.c
 index 20a47aaf5..efb15cc1b 100644
 --- a/grub-core/kern/efi/mm.c

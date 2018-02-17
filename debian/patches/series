@@ -1,3 +1,4 @@
+replace-libgcrypt-crc.patch
 olpc_prefix_hack.patch
 core_in_fs.patch
 dpkg_version_comparison.patch
@@ -55,3 +56,7 @@ efinet_set_network_from_uefi_devpath.patch
 efinet_set_dns_from_uefi_proto.patch
 grub-install-efibootmgr-check.patch
 ext4_feature_encrypt.patch
+tsc_efi_default_to_pmtimer.patch
+freetype-capitalise-variables.patch
+freetype-pkg-config.patch
+fix-yylex-build.patch
