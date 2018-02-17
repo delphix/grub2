@@ -1,3 +1,40 @@
+grub2 (2.02+dfsg1-1) unstable; urgency=medium
+
+  * Switch to tracking debian/grub-extras/ using "git subtree" rather than
+    submodules.
+  * Update debian/README.source for Salsa migration.
+  * Use pkg-config to find FreeType (closes: #887721).
+  * Change various binary packages' priorities to optional, since "Priority:
+    extra" is now deprecated.
+  * Repack upstream tarball without grub-core/lib/libgcrypt*/cipher/crc.c,
+    and provide a replacement implementation backported from more recent
+    versions of libgcrypt (closes: #745409).
+  * Cherry-pick upstream patch to avoid -Werror=unused-value build failure
+    (closes: #890431).
+  * Handle the case where udevadm exists but is non-functional, as warned
+    about by Lintian 2.5.75.
+
+ -- Colin Watson <cjwatson@debian.org>  Sat, 17 Feb 2018 21:28:41 +0000
+
+grub2 (2.02-3) unstable; urgency=medium
+
+  * Use current location for upstream signing key
+    (debian/upstream/signing-key.asc).
+  * Update upstream signing key to a non-expired version.
+  * Install bootinfo.txt and grub.chrp in grub-ieee1275-bin for ppc64, and
+    install and use prep-bootdev on powerpc and ppc64 as well as ppc64el
+    (thanks, John Paul Adrian Glaubitz; closes: #881730).
+  * Cherry-pick upstream patch to change the default TSC calibration method
+    to pmtimer on EFI systems (closes: #883193).
+  * Move VCS to salsa.debian.org.
+  * Consistently create /boot/grub in the postinst of all grub-<platform>
+    packages (closes: #884883).
+
+  [ Debconf translations ]
+  * [sq] Albanian (Silva Arapi; closes: #874497).
+
+ -- Colin Watson <cjwatson@debian.org>  Sat, 10 Feb 2018 03:00:30 +0000
+
 grub2 (2.02-2) unstable; urgency=medium
 
   * Comment out debian/watch lines for betas and pre-releases for now.
