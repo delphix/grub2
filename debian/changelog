@@ -1,3 +1,13 @@
+grub2 (2.02+dfsg1-2) unstable; urgency=medium
+
+  * Build-depend on libparted-dev on powerpc and ppc64 (closes: #891070).
+  * Add support for modern sparc64 hardware (thanks, Eric Snowberg via John
+    Paul Adrian Glaubitz; closes: #854568).
+  * Build without PIE on sparc and sparc64 (thanks, John Paul Adrian
+    Glaubitz; closes: #891733).
+
+ -- Colin Watson <cjwatson@debian.org>  Wed, 28 Feb 2018 12:03:49 +0000
+
 grub2 (2.02+dfsg1-1) unstable; urgency=medium
 
   * Switch to tracking debian/grub-extras/ using "git subtree" rather than
