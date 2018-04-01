@@ -1,3 +1,14 @@
+grub2 (2.02+dfsg1-4) unstable; urgency=medium
+
+  * Adjust restore_mkdevicemap.patch to fix format-overflow warning with GCC
+    7 (the overflow was in fact impossible in practice, but GCC couldn't
+    prove that).
+  * Cherry-pick upstream patch to disable -Wformat-truncation on GCC >= 7 in
+    printf_unit_test.
+  * Build with GCC 7 (closes: #892397).
+
+ -- Colin Watson <cjwatson@debian.org>  Sun, 01 Apr 2018 10:49:48 +0100
+
 grub2 (2.02+dfsg1-3) unstable; urgency=medium
 
   * sparc64: Don't use devspec to determine the OBP path (closes: #854568).
