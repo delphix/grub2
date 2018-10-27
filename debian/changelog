@@ -1,3 +1,14 @@
+grub2 (2.02+dfsg1-7) unstable; urgency=medium
+
+  * Move kernel maintainer script snippets into grub2-common (thanks,
+    Bastian Blank; closes: #910959).
+  * Add cryptodisk and gcry_* modules to signed UEFI images (closes:
+    #908162, LP: #1565950).
+  * Remove dh_builddeb override to use xz compression; this has been the
+    default since dpkg 1.17.0.
+
+ -- Colin Watson <cjwatson@debian.org>  Sat, 27 Oct 2018 13:06:32 +0100
+
 grub2 (2.02+dfsg1-6) unstable; urgency=medium
 
   * Only build *-signed packages on their native architecture for now, since
