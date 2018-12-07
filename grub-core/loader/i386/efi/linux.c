@@ -58,6 +58,12 @@ grub_linuxefi_secure_validate (void *data, grub_uint32_t size)
   grub_efi_shim_lock_t *shim_lock;
   grub_efi_status_t status;
 
+  if (! grub_efi_secure_boot())
+    {
+      grub_dprintf ("linuxefi", "secure boot not enabled, not validating");
+      return 1;
+    }
+
   grub_dprintf ("linuxefi", "Locating shim protocol\n");
   shim_lock = grub_efi_locate_protocol(&guid, NULL);
 
@@ -201,7 +207,7 @@ grub_cmd_linux (grub_command_t cmd __attribute__ ((unused)),
 		int argc, char *argv[])
 {
   grub_file_t file = 0;
-  struct linux_kernel_header lh;
+  struct linux_i386_kernel_header lh;
   grub_ssize_t len, start, filelen;
   void *kernel;
 
@@ -312,7 +318,7 @@ grub_cmd_linux (grub_command_t cmd __attribute__ ((unused)),
   start = (lh.setup_sects + 1) * 512;
   len = grub_file_size(file) - start;
 
-  kernel_mem = grub_efi_allocate_pages(lh.pref_address,
+  kernel_mem = grub_efi_allocate_fixed(lh.pref_address,
 				       BYTES_TO_PAGES(lh.init_size));
 
   if (!kernel_mem)
