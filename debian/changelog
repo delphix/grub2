@@ -1,3 +1,20 @@
+grub2 (2.02+dfsg1-10) unstable; urgency=medium
+
+  * Apply patch from Heinrich Schuchardt (mentioned in #916695 though
+    unrelated):
+    - grub-core/loader/efi/fdt.c: do not copy random memory
+  * Add luks modules to signed UEFI images (pointed out by Alex Griffin and
+    Hervé Werner; closes: #908162, LP: #1565950).
+  * Keep track of the previous version of /usr/share/grub/default/grub and
+    set UCF_FORCE_CONFFOLD=1 when running ucf if it hasn't changed; ucf
+    can't figure this out for itself since we apply debconf-based
+    customisations on top of the template configuration file (closes:
+    #812574, LP: #564853).
+  * Backport Xen PVH guest support from upstream (closes: #776450).  Thanks
+    to Hans van Kranenburg for testing.
+
+ -- Colin Watson <cjwatson@debian.org>  Fri, 11 Jan 2019 15:24:20 +0000
+
 grub2 (2.02+dfsg1-9) unstable; urgency=medium
 
   [ Colin Watson ]
