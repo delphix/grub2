@@ -1,3 +1,13 @@
+grub2 (2.02+dfsg1-13) unstable; urgency=medium
+
+  * Add regexp module to signed UEFI images.
+  * debian/signing-template.json.in: Use new extendable format.
+
+  [ Debconf translations ]
+  * [nb] Norwegian Bokmål (Petter Reinholdtsen; closes: #924326).
+
+ -- Colin Watson <cjwatson@debian.org>  Thu, 14 Mar 2019 10:33:24 +0000
+
 grub2 (2.02+dfsg1-12) unstable; urgency=medium
 
   [ Colin Watson ]
