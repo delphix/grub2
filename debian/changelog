@@ -1,3 +1,13 @@
+grub2 (2.04~rc1-1) experimental; urgency=medium
+
+  * New upstream release candidate.
+    - getroot: Save/restore CWD more reliably on Unix (closes: #918700).
+  * Rename patches to use "-" as a separator rather than "_" (except when
+    referring to a file, function, or command containing a "_").
+  * Fix format of debian/copyright.
+
+ -- Colin Watson <cjwatson@debian.org>  Thu, 30 May 2019 16:56:05 +0100
+
 grub2 (2.02+dfsg1-18) unstable; urgency=medium
 
   * Apply patches from Alexander Graf to fix grub-efi-arm crash (closes:
