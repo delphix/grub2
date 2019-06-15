@@ -1,3 +1,18 @@
+grub2 (2.04~rc1-2) experimental; urgency=medium
+
+  [ Colin Watson ]
+  * debian/build-efi-images: Add tpm on x86_64-efi (thanks, Chris Coulson).
+
+  [ Steve McIntyre ]
+  * Add the ntfs module to signed UEFI images. Closes: #923855
+  * Add the cpuid module to signed UEFI images. Closes: #928628
+  * Add the play module to signed UEFI images. Closes: #930290
+  * Add an extra di-specific version of the UEFI netboot image with a
+    different baked-in prefix value. Helps to fix #928750.
+  * Deal with --force-extra-removable with signed shim too. Closes: #930531
+
+ -- Colin Watson <cjwatson@debian.org>  Sat, 15 Jun 2019 09:41:19 +0100
+
 grub2 (2.04~rc1-1) experimental; urgency=medium
 
   * New upstream release candidate.
