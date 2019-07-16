@@ -665,6 +665,17 @@ CLEANFILES += 10_linux
 EXTRA_DIST += 
 dist_noinst_DATA += util/grub.d/10_linux.in 
 endif COND_HOST_LINUX
+if COND_HOST_LINUX
+grubconf_SCRIPTS += 10_linux_zfs
+
+10_linux_zfs: $(top_builddir)/config.status util/grub.d/10_linux_zfs.in 
+	(for x in util/grub.d/10_linux_zfs.in ; do cat $(srcdir)/"$$x"; done) | $(top_builddir)/config.status --file=$@:-
+	chmod a+x 10_linux_zfs
+	
+CLEANFILES += 10_linux_zfs
+EXTRA_DIST += 
+dist_noinst_DATA += util/grub.d/10_linux_zfs.in 
+endif COND_HOST_LINUX
 if COND_HOST_XNU
 grubconf_SCRIPTS += 10_xnu
 

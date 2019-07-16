@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: grub_debian_po_he\n"
 "Report-Msgid-Bugs-To: grub2@packages.debian.org\n"
-"POT-Creation-Date: 2019-02-26 09:54+0000\n"
+"POT-Creation-Date: 2019-07-12 11:37-0400\n"
 "PO-Revision-Date: 2014-12-17 18:35+0200\n"
 "Last-Translator: Omer Zak\n"
 "Language-Team: Hebrew <kde-i18n-doc@kde.org>\n"
@@ -321,20 +321,31 @@ msgstr ""
 #. Type: boolean
 #. Description
 #: ../templates.in:3001
-msgid "Force extra installation to the EFI removable media path?"
+#, fuzzy
+#| msgid "Force extra installation to the EFI removable media path?"
+msgid "Skip extra installation to the EFI removable media path?"
 msgstr "לאלץ התקנה נוספת לנתיב מדיה EFI הניתן להסרה?"
 
 #. Type: boolean
 #. Description
 #: ../templates.in:3001
+#, fuzzy
+#| msgid ""
+#| "Some EFI-based systems are buggy and do not handle new bootloaders "
+#| "correctly. If you force an extra installation of GRUB to the EFI "
+#| "removable media path, this should ensure that this system will boot "
+#| "Debian correctly despite such a problem. However, it may remove the "
+#| "ability to boot any other operating systems that also depend on this "
+#| "path. If so, you will need to make sure that GRUB is configured "
+#| "successfully to be able to boot any other OS installations correctly."
 msgid ""
 "Some EFI-based systems are buggy and do not handle new bootloaders "
-"correctly. If you force an extra installation of GRUB to the EFI removable "
-"media path, this should ensure that this system will boot Debian correctly "
-"despite such a problem. However, it may remove the ability to boot any other "
-"operating systems that also depend on this path. If so, you will need to "
-"make sure that GRUB is configured successfully to be able to boot any other "
-"OS installations correctly."
+"correctly. If you do not make an extra installation of GRUB to the EFI "
+"removable media path, this may prevent your system from booting Debian "
+"correctly in case it is affected by this problem. However, it may remove the "
+"ability to boot any other operating systems that also depend on this path. "
+"If so, you will need to make sure that GRUB is configured successfully to be "
+"able to boot any other OS installations correctly."
 msgstr ""
 "כמה מערכות מבוססות EFI מכילות בגים ואינן מתמודדות נכונות עם מאתחלים חדשים. "
 "אם הינך מאלץ התקנה נוספת של GRUB לנתיב מדיה EFI הניתן להסרה, הדבר אמור "
@@ -392,6 +403,41 @@ msgid ""
 msgstr ""
 "המחרוזת הבאה תשמש כפרמטרי kFreeBSD עבור ברירת המחדל בתפריט אבל לא עבור מצב "
 "recovery."
+
+#. Type: title
+#. Description
+#: ../templates.in:7001
+msgid "unsigned kernels"
+msgstr ""
+
+#. Type: note
+#. Description
+#: ../templates.in:8001
+msgid "Cannot upgrade Secure Boot enforcement policy due to unsigned kernels"
+msgstr ""
+
+#. Type: note
+#. Description
+#: ../templates.in:8001
+msgid ""
+"Your system has UEFI Secure Boot enabled in firmware, and the following "
+"kernels present on your system are unsigned:"
+msgstr ""
+
+#. Type: note
+#. Description
+#: ../templates.in:8001
+msgid " ${unsigned_versions}"
+msgstr ""
+
+#. Type: note
+#. Description
+#: ../templates.in:8001
+msgid ""
+"These kernels cannot be verified under Secure Boot.  To ensure your system "
+"remains bootable, GRUB will not be upgraded on your disk until these kernels "
+"are removed or replaced with signed kernels."
+msgstr ""
 
 #~ msgid "/boot/grub/device.map has been regenerated"
 #~ msgstr "הקובץ ‎/boot/grub/device.map נוצר מחדש"

@@ -89,6 +89,10 @@ case x"$GRUB_FS" in
 	    GRUB_CMDLINE_LINUX="rootflags=subvol=${rootsubvol} ${GRUB_CMDLINE_LINUX}"
 	fi;;
     xzfs)
+	# We have a more specialized ZFS handler, with multiple system in 10_linux_zfs.
+	if [ -e "`dirname $(readlink -f $0)`/10_linux_zfs" ]; then
+	  exit 0
+	fi
 	rpool=`${grub_probe} --device ${GRUB_DEVICE} --target=fs_label 2>/dev/null || true`
 	bootfs="`make_system_path_relative_to_its_root / | sed -e "s,@$,,"`"
 	LINUX_ROOT_DEVICE="ZFS=${rpool}${bootfs%/}"
@@ -112,6 +116,10 @@ if [ "$vt_handoff" = 1 ]; then
       GRUB_CMDLINE_LINUX_DEFAULT="$GRUB_CMDLINE_LINUX_DEFAULT \$vt_handoff"
     fi
   done
+fi
+
+if [ x"$GRUB_FORCE_PARTUUID" != x ]; then
+   echo "set partuuid=${GRUB_FORCE_PARTUUID}"
 fi
 
 linux_entry ()
@@ -189,25 +197,49 @@ EOF
 	linux	${rel_dirname}/${basename}.efi.signed root=${linux_root_device_thisversion} ro ${args}
 EOF
   else
-    sed "s/^/$submenu_indentation/" << EOF
+    # We have initrd and PARTUUID is set - we try to boot without initrd, and fallback to using it
+    # if it fails.
+    # "panic=-1" means "on panic reboot immediately". "panic=0" disables the reboot behavior.
+    if [ x"$GRUB_FORCE_PARTUUID" != x ]; then
+        linux_root_device_thisversion="PARTUUID=${GRUB_FORCE_PARTUUID}"
+    fi
+    message="$(gettext_printf "Loading initial ramdisk ...")"
+    if test -n "${initrd}" && [ x"$GRUB_FORCE_PARTUUID" != x ]; then
+        sed "s/^/$submenu_indentation/" << EOF
+	if [ "\${initrdfail}" = 1 ]; then
+	  linux	${rel_dirname}/${basename} root=${linux_root_device_thisversion} ro ${args}
+EOF
+        if [ x"$quiet_boot" = x0 ] || [ x"$type" != xsimple ]; then
+          sed "s/^/$submenu_indentation/" << EOF
+	  echo	'$(echo "$message" | grub_quote)'
+EOF
+        fi
+
+        sed "s/^/$submenu_indentation/" << EOF
+	  initrd	${rel_dirname}/${initrd}
+	else
+	  linux	${rel_dirname}/${basename} root=${linux_root_device_thisversion} ro ${args} panic=-1
+	fi
+	initrdfail
+EOF
+    else
+    # We don't have initrd or we don't want to set PARTUUID. Don't try initrd-less boot with fallback.
+        sed "s/^/$submenu_indentation/" << EOF
 	linux	${rel_dirname}/${basename} root=${linux_root_device_thisversion} ro ${args}
 EOF
-  fi
-  if test -n "${initrd}" ; then
-    # TRANSLATORS: ramdisk isn't identifier. Should be translated.
-    if [ x"$quiet_boot" = x0 ] || [ x"$type" != xsimple ]; then
-      message="$(gettext_printf "Loading initial ramdisk ...")"
-      sed "s/^/$submenu_indentation/" << EOF
+        if test -n "${initrd}"; then
+            # We do have initrd - let's use it at boot.
+            # TRANSLATORS: ramdisk isn't identifier. Should be translated.
+            if [ x"$quiet_boot" = x0 ] || [ x"$type" != xsimple ]; then
+              sed "s/^/$submenu_indentation/" << EOF
 	echo	'$(echo "$message" | grub_quote)'
 EOF
-    fi
-    initrd_path=
-    for i in ${initrd}; do
-      initrd_path="${initrd_path} ${rel_dirname}/${i}"
-    done
-    sed "s/^/$submenu_indentation/" << EOF
-	initrd	$(echo $initrd_path)
+            fi
+            sed "s/^/$submenu_indentation/" << EOF
+	initrd	${rel_dirname}/${initrd}
 EOF
+        fi
+    fi
   fi
   sed "s/^/$submenu_indentation/" << EOF
 }
@@ -334,7 +366,10 @@ while [ "x$list" != "x" ] ; do
 
   initrd=
   if test -n "${initrd_early}" || test -n "${initrd_real}"; then
-    initrd="${initrd_early} ${initrd_real}"
+    initrd="${initrd_real}"
+    if test -n "${initrd_early}"; then
+        initrd="${initrd_early} ${initrd}"
+    fi
 
     initrd_display=
     for i in ${initrd}; do

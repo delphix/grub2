@@ -162,10 +162,12 @@ if [ "x${GRUB_EARLY_INITRD_LINUX_STOCK}" = "x" ]; then
 fi
 
 if test -f ${sysconfdir}/default/grub ; then
+  gettext_printf "Sourcing file \`%s'\n" "${sysconfdir}/default/grub" 1>&2
   . ${sysconfdir}/default/grub
 fi
 for x in ${sysconfdir}/default/grub.d/*.cfg ; do
   if [ -e "${x}" ]; then
+    gettext_printf "Sourcing file \`%s'\n" "${x}" 1>&2
     . "${x}"
   fi
 done
@@ -256,7 +258,9 @@ export GRUB_DEFAULT \
   GRUB_OS_PROBER_SKIP_LIST \
   GRUB_DISABLE_SUBMENU \
   GRUB_RECORDFAIL_TIMEOUT \
-  GRUB_RECOVERY_TITLE
+  GRUB_RECOVERY_TITLE \
+  GRUB_FORCE_PARTUUID \
+  GRUB_DISABLE_INITRD
 
 if test "x${grub_cfg}" != "x"; then
   rm -f "${grub_cfg}.new"

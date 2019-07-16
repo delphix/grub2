@@ -19,16 +19,14 @@
 #include <grub/loader.h>
 #include <grub/file.h>
 #include <grub/err.h>
-#include <grub/misc.h>
 #include <grub/types.h>
 #include <grub/mm.h>
 #include <grub/cpu/linux.h>
 #include <grub/command.h>
 #include <grub/i18n.h>
 #include <grub/lib/cmdline.h>
-#include <grub/linux.h>
 #include <grub/efi/efi.h>
-#include <stddef.h>
+#include <grub/efi/linux.h>
 
 GRUB_MOD_LICENSE ("GPLv3+");
 
@@ -43,70 +41,14 @@ static char *linux_cmdline;
 
 #define BYTES_TO_PAGES(bytes)   (((bytes) + 0xfff) >> 12)
 
-#define SHIM_LOCK_GUID \
-  { 0x605dab50, 0xe046, 0x4300, {0xab, 0xb6, 0x3d, 0xd8, 0x10, 0xdd, 0x8b, 0x23} }
-
-struct grub_efi_shim_lock
-{
-  grub_efi_status_t (*verify) (void *buffer, grub_uint32_t size);
-};
-typedef struct grub_efi_shim_lock grub_efi_shim_lock_t;
-
-static grub_efi_boolean_t
-grub_linuxefi_secure_validate (void *data, grub_uint32_t size)
-{
-  grub_efi_guid_t guid = SHIM_LOCK_GUID;
-  grub_efi_shim_lock_t *shim_lock;
-  grub_efi_status_t status;
-
-  if (! grub_efi_secure_boot())
-    {
-      grub_dprintf ("linuxefi", "secure boot not enabled, not validating");
-      return 1;
-    }
-
-  grub_dprintf ("linuxefi", "Locating shim protocol\n");
-  shim_lock = grub_efi_locate_protocol(&guid, NULL);
-
-  if (!shim_lock)
-    {
-      grub_dprintf ("linuxefi", "shim not available\n");
-      return 0;
-    }
-
-  grub_dprintf ("linuxefi", "Asking shim to verify kernel signature\n");
-  status = shim_lock->verify(data, size);
-  if (status == GRUB_EFI_SUCCESS)
-    {
-      grub_dprintf ("linuxefi", "Kernel signature verification passed\n");
-      return 1;
-    }
-
-  grub_dprintf ("linuxefi", "Kernel signature verification failed (0x%lx)\n",
-		(unsigned long) status);
-  return 0;
-}
-
-typedef void(*handover_func)(void *, grub_efi_system_table_t *, struct linux_kernel_params *);
-
 static grub_err_t
 grub_linuxefi_boot (void)
 {
-  handover_func hf;
-  int offset = 0;
-
-#ifdef __x86_64__
-  offset = 512;
-#endif
-
-  hf = (handover_func)((char *)kernel_mem + handover_offset + offset);
-
   asm volatile ("cli");
 
-  hf (grub_efi_image_handle, grub_efi_system_table, params);
-
-  /* Not reached */
-  return GRUB_ERR_NONE;
+  return grub_efi_linux_boot ((char *)kernel_mem,
+			      handover_offset,
+			      params);
 }
 
 static grub_err_t
@@ -115,13 +57,18 @@ grub_linuxefi_unload (void)
   grub_dl_unref (my_mod);
   loaded = 0;
   if (initrd_mem)
-    grub_efi_free_pages((grub_efi_physical_address_t)(grub_addr_t)initrd_mem, BYTES_TO_PAGES(params->ramdisk_size));
+    grub_efi_free_pages ((grub_efi_physical_address_t)(grub_addr_t)initrd_mem,
+			 BYTES_TO_PAGES(params->ramdisk_size));
   if (linux_cmdline)
-    grub_efi_free_pages((grub_efi_physical_address_t)(grub_addr_t)linux_cmdline, BYTES_TO_PAGES(params->cmdline_size + 1));
+    grub_efi_free_pages ((grub_efi_physical_address_t)(grub_addr_t)
+			 linux_cmdline,
+			 BYTES_TO_PAGES(params->cmdline_size + 1));
   if (kernel_mem)
-    grub_efi_free_pages((grub_efi_physical_address_t)(grub_addr_t)kernel_mem, BYTES_TO_PAGES(kernel_size));
+    grub_efi_free_pages ((grub_efi_physical_address_t)(grub_addr_t)kernel_mem,
+			 BYTES_TO_PAGES(kernel_size));
   if (params)
-    grub_efi_free_pages((grub_efi_physical_address_t)(grub_addr_t)params, BYTES_TO_PAGES(16384));
+    grub_efi_free_pages ((grub_efi_physical_address_t)(grub_addr_t)params,
+			 BYTES_TO_PAGES(16384));
   return GRUB_ERR_NONE;
 }
 
@@ -129,8 +76,10 @@ static grub_err_t
 grub_cmd_initrd (grub_command_t cmd __attribute__ ((unused)),
                  int argc, char *argv[])
 {
+  grub_file_t *files = 0;
+  int i, nfiles = 0;
   grub_size_t size = 0;
-  struct grub_linux_initrd_context initrd_ctx;
+  grub_uint8_t *ptr;
 
   if (argc == 0)
     {
@@ -144,10 +93,18 @@ grub_cmd_initrd (grub_command_t cmd __attribute__ ((unused)),
       goto fail;
     }
 
-  if (grub_initrd_init (argc, argv, &initrd_ctx))
+  files = grub_zalloc (argc * sizeof (files[0]));
+  if (!files)
     goto fail;
 
-  size = grub_get_initrd_size (&initrd_ctx);
+  for (i = 0; i < argc; i++)
+    {
+      files[i] = grub_file_open (argv[i], GRUB_FILE_TYPE_LINUX_INITRD | GRUB_FILE_TYPE_NO_DECOMPRESS);
+      if (! files[i])
+        goto fail;
+      nfiles++;
+      size += ALIGN_UP (grub_file_size (files[i]), 4);
+    }
 
   initrd_mem = grub_efi_allocate_pages_max (0x3fffffff, BYTES_TO_PAGES(size));
 
@@ -162,28 +119,52 @@ grub_cmd_initrd (grub_command_t cmd __attribute__ ((unused)),
   params->ramdisk_size = size;
   params->ramdisk_image = (grub_uint32_t)(grub_addr_t) initrd_mem;
 
-  if (grub_initrd_load (&initrd_ctx, argv, initrd_mem))
-    goto fail;
+  ptr = initrd_mem;
+
+  for (i = 0; i < nfiles; i++)
+    {
+      grub_ssize_t cursize = grub_file_size (files[i]);
+      if (grub_file_read (files[i], ptr, cursize) != cursize)
+        {
+          if (!grub_errno)
+            grub_error (GRUB_ERR_FILE_READ_ERROR, N_("premature end of file %s"),
+                        argv[i]);
+          goto fail;
+        }
+      ptr += cursize;
+      grub_memset (ptr, 0, ALIGN_UP_OVERHEAD (cursize, 4));
+      ptr += ALIGN_UP_OVERHEAD (cursize, 4);
+    }
 
   params->ramdisk_size = size;
 
  fail:
-  grub_initrd_close (&initrd_ctx);
+  for (i = 0; i < nfiles; i++)
+    grub_file_close (files[i]);
+  grub_free (files);
 
   if (initrd_mem && grub_errno)
-    grub_efi_free_pages((grub_efi_physical_address_t)(grub_addr_t)initrd_mem, BYTES_TO_PAGES(size));
+    grub_efi_free_pages ((grub_efi_physical_address_t)(grub_addr_t)initrd_mem,
+			 BYTES_TO_PAGES(size));
 
   return grub_errno;
 }
+
+#define MIN(a, b) \
+  ({ typeof (a) _a = (a); \
+     typeof (b) _b = (b); \
+     _a < _b ? _a : _b; })
 
 static grub_err_t
 grub_cmd_linux (grub_command_t cmd __attribute__ ((unused)),
 		int argc, char *argv[])
 {
   grub_file_t file = 0;
-  struct linux_i386_kernel_header lh;
-  grub_ssize_t len, start, filelen;
-  void *kernel;
+  struct linux_i386_kernel_header *lh = NULL;
+  grub_ssize_t start, filelen;
+  void *kernel = NULL;
+  int setup_header_end_offset;
+  int rc;
 
   grub_dl_ref (my_mod);
 
@@ -209,68 +190,92 @@ grub_cmd_linux (grub_command_t cmd __attribute__ ((unused)),
 
   if (grub_file_read (file, kernel, filelen) != filelen)
     {
-      grub_error (GRUB_ERR_FILE_READ_ERROR, N_("Can't read kernel %s"), argv[0]);
+      grub_error (GRUB_ERR_FILE_READ_ERROR, N_("Can't read kernel %s"),
+		  argv[0]);
       goto fail;
     }
 
-  if (! grub_linuxefi_secure_validate (kernel, filelen))
+  rc = grub_linuxefi_secure_validate (kernel, filelen);
+  if (rc < 0)
     {
-      grub_error (GRUB_ERR_ACCESS_DENIED, N_("%s has invalid signature"), argv[0]);
-      grub_free (kernel);
+      grub_error (GRUB_ERR_ACCESS_DENIED, N_("%s has invalid signature"),
+		  argv[0]);
       goto fail;
     }
 
-  grub_file_seek (file, 0);
-
-  grub_free(kernel);
-
-  params = grub_efi_allocate_pages_max (0x3fffffff, BYTES_TO_PAGES(16384));
-
+  params = grub_efi_allocate_pages_max (0x3fffffff,
+					BYTES_TO_PAGES(sizeof(*params)));
   if (! params)
     {
       grub_error (GRUB_ERR_OUT_OF_MEMORY, "cannot allocate kernel parameters");
       goto fail;
     }
 
-  grub_dprintf ("linuxefi", "params = %lx\n", (unsigned long) params);
+  grub_dprintf ("linuxefi", "params = %p\n", params);
 
-  grub_memset (params, 0, 16384);
+  grub_memset (params, 0, sizeof(*params));
 
-  if (grub_file_read (file, &lh, sizeof (lh)) != sizeof (lh))
-    {
-      if (!grub_errno)
-	grub_error (GRUB_ERR_BAD_OS, N_("premature end of file %s"),
-		    argv[0]);
-      goto fail;
-    }
-
-  if (lh.boot_flag != grub_cpu_to_le16 (0xaa55))
+  setup_header_end_offset = *((grub_uint8_t *)kernel + 0x201);
+  grub_dprintf ("linuxefi", "copying %zu bytes from %p to %p\n",
+		MIN((grub_size_t)0x202+setup_header_end_offset,
+		    sizeof (*params)) - 0x1f1,
+		(grub_uint8_t *)kernel + 0x1f1,
+		(grub_uint8_t *)params + 0x1f1);
+  grub_memcpy ((grub_uint8_t *)params + 0x1f1,
+	       (grub_uint8_t *)kernel + 0x1f1,
+		MIN((grub_size_t)0x202+setup_header_end_offset,sizeof (*params)) - 0x1f1);
+  lh = (struct linux_i386_kernel_header *)params;
+  grub_dprintf ("linuxefi", "lh is at %p\n", lh);
+  grub_dprintf ("linuxefi", "checking lh->boot_flag\n");
+  if (lh->boot_flag != grub_cpu_to_le16 (0xaa55))
     {
       grub_error (GRUB_ERR_BAD_OS, N_("invalid magic number"));
       goto fail;
     }
 
-  if (lh.setup_sects > GRUB_LINUX_MAX_SETUP_SECTS)
+  grub_dprintf ("linuxefi", "checking lh->setup_sects\n");
+  if (lh->setup_sects > GRUB_LINUX_MAX_SETUP_SECTS)
     {
       grub_error (GRUB_ERR_BAD_OS, N_("too many setup sectors"));
       goto fail;
     }
 
-  if (lh.version < grub_cpu_to_le16 (0x020b))
+  grub_dprintf ("linuxefi", "checking lh->version\n");
+  if (lh->version < grub_cpu_to_le16 (0x020b))
     {
       grub_error (GRUB_ERR_BAD_OS, N_("kernel too old"));
       goto fail;
     }
 
-  if (!lh.handover_offset)
+  grub_dprintf ("linuxefi", "checking lh->handover_offset\n");
+  if (!lh->handover_offset)
     {
       grub_error (GRUB_ERR_BAD_OS, N_("kernel doesn't support EFI handover"));
       goto fail;
     }
 
-  linux_cmdline = grub_efi_allocate_pages_max(0x3fffffff,
-					 BYTES_TO_PAGES(lh.cmdline_size + 1));
+#if defined(__x86_64__) || defined(__aarch64__)
+  grub_dprintf ("linuxefi", "checking lh->xloadflags\n");
+  if (!(lh->xloadflags & LINUX_XLF_KERNEL_64))
+    {
+      grub_error (GRUB_ERR_BAD_OS, N_("kernel doesn't support 64-bit CPUs"));
+      goto fail;
+    }
+#endif
 
+#if defined(__i386__)
+  if ((lh->xloadflags & LINUX_XLF_KERNEL_64) &&
+      !(lh->xloadflags & LINUX_XLF_EFI_HANDOVER_32))
+    {
+      grub_error (GRUB_ERR_BAD_OS,
+		  N_("kernel doesn't support 32-bit handover"));
+      goto fail;
+    }
+#endif
+
+  grub_dprintf ("linuxefi", "setting up cmdline\n");
+  linux_cmdline = grub_efi_allocate_pages_max(0x3fffffff,
+					 BYTES_TO_PAGES(lh->cmdline_size + 1));
   if (!linux_cmdline)
     {
       grub_error (GRUB_ERR_OUT_OF_MEMORY, N_("can't allocate cmdline"));
@@ -278,34 +283,28 @@ grub_cmd_linux (grub_command_t cmd __attribute__ ((unused)),
     }
 
   grub_dprintf ("linuxefi", "linux_cmdline = %lx\n",
-		(unsigned long) linux_cmdline);
+		(unsigned long)linux_cmdline);
 
   grub_memcpy (linux_cmdline, LINUX_IMAGE, sizeof (LINUX_IMAGE));
-  {
-    grub_err_t err;
-    err = grub_create_loader_cmdline (argc, argv,
-				      linux_cmdline
-				      + sizeof (LINUX_IMAGE) - 1,
-				      lh.cmdline_size
-				      - (sizeof (LINUX_IMAGE) - 1),
-				      GRUB_VERIFY_KERNEL_CMDLINE);
-    if (err)
-      goto fail;
-  }
+  grub_create_loader_cmdline (argc, argv,
+                              linux_cmdline + sizeof (LINUX_IMAGE) - 1,
+			      lh->cmdline_size - (sizeof (LINUX_IMAGE) - 1),
+			      GRUB_VERIFY_KERNEL_CMDLINE);
 
-  lh.cmd_line_ptr = (grub_uint32_t)(grub_addr_t)linux_cmdline;
+  grub_dprintf ("linuxefi", "setting lh->cmd_line_ptr\n");
+  lh->cmd_line_ptr = (grub_uint32_t)(grub_addr_t)linux_cmdline;
 
-  handover_offset = lh.handover_offset;
+  grub_dprintf ("linuxefi", "computing handover offset\n");
+  handover_offset = lh->handover_offset;
 
-  start = (lh.setup_sects + 1) * 512;
-  len = grub_file_size(file) - start;
+  start = (lh->setup_sects + 1) * 512;
 
-  kernel_mem = grub_efi_allocate_fixed(lh.pref_address,
-				       BYTES_TO_PAGES(lh.init_size));
+  kernel_mem = grub_efi_allocate_fixed(lh->pref_address,
+				       BYTES_TO_PAGES(lh->init_size));
 
   if (!kernel_mem)
     kernel_mem = grub_efi_allocate_pages_max(0x3fffffff,
-					     BYTES_TO_PAGES(lh.init_size));
+					     BYTES_TO_PAGES(lh->init_size));
 
   if (!kernel_mem)
     {
@@ -315,36 +314,28 @@ grub_cmd_linux (grub_command_t cmd __attribute__ ((unused)),
 
   grub_dprintf ("linuxefi", "kernel_mem = %lx\n", (unsigned long) kernel_mem);
 
-  if (grub_file_seek (file, start) == (grub_off_t) -1)
-    {
-      grub_error (GRUB_ERR_BAD_OS, N_("premature end of file %s"),
-		  argv[0]);
-      goto fail;
-    }
+  grub_loader_set (grub_linuxefi_boot, grub_linuxefi_unload, 0);
+  loaded=1;
+  grub_dprintf ("linuxefi", "setting lh->code32_start to %p\n", kernel_mem);
+  lh->code32_start = (grub_uint32_t)(grub_addr_t) kernel_mem;
 
-  if (grub_file_read (file, kernel_mem, len) != len && !grub_errno)
-    {
-      grub_error (GRUB_ERR_BAD_OS, N_("premature end of file %s"),
-		  argv[0]);
-    }
+  grub_memcpy (kernel_mem, (char *)kernel + start, filelen - start);
 
-  if (grub_errno == GRUB_ERR_NONE)
-    {
-      grub_loader_set (grub_linuxefi_boot, grub_linuxefi_unload, 0);
-      loaded = 1;
-      lh.code32_start = (grub_uint32_t)(grub_addr_t) kernel_mem;
-    }
+  grub_dprintf ("linuxefi", "setting lh->type_of_loader\n");
+  lh->type_of_loader = 0x6;
 
-  /* do not overwrite below boot_params->hdr to avoid setting the sentinel byte */
-  start = offsetof (struct linux_kernel_params, setup_sects);
-  grub_memcpy ((grub_uint8_t *)params + start, (grub_uint8_t *)&lh + start, 2 * 512 - start);
-
-  params->type_of_loader = 0x21;
+  grub_dprintf ("linuxefi", "setting lh->ext_loader_{type,ver}\n");
+  params->ext_loader_type = 0;
+  params->ext_loader_ver = 2;
+  grub_dprintf("linuxefi", "kernel_mem: %p handover_offset: %08x\n",
+	       kernel_mem, handover_offset);
 
  fail:
-
   if (file)
     grub_file_close (file);
+
+  if (kernel)
+    grub_free (kernel);
 
   if (grub_errno != GRUB_ERR_NONE)
     {
@@ -352,14 +343,18 @@ grub_cmd_linux (grub_command_t cmd __attribute__ ((unused)),
       loaded = 0;
     }
 
-  if (linux_cmdline && !loaded)
-    grub_efi_free_pages((grub_efi_physical_address_t)(grub_addr_t)linux_cmdline, BYTES_TO_PAGES(lh.cmdline_size + 1));
+  if (linux_cmdline && lh && !loaded)
+    grub_efi_free_pages ((grub_efi_physical_address_t)(grub_addr_t)
+			 linux_cmdline,
+			 BYTES_TO_PAGES(lh->cmdline_size + 1));
 
   if (kernel_mem && !loaded)
-    grub_efi_free_pages((grub_efi_physical_address_t)(grub_addr_t)kernel_mem, BYTES_TO_PAGES(kernel_size));
+    grub_efi_free_pages ((grub_efi_physical_address_t)(grub_addr_t)kernel_mem,
+			 BYTES_TO_PAGES(kernel_size));
 
   if (params && !loaded)
-    grub_efi_free_pages((grub_efi_physical_address_t)(grub_addr_t)params, BYTES_TO_PAGES(16384));
+    grub_efi_free_pages ((grub_efi_physical_address_t)(grub_addr_t)params,
+			 BYTES_TO_PAGES(16384));
 
   return grub_errno;
 }
