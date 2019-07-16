@@ -95,7 +95,7 @@ FLICKER_FREE_BOOT := no
 endif
 
 ifeq ($(FLICKER_FREE_BOOT),yes)
-DEFAULT_HIDDEN_TIMEOUT := 0
+DEFAULT_TIMEOUT := 0
 DEFAULT_HIDDEN_TIMEOUT_BOOL := true
 confflags += \
 	--enable-quiet-boot \
@@ -106,7 +106,6 @@ substvars += \
 	-Vlsb-base-depends="lsb-base (>= 3.0-6)" \
 	-Vgfxpayload-depends="grub-gfxpayload-lists [any-i386 any-amd64]"
 else
-DEFAULT_HIDDEN_TIMEOUT :=
 DEFAULT_HIDDEN_TIMEOUT_BOOL := false
 endif
 
@@ -134,7 +133,7 @@ endif
 SB_EFI_VENDOR ?= $(shell dpkg-vendor --query vendor | tr '[:upper:]' '[:lower:]')
 
 %:
-	dh $@ --with=bash_completion
+	dh $@ --with=bash_completion,systemd
 
 override_dh_auto_configure: $(patsubst %,configure/%,$(BUILD_PACKAGES))
 
@@ -513,8 +512,8 @@ ifneq (,$(filter grub2-common,$(BUILD_PACKAGES)))
 		-e "s/@DEFAULT_CMDLINE@/$(DEFAULT_CMDLINE)/g" \
 		-e "s/@DEFAULT_TIMEOUT@/$(DEFAULT_TIMEOUT)/g" \
 		debian/grub2-common/usr/share/grub/default/grub
-ifneq (,$(DEFAULT_HIDDEN_TIMEOUT))
-	perl -pi -e 's/^GRUB_TIMEOUT=.*/GRUB_HIDDEN_TIMEOUT=0\nGRUB_HIDDEN_TIMEOUT_QUIET=true\n$$&/' \
+ifneq (false,$(DEFAULT_HIDDEN_TIMEOUT_BOOL))
+	perl -pi -e 's/^GRUB_TIMEOUT=.*/GRUB_TIMEOUT_STYLE=hidden\n$$&/' \
 		debian/grub2-common/usr/share/grub/default/grub
 endif
 endif
@@ -562,6 +561,10 @@ override_dh_builddeb:
 	dh_builddeb
 ifneq (,$(SB_PACKAGE))
 	echo $(deb_version) > obj/monolithic/$(SB_PACKAGE)/version
+ifeq (yes,$(shell dpkg-vendor --derives-from Ubuntu && echo yes))
+	mkdir -v obj/monolithic/$(SB_PACKAGE)/$(deb_version)
+	mv -v obj/monolithic/$(SB_PACKAGE)/* obj/monolithic/$(SB_PACKAGE)/$(deb_version) || :
+endif
 	tar -c -f ../$(TARNAME) -a -C obj/monolithic/$(SB_PACKAGE) -v .
 	dpkg-distaddfile $(TARNAME) raw-uefi -
 endif
