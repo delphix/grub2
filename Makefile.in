@@ -221,10 +221,11 @@ TESTS = example_unit_test$(EXEEXT) printf_test$(EXEEXT) \
 @COND_HOST_NETBSD_TRUE@am__append_74 = 10_netbsd
 @COND_HOST_NETBSD_TRUE@am__append_75 = 
 @COND_HOST_NETBSD_TRUE@am__append_76 = util/grub.d/10_netbsd.in 
-@COND_HOST_LINUX_TRUE@am__append_77 = 10_linux
-@COND_HOST_LINUX_TRUE@am__append_78 = 10_linux
-@COND_HOST_LINUX_TRUE@am__append_79 = 
-@COND_HOST_LINUX_TRUE@am__append_80 = util/grub.d/10_linux.in 
+@COND_HOST_LINUX_TRUE@am__append_77 = 10_linux 10_linux_zfs
+@COND_HOST_LINUX_TRUE@am__append_78 = 10_linux 10_linux_zfs
+@COND_HOST_LINUX_TRUE@am__append_79 =
+@COND_HOST_LINUX_TRUE@am__append_80 = util/grub.d/10_linux.in \
+@COND_HOST_LINUX_TRUE@	util/grub.d/10_linux_zfs.in
 @COND_HOST_XNU_TRUE@am__append_81 = 10_xnu
 @COND_HOST_XNU_TRUE@am__append_82 = 10_xnu
 @COND_HOST_XNU_TRUE@am__append_83 = 
@@ -1254,6 +1255,7 @@ am__dist_noinst_DATA_DIST = grub-core/kern/disk_common.c \
 	util/grub.d/10_windows.in util/grub.d/10_hurd.in \
 	util/grub.d/10_kfreebsd.in util/grub.d/10_illumos.in \
 	util/grub.d/10_netbsd.in util/grub.d/10_linux.in \
+	util/grub.d/10_linux_zfs.in \
 	util/grub.d/10_xnu.in util/grub.d/20_linux_xen.in \
 	util/grub.d/30_os-prober.in util/grub.d/40_custom.in \
 	util/grub.d/41_custom.in util/grub-mkconfig.in \
@@ -12697,6 +12699,10 @@ $(top_srcdir)/grub-core/Makefile.core.am: $(top_srcdir)/gentpl.py $(top_srcdir)/
 @COND_HOST_LINUX_TRUE@10_linux: $(top_builddir)/config.status util/grub.d/10_linux.in 
 @COND_HOST_LINUX_TRUE@	(for x in util/grub.d/10_linux.in ; do cat $(srcdir)/"$$x"; done) | $(top_builddir)/config.status --file=$@:-
 @COND_HOST_LINUX_TRUE@	chmod a+x 10_linux
+
+@COND_HOST_LINUX_TRUE@10_linux_zfs: $(top_builddir)/config.status util/grub.d/10_linux_zfs.in 
+@COND_HOST_LINUX_TRUE@	(for x in util/grub.d/10_linux_zfs.in ; do cat $(srcdir)/"$$x"; done) | $(top_builddir)/config.status --file=$@:-
+@COND_HOST_LINUX_TRUE@	chmod a+x 10_linux_zfs
 
 @COND_HOST_XNU_TRUE@10_xnu: $(top_builddir)/config.status util/grub.d/10_xnu.in 
 @COND_HOST_XNU_TRUE@	(for x in util/grub.d/10_xnu.in ; do cat $(srcdir)/"$$x"; done) | $(top_builddir)/config.status --file=$@:-
