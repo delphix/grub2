@@ -1,4 +1,4 @@
-From 26c56d2aeb1a577a7b3bede82a7aed1f4ee6e0e8 Mon Sep 17 00:00:00 2001
+From 7e9567b42599f26081aceb780e910b6d7a18058c Mon Sep 17 00:00:00 2001
 From: Colin Watson <cjwatson@ubuntu.com>
 Date: Mon, 13 Jan 2014 12:13:21 +0000
 Subject: Generate configuration for signed UEFI kernels if available
@@ -8,14 +8,15 @@ Last-Update: 2013-12-25
 
 Patch-Name: mkconfig-signed-kernel.patch
 ---
- util/grub.d/10_linux.in | 15 +++++++++++++++
- 1 file changed, 15 insertions(+)
+ util/grub.d/10_linux.in     | 15 +++++++++++++++
+ util/grub.d/10_linux_zfs.in | 25 +++++++++++++++++++++++++
+ 2 files changed, 40 insertions(+)
 
 diff --git a/util/grub.d/10_linux.in b/util/grub.d/10_linux.in
-index fd87a124d..61335e908 100644
+index 19e4df4ad..cb1cc200e 100644
 --- a/util/grub.d/10_linux.in
 +++ b/util/grub.d/10_linux.in
-@@ -161,8 +161,16 @@ linux_entry ()
+@@ -165,8 +165,16 @@ linux_entry ()
    message="$(gettext_printf "Loading Linux %s ..." ${version})"
    sed "s/^/$submenu_indentation/" << EOF
  	echo	'$(echo "$message" | grub_quote)'
@@ -32,7 +33,7 @@ index fd87a124d..61335e908 100644
    if test -n "${initrd}" ; then
      # TRANSLATORS: ramdisk isn't identifier. Should be translated.
      message="$(gettext_printf "Loading initial ramdisk ...")"
-@@ -214,6 +222,13 @@ submenu_indentation=""
+@@ -218,6 +226,13 @@ submenu_indentation=""
  is_top_level=true
  while [ "x$list" != "x" ] ; do
    linux=`version_find_latest $list`
@@ -46,3 +47,46 @@ index fd87a124d..61335e908 100644
    gettext_printf "Found linux image: %s\n" "$linux" >&2
    basename=`basename $linux`
    dirname=`dirname $linux`
+diff --git a/util/grub.d/10_linux_zfs.in b/util/grub.d/10_linux_zfs.in
+index 3e8ec4beb..498cd5984 100755
+--- a/util/grub.d/10_linux_zfs.in
++++ b/util/grub.d/10_linux_zfs.in
+@@ -282,6 +282,17 @@ get_system_directory() {
+     return
+ }
+ 
++# Return if secure boot is enabled on that system
++is_secure_boot_enabled() {
++    if LANG=C mokutil --sb-state 2>/dev/null | grep -qi enabled; then
++        echo "true"
++        return
++    fi
++    echo "false"
++    return
++}
++
++
+ # Given a filesystem or snapshot dataset, returns dataset|machine id|pretty name|last used
+ # $1 is dataset we want information from
+ # $2 is the temporary mount directory to use
+@@ -348,6 +359,20 @@ get_dataset_info() {
+             continue
+         fi
+ 
++        # filters entry if efi/non efi
++        case "${linux}" in
++            *.efi.signed)
++                if [ "$(is_secure_boot_enabled)" = "false" ]; then
++                    continue
++                fi
++            ;;
++            *)
++                if [ "$(is_secure_boot_enabled)" = "true" ]; then
++                    continue
++                fi
++            ;;
++        esac
++
+         linux_basename=$(basename "${linux}")
+         linux_dirname=$(dirname "${linux}")
+         version=$(echo "${linux_basename}" | sed -e "s,^[^0-9]*-,,g")

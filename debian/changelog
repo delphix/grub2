@@ -1,3 +1,28 @@
+grub2 (2.04-1ubuntu3) eoan; urgency=medium
+
+  [ Mathieu Trudel-Lapierre ]
+  * debian/patches/ubuntu-add-devicetree-command-support.patch: import patch
+    into git-dpm: drop [PATCH] tag and add Patch-Name.
+
+  [ Didier Roche ]
+  * debian/patches/ubuntu-zfs-enhance-support.patch
+    - Don't patch autoregenerated files.
+    - rewrite generate MenuMeta implementation in shell (LP: #1834095)
+      mawk doesn't support \s and other array features.
+      + Change \s by their space or tab equivalent.
+      + Rewrite the menumeta generation in pure shell, which is easier to
+        debug, keeping globally the same algorithm
+      + Support i18n in entry name generation.
+      Co-authored with Jean-Baptiste.
+    - Resplit all patches in debian/patches/*, so that we have upstreamable
+      and non upstreamable parts separate. Also, any change in 10_linux patch
+      will be reflected in 10_linux_zfs.
+    - Always import pools (using force), as we don't mount them. Ensure also
+      that we don't update the host cache, as we import all pools, and not
+      only those attached to that system.
+
+ -- Didier Roche <didrocks@ubuntu.com>  Mon, 29 Jul 2019 08:08:48 +0200
+
 grub2 (2.04-1ubuntu2) eoan; urgency=medium
 
   * Add device-tree command support as installed by flash-kernel.

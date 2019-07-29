@@ -1,7 +1,7 @@
-From 41bff5751f6563268e0ed95289181eb10aa3bee8 Mon Sep 17 00:00:00 2001
+From acd9c584f69fdaae6ea09c38512dd6c0af5b92ac Mon Sep 17 00:00:00 2001
 From: Didier Roche <didrocks@ubuntu.com>
 Date: Fri, 12 Jul 2019 11:06:06 -0400
-Subject: Enhance ZFS grub support
+Subject: UBUNTU: Enhance ZFS grub support
 
 * Support multiple zfs systems (grouped by machine-id)
 * Group zfs snapshots and clones with latest dataset for a given
@@ -15,85 +15,22 @@ Subject: Enhance ZFS grub support
 
 Author: Jean-Baptiste Lallement <jean-baptiste@ubuntu.com>
 Author: Didier Roche <didrocks@ubuntu.com>
-Last-Update: 2019-07-12
+Last-Update: 2019-07-26
 Patch-Name: ubuntu-zfs-enhance-support.patch
 
-Signed-off-by: Mathieu Trudel-Lapierre <mathieu.trudel-lapierre@canonical.com>
+Signed-off-by: Didier Roche <didier.roche@canonical.com>
 ---
- Makefile.in                 |   14 +-
- Makefile.util.am            |   11 +
- Makefile.util.def           |    7 +
- util/grub.d/10_linux.in     |    4 +
- util/grub.d/10_linux_zfs.in | 1033 +++++++++++++++++++++++++++++++++++
- 5 files changed, 1065 insertions(+), 4 deletions(-)
+ Makefile.util.def           |   7 +
+ util/grub.d/10_linux.in     |   4 +
+ util/grub.d/10_linux_zfs.in | 871 ++++++++++++++++++++++++++++++++++++
+ 3 files changed, 882 insertions(+)
  create mode 100755 util/grub.d/10_linux_zfs.in
 
-diff --git a/Makefile.in b/Makefile.in
-index e6a185b1d..760601faa 100644
---- a/Makefile.in
-+++ b/Makefile.in
-@@ -221,10 +221,11 @@ TESTS = example_unit_test$(EXEEXT) printf_test$(EXEEXT) \
- @COND_HOST_NETBSD_TRUE@am__append_74 = 10_netbsd
- @COND_HOST_NETBSD_TRUE@am__append_75 = 
- @COND_HOST_NETBSD_TRUE@am__append_76 = util/grub.d/10_netbsd.in 
--@COND_HOST_LINUX_TRUE@am__append_77 = 10_linux
--@COND_HOST_LINUX_TRUE@am__append_78 = 10_linux
--@COND_HOST_LINUX_TRUE@am__append_79 = 
--@COND_HOST_LINUX_TRUE@am__append_80 = util/grub.d/10_linux.in 
-+@COND_HOST_LINUX_TRUE@am__append_77 = 10_linux 10_linux_zfs
-+@COND_HOST_LINUX_TRUE@am__append_78 = 10_linux 10_linux_zfs
-+@COND_HOST_LINUX_TRUE@am__append_79 =
-+@COND_HOST_LINUX_TRUE@am__append_80 = util/grub.d/10_linux.in \
-+@COND_HOST_LINUX_TRUE@	util/grub.d/10_linux_zfs.in
- @COND_HOST_XNU_TRUE@am__append_81 = 10_xnu
- @COND_HOST_XNU_TRUE@am__append_82 = 10_xnu
- @COND_HOST_XNU_TRUE@am__append_83 = 
-@@ -1254,6 +1255,7 @@ am__dist_noinst_DATA_DIST = grub-core/kern/disk_common.c \
- 	util/grub.d/10_windows.in util/grub.d/10_hurd.in \
- 	util/grub.d/10_kfreebsd.in util/grub.d/10_illumos.in \
- 	util/grub.d/10_netbsd.in util/grub.d/10_linux.in \
-+	util/grub.d/10_linux_zfs.in \
- 	util/grub.d/10_xnu.in util/grub.d/20_linux_xen.in \
- 	util/grub.d/30_os-prober.in util/grub.d/40_custom.in \
- 	util/grub.d/41_custom.in util/grub-mkconfig.in \
-@@ -12698,6 +12700,10 @@ $(top_srcdir)/grub-core/Makefile.core.am: $(top_srcdir)/gentpl.py $(top_srcdir)/
- @COND_HOST_LINUX_TRUE@	(for x in util/grub.d/10_linux.in ; do cat $(srcdir)/"$$x"; done) | $(top_builddir)/config.status --file=$@:-
- @COND_HOST_LINUX_TRUE@	chmod a+x 10_linux
- 
-+@COND_HOST_LINUX_TRUE@10_linux_zfs: $(top_builddir)/config.status util/grub.d/10_linux_zfs.in 
-+@COND_HOST_LINUX_TRUE@	(for x in util/grub.d/10_linux_zfs.in ; do cat $(srcdir)/"$$x"; done) | $(top_builddir)/config.status --file=$@:-
-+@COND_HOST_LINUX_TRUE@	chmod a+x 10_linux_zfs
-+
- @COND_HOST_XNU_TRUE@10_xnu: $(top_builddir)/config.status util/grub.d/10_xnu.in 
- @COND_HOST_XNU_TRUE@	(for x in util/grub.d/10_xnu.in ; do cat $(srcdir)/"$$x"; done) | $(top_builddir)/config.status --file=$@:-
- @COND_HOST_XNU_TRUE@	chmod a+x 10_xnu
-diff --git a/Makefile.util.am b/Makefile.util.am
-index ef9100495..5034b57d7 100644
---- a/Makefile.util.am
-+++ b/Makefile.util.am
-@@ -665,6 +665,17 @@ CLEANFILES += 10_linux
- EXTRA_DIST += 
- dist_noinst_DATA += util/grub.d/10_linux.in 
- endif COND_HOST_LINUX
-+if COND_HOST_LINUX
-+grubconf_SCRIPTS += 10_linux_zfs
-+
-+10_linux_zfs: $(top_builddir)/config.status util/grub.d/10_linux_zfs.in 
-+	(for x in util/grub.d/10_linux_zfs.in ; do cat $(srcdir)/"$$x"; done) | $(top_builddir)/config.status --file=$@:-
-+	chmod a+x 10_linux_zfs
-+	
-+CLEANFILES += 10_linux_zfs
-+EXTRA_DIST += 
-+dist_noinst_DATA += util/grub.d/10_linux_zfs.in 
-+endif COND_HOST_LINUX
- if COND_HOST_XNU
- grubconf_SCRIPTS += 10_xnu
- 
 diff --git a/Makefile.util.def b/Makefile.util.def
-index 59e41423b..504d1c058 100644
+index 969d32f00..bac85e284 100644
 --- a/Makefile.util.def
 +++ b/Makefile.util.def
-@@ -499,6 +499,13 @@ script = {
+@@ -482,6 +482,13 @@ script = {
    condition = COND_HOST_LINUX;
  };
  
@@ -108,10 +45,10 @@ index 59e41423b..504d1c058 100644
    name = '10_xnu';
    common = util/grub.d/10_xnu.in;
 diff --git a/util/grub.d/10_linux.in b/util/grub.d/10_linux.in
-index 3c0b3c82c..a95992a77 100644
+index 4532266be..a75096609 100644
 --- a/util/grub.d/10_linux.in
 +++ b/util/grub.d/10_linux.in
-@@ -89,6 +89,10 @@ case x"$GRUB_FS" in
+@@ -71,6 +71,10 @@ case x"$GRUB_FS" in
  	    GRUB_CMDLINE_LINUX="rootflags=subvol=${rootsubvol} ${GRUB_CMDLINE_LINUX}"
  	fi;;
      xzfs)
@@ -124,10 +61,10 @@ index 3c0b3c82c..a95992a77 100644
  	LINUX_ROOT_DEVICE="ZFS=${rpool}${bootfs%/}"
 diff --git a/util/grub.d/10_linux_zfs.in b/util/grub.d/10_linux_zfs.in
 new file mode 100755
-index 000000000..5229059f5
+index 000000000..185f75dd2
 --- /dev/null
 +++ b/util/grub.d/10_linux_zfs.in
-@@ -0,0 +1,1033 @@
+@@ -0,0 +1,871 @@
 +#! /bin/sh
 +set -e
 +
@@ -149,11 +86,6 @@ index 000000000..5229059f5
 +
 +prefix="@prefix@"
 +datarootdir="@datarootdir@"
-+ubuntu_recovery="@UBUNTU_RECOVERY@"
-+quiet_boot="@QUIET_BOOT@"
-+quick_boot="@QUICK_BOOT@"
-+gfxpayload_dynamic="@GFXPAYLOAD_DYNAMIC@"
-+vt_handoff="@VT_HANDOFF@"
 +
 +. "${pkgdatadir}/grub-mkconfig_lib"
 +
@@ -193,7 +125,7 @@ index 000000000..5229059f5
 +    local all_pools=""
 +    local imported_pools=""
 +
-+    zpool import -a -N 2>/dev/null
++    zpool import -f -a -o cachefile=none -N 2>/dev/null
 +
 +    all_pools="$(zpool list | awk '{if (NR>1) print $1}')"
 +    for pool in ${all_pools}; do
@@ -282,7 +214,7 @@ index 000000000..5229059f5
 +    # 1. Look for /etc/fstab first (which will mount even on top of non empty $directory)
 +    local directory_in_fstab="false"
 +    if [ -f "${etc_dir}/fstab" ]; then
-+        mount_args=$(awk '/^[^#].*\s\/'"${directory}"'\s/ {print "-t", $3, $1}' "${etc_dir}/fstab")
++        mount_args=$(awk '/^[^#].*[ \t]\/'"${directory}"'[ \t]/ {print "-t", $3, $1}' "${etc_dir}/fstab")
 +        if [ -n "${mount_args}" ]; then
 +            mount -o noatime ${mount_args} "${candidate_path}"
 +            directory_in_fstab="true"
@@ -329,7 +261,7 @@ index 000000000..5229059f5
 +    # - the same dataset name (last section) than our base_dataset_name
 +    # - mountpoint=directory
 +    # - canmount!=off
-+    all_same_base_dataset_name="$(zfs list -H -t filesystem -o name,canmount | awk '/^[^ ]+\/'"${base_dataset_name}"'\s(on|noauto)/ {print $1}') "
++    all_same_base_dataset_name="$(zfs list -H -t filesystem -o name,canmount | awk '/^[^ ]+\/'"${base_dataset_name}"'[ \t](on|noauto)/ {print $1}') "
 +
 +    # order by local pool datasets first
 +    current_pool_same_base_datasets=""
@@ -372,7 +304,7 @@ index 000000000..5229059f5
 +
 +    # 2.d) If we didn't find anything yet: check for persistent datasets corresponding to our mountpoint, with canmount=on without any snapshot associated:
 +    # Note: we go over previous datasets as well, but this is ok, as we didn't include them before.
-+    all_mountable_datasets="$(zfs list -t filesystem -o name,canmount | awk  '/^[^ ]+\s+on/ {print $1}')"
++    all_mountable_datasets="$(zfs list -t filesystem -o name,canmount | awk  '/^[^ ]+[ \t]+on/ {print $1}')"
 +
 +    # order by local pool datasets first
 +    current_pool_datasets=""
@@ -415,17 +347,6 @@ index 000000000..5229059f5
 +    grub_warn "Failed to find a valid directory '${directory}' for dataset '${dataset_path}'. Ignoring"
 +    return
 +}
-+
-+# Return if secure boot is enabled on that system
-+is_secure_boot_enabled() {
-+    if LANG=C mokutil --sb-state 2>/dev/null | grep -qi enabled; then
-+        echo "true"
-+        return
-+    fi
-+    echo "false"
-+    return
-+}
-+
 +
 +# Given a filesystem or snapshot dataset, returns dataset|machine id|pretty name|last used
 +# $1 is dataset we want information from
@@ -493,20 +414,6 @@ index 000000000..5229059f5
 +            continue
 +        fi
 +
-+        # filters entry if efi/non efi
-+        case "${linux}" in
-+            *.efi.signed)
-+                if [ "$(is_secure_boot_enabled)" = "false" ]; then
-+                    continue
-+                fi
-+            ;;
-+            *)
-+                if [ "$(is_secure_boot_enabled)" = "true" ]; then
-+                    continue
-+                fi
-+            ;;
-+        esac
-+
 +        linux_basename=$(basename "${linux}")
 +        linux_dirname=$(dirname "${linux}")
 +        version=$(echo "${linux_basename}" | sed -e "s,^[^0-9]*-,,g")
@@ -558,7 +465,7 @@ index 000000000..5229059f5
 +    # otherwise, last_used is manually marked at boot/shutdown on a root dataset for zsys
 +    else
 +        # if current system, take current time
-+        if zfs mount | awk '/\s+\/$/ {print $1}' | grep -q ${dataset}; then
++        if zfs mount | awk '/[ \t]+\/$/ {print $1}' | grep -q ${dataset}; then
 +            last_used=$(date +%s)
 +        else
 +            last_used=$(zfs get -H org.zsys:last-used "${dataset}" | awk '{print $3}')
@@ -603,274 +510,178 @@ index 000000000..5229059f5
 +    echo "${boot_list}"
 +}
 +
-+# Generate metadata from a BOOTLIST that will subsequently used to generate
-+# the final grub menu entries
-+generate_grub_menu_metadata() {
 +
-+    echo "$1" | awk '
-+BEGIN {
-+    FS = "\t"
-+    OFS = "\t"
++# Order machine ids by last_used from their main entry
++get_machines_sorted() {
++    local bootlist="$1"
++
++    local machineids="$(echo "${bootlist}" | awk '{print $3}' | sort -u)"
++    for machineid in ${machineids}; do
++        echo "${bootlist}" | awk 'BEGIN{FS="\t"} $1 !~ /.*@.*/  {print $5, $3}' | sort -nr | grep -E "[^^]\b${machineid}\b" | head -1
++    done | sort -nr | awk '{print $2}'
++}
++
++# Sort entries by last_used for a given machineid
++sort_entries_for_machineid() {
++    local bootlist="$1"
++    local machineid="$2"
++
++    tab="$(printf '\t')"
++    echo "${bootlist}" | grep -E "[^^]\b${machineid}\b" | sort -k5,5r -k1,1 -t "${tab}"
 +}
 +
 +# Return main entry index
-+# param records: boot list records for a machine id
-+function get_main_entry(records) {
-+    idx = ""
-+    for (i in records) {
++get_main_entry() {
++    local entries="$1"
 +
-+        # Exclude snapshots
-+        if ( index(records[i]["dataset"], "@") > 0  ) {
-+            continue
-+        }
-+
-+        # Take first element which is not a snapshot to initialize
-+        if ( idx == "" ) {
-+            idx = i
-+        }
-+
-+        # Get most recent entry
-+        if ( records[i]["lastused"] > records[idx]["lastused"] ) {
-+            idx = i
-+        }
-+    }
-+
-+    return idx
++    echo "${entries}" | awk 'BEGIN{FS="\t"} $1 !~ /.*@.*/  {print}' | head -1
 +}
 +
-+# Print the main entry
-+# param m: main entry to print
-+function print_main_entry(m) {
-+    split(m["initrds"], initrds, "|")
-+    split(m["kernels"], kernels, "|")
++# Return specific field at index from entry
++get_field_from_entry() {
++    local entry="$1"
++    local index="$2"
 +
-+    print m["machineid"],
-+        m["zsys"],
-+        "main",
-+        m["name"],
-+        m["dataset"],
-+        m["device"],
-+        initrds[1],
-+        kernels[1]
++    echo "${entry}" | awk "BEGIN{FS=\"\t\"} {print \$$index}"
 +}
 +
-+# Print advanced entries for a given main entry
-+# param m: record to display
-+function print_advanced_entries(m) {
-+    split(m["initrds"], initrds, "|")
-+    split(m["kernels"], kernels, "|")
++# Get the main entry metadata
++main_entry_meta() {
++    local main_entry="$1"
 +
-+    for ( k in kernels ) {
-+        was_last_used_kernel = "false"
++    initrd=$(get_field_from_entry "${main_entry}" 7 | cut -d'|' -f1)
++    kernel=$(get_field_from_entry "${main_entry}" 8 | cut -d'|' -f1)
 +
-+        kernelbasename = kernels[k]
-+        sub(/^.*\//, "", kernelbasename)
-+        if ( kernelbasename == m["last_booted_kernel"] ) {
-+            was_last_used_kernel = "true"
-+        }
-+
-+        print m["machineid"],
-+            m["zsys"],
-+            "advanced",
-+            m["name"],
-+            m["dataset"],
-+            m["device"],
-+            initrds[k],
-+            kernels[k],
-+            was_last_used_kernel
-+    }
++    # Take first element (most recent entry) which is not a snapshot
++    echo "${main_entry}" | awk "BEGIN{ FS=\"\t\"; OFS=\"\t\"} {print \$3, \$2, \"main\", \$4, \$1, \$6, \"$initrd\", \"$kernel\"}"
 +}
 +
-+# Print history for a given machine_id
-+# param records: List of records for a given machine id
-+# param m: Main entry for this machine id
-+function print_history_entries(records, m) {
-+    main_dataset_name = m["name"]  # Save it because the record is deleted afterwards
-+    main_dataset = m["dataset"]
++# Get advanced entries metadata
++advanced_entries_meta() {
++    local main_entry="$1"
 +
-+    # Creates an array of last_used that will then sort and traverse in
-+    # reverse order to display snapshot from most newest to oldest and ending
-+    # with snapshot not managed by zsys
-+    i=1
-+    delete last_used
-+    for (r in records) {
-+        # Skip main entry, as treated in other menus
-+        if ( records[r]["dataset"] == m["dataset"] ) {
-+            delete records[r]
-+            continue
-+        }
-+        last_used[i] = records[r]["lastused"]
-+        i++
-+    }
++    last_used_kernel="$(get_field_from_entry "${main_entry}" 9 )"
 +
-+    n = asort(last_used, last_used_sorted)
-+    # Traverse snapshots/clone in reverse order
-+    for (i = n; i > 0; i--) {
-+        for (r in records) {
-+            if (records[r]["lastused"] == last_used_sorted[i]) {
-+                name = ""
-+                # Compute snapshot/filesystem dataset name
-+                snapname = records[r]["dataset"]
-+                if ( index(records[r]["dataset"], "@") > 0  ) {
-+                    sub(".*@", "", snapname)
-+                } else {
-+                    sub(main_dataset "_", "", snapname)
++    # We must align initrds with kernels.
++    # Adds initrds to the stack then pop them 1 by 1 as we process the kernels
++    set -- $(get_field_from_entry "${main_entry}" 7 | tr "|" " ")
++    for kernel in $(get_field_from_entry "${main_entry}" 8 | tr "|" " "); do
++        # get initrd and pop to the next one
++        initrd="$1"; shift
 +
-+                    # Handle manual user clone (not prefixed by "main_dataset_")
-+                    sub(".*/", "", snapname)
-+                }
++        was_last_used_kernel="false"
++        kernel_basename=$(basename "${kernel}")
++        if [ "${kernel_basename}" = "${last_used_kernel}" ]; then
++            was_last_used_kernel="true"
++        fi
 +
-+                # We keep the snapname only if it is not only a zsys auto snapshot
-+                if ( match(snapname, "^autozsys_") != 0 ) {
-+                    snapname = ""
-+                }
-+
-+                # We keep the release only if it different from main dataset release (snapshot before a release upgrade)
-+                releasename = ""
-+                if ( records[r]["name"] != main_dataset_name ) {
-+                    releasename = records[r]["name"]
-+                }
-+
-+                # Snapshot date
-+                date = strftime("%x @ %H:%M", records[r]["lastused"])
-+
-+                # For snapshots/clones the name can have the following formats:
-+                # 	<DATE>: autozsys, same release
-+                #   <OLD_RELEASE> on <DATE>: autozsys, different release
-+                #   <SNAPNAME> on <DATE>: Manual snapshot, same release
-+                #   <SNAPNAME>, <OLD_RELEASE> on <DATE>: Manual snapshot, different release
-+                if (snapname == "" && releasename == "") {
-+                    name = date
-+                } else if (snapname == "" && releasename != "") {
-+                    name = sprintf("%s on %s", releasename, date)
-+                } else if (snapname != "" && releasename == "") {
-+                    name = sprintf("%s on %s", snapname, date)
-+                } else { # snapname != "" && releasename != ""
-+                    name = sprintf("%s, %s on %s", snapname, releasename, date)
-+                }
-+
-+                # Choose kernel and initrd if the snapshot was booted successfully on a specific kernel before
-+                split(records[r]["initrds"], initrds, "|")
-+                split(records[r]["kernels"], kernels, "|")
-+
-+                # Take latest by default
-+                chosen_kernel_index = 1
-+                for ( k in kernels ) {
-+                    kernelbasename = kernels[k]
-+                    sub(/^.*\//, "", kernelbasename)
-+                    if ( kernelbasename == records[r]["last_booted_kernel"] ) {
-+                        chosen_kernel_index = k
-+                    }
-+                }
-+
-+                print records[r]["machineid"],
-+                    records[r]["zsys"],
-+                    "history",
-+                    name,
-+                    records[r]["dataset"],
-+                    records[r]["device"],
-+                    initrds[chosen_kernel_index],
-+                    kernels[chosen_kernel_index]
-+
-+                delete records[r]
-+            }
-+        }
-+    }
++        echo "${main_entry}" | awk "BEGIN{ FS=\"\t\"; OFS=\"\t\"}    {print \$3, \$2, \"advanced\", \$4, \$1, \$6, \"$initrd\", \"$kernel\", \"$was_last_used_kernel\"}"
++    done
 +}
 +
-+{
-+    # Load bootlist
-+    if ( ! /^$/ ) {
-+        entry[$3][NR]["machineid"] = $3
-+        entry[$3][NR]["dataset"] = $1
-+        entry[$3][NR]["name"] = $4
-+        entry[$3][NR]["device"] = $6
-+        entry[$3][NR]["initrds"] = $7
-+        entry[$3][NR]["kernels"] = $8
-+        entry[$3][NR]["last_booted_kernel"] = $9
-+        entry[$3][NR]["zsys"] = $2
-+        entry[$3][NR]["lastused"] = $5
-+    }
++# Get history metadata
++history_entries_meta() {
++    local entries="$1"
++    local main_dataset_name="$2"
++    local main_dataset_releasename="$3"
 +
-+}
-+
-+END {
-+
-+    # Order machine ids by last_used from their main entry
-+    for (machineid in entry) {
-+        mainentry_idx = get_main_entry(entry[machineid])
-+        if ( mainentry_idx == "" ) {
-+            printf("W: no main entry found for %s\n", machineid) > "/dev/stderr"
-+            continue
-+        }
-+        m[entry[machineid][mainentry_idx]["lastused"] "," machineid] = mainentry_idx
-+    }
-+    asorti(m, machines, "@ind_str_desc")
-+
-+    # Print records
-+    for (i in machines) {
-+        split(machines[i], m_id, ",")
-+        machineid = m_id[2]
-+        mainentry_idx = m[machines[i]]
-+
-+        print_main_entry(entry[machineid][mainentry_idx])
-+        print_advanced_entries(entry[machineid][mainentry_idx])
-+        print_history_entries(entry[machineid], entry[machineid][mainentry_idx])
-+    }
-+}
-+'
-+}
-+
-+# Print the configuration part common to all sections
-+# Note:
-+#   If 10_linux runs these part will be defined twice in grub configuration
-+print_menu_prologue() {
-+    cat << 'EOF'
-+function gfxmode {
-+	set gfxpayload="${1}"
-+EOF
-+    if [ "${vt_handoff}" = 1 ]; then
-+        cat << 'EOF'
-+	if [ "${1}" = "keep" ]; then
-+		set vt_handoff=vt.handoff=1
-+	else
-+		set vt_handoff=
-+	fi
-+EOF
++    if [ -z "${entries}" ]; then
++        return
 +    fi
-+    cat << EOF
-+}
-+EOF
 +
-+    # Use ELILO's generic "efifb" when it's known to be available.
-+    # FIXME: We need an interface to select vesafb in case efifb can't be used.
-+    GRUB_GFXPAYLOAD_LINUX="${GRUB_GFXPAYLOAD_LINUX:-}"
-+    if [ "${GRUB_GFXPAYLOAD_LINUX}" != "" ] || [ "${gfxpayload_dynamic}" = 0 ]; then
-+        echo "set linux_gfx_mode=${GRUB_GFXPAYLOAD_LINUX}"
-+    else
-+        cat << EOF
-+if [ "\${recordfail}" != 1 ]; then
-+  if [ -e \${prefix}/gfxblacklist.txt ]; then
-+    if hwmatch \${prefix}/gfxblacklist.txt 3; then
-+      if [ \${match} = 0 ]; then
-+        set linux_gfx_mode=keep
-+      else
-+        set linux_gfx_mode=text
-+      fi
-+    else
-+      set linux_gfx_mode=text
-+    fi
-+  else
-+    set linux_gfx_mode=keep
-+  fi
-+else
-+  set linux_gfx_mode=text
-+fi
-+EOF
-+    fi
-+    cat << EOF
-+export linux_gfx_mode
-+EOF
++    # Traverse snapshots and clones
++    echo "${entries}" | while read entry; do
++        name=""
++        # Compute snapshot/filesystem dataset name
++        snap_dataset_name="$(get_field_from_entry "${entry}" 1)"
++
++        snapname="${snap_dataset_name##*@}"
++        # If, this is a clone, take what is after main_dataset_name
++        if [ "${snapname}" = "${snap_dataset_name}" ]; then
++            snapname="${snap_dataset_name##${main_dataset_name}_}"
++
++            # Handle manual user clone (not prefixed by "main_dataset_name")
++            snapname="${snapname##*/}"
++        fi
++
++        # We keep the snapname only if it is not only a zsys auto snapshot
++        if echo "${snapname}" | grep -q "^autozsys_"; then
++            snapname=""
++        fi
++
++        # We store the release only if it different from main dataset release (snapshot before a release upgrade)
++        releasename=$(get_field_from_entry "${entry}" 4)
++        if [ "${releasename}" = "${main_dataset_releasename}" ]; then
++            releasename=""
++        fi
++
++        # Snapshot date
++        foo="$(get_field_from_entry "${entry}" 5)"
++        snapdate="$(date -d @$(get_field_from_entry "${entry}" 5) "+%x @ %H:%M")"
++
++        # For snapshots/clones the name can have the following formats:
++        # 	<DATE>: autozsys, same release
++        #   <OLD_RELEASE> on <DATE>: autozsys, different release
++        #   <SNAPNAME> on <DATE>: Manual snapshot, same release
++        #   <SNAPNAME>, <OLD_RELEASE> on <DATE>: Manual snapshot, different release
++        if [ "${snapname}" = "" -a "${releasename}" = "" ]; then
++            name="${snapdate}"
++        elif [ "${snapname}" = "" -a "${releasename}" != "" ]; then
++            name=$(gettext_printf "%s on %s" "${releasename}" "${snapdate}")
++        elif [ "${snapname}" != "" -a "${releasename}" = "" ]; then
++            name=$(gettext_printf "%s on %s" "${snapname}" "${snapdate}")
++        else # snapname != "" && releasename != ""
++            name=$(gettext_printf "%s, %s on %s" "${snapname}" "${releasename}" "${snapdate}")
++        fi
++
++        # Choose kernel and initrd if the snapshot was booted successfully on a specific kernel before
++        # Take latest by default if no match
++        initrd=$(get_field_from_entry "${entry}" 7 | cut -d'|' -f1)
++        kernel=$(get_field_from_entry "${entry}" 8 | cut -d'|' -f1)
++        last_used_kernel="$(get_field_from_entry "${entry}" 9)"
++
++        # We must align initrds with kernels.
++        # Adds initrds to the stack then pop them 1 by 1 as we process the kernels
++        set -- $(get_field_from_entry "${entry}" 7 | tr "|" " ")
++        for k in $(get_field_from_entry "${entry}" 8|tr "|" " "); do
++            # get initrd and pop to the next one
++            candidate_initrd="$1"; shift
++
++            kernel_basename=$(basename "${k}")
++            if [ "${kernel_basename}" = "${last_used_kernel}" ]; then
++                kernel="${k}"
++                initrd="${candidate_initrd}"
++                break
++            fi
++        done
++
++        echo "${entry}" | awk "BEGIN{ FS=\"\t\"; OFS=\"\t\"}    {print \$3, \$2, \"history\", \"$name\", \$1, \$6, \"$initrd\", \"$kernel\"}"
++    done
++}
++
++# Generate metadata from a BOOTLIST that will subsequently used to generate
++# the final grub menu entries
++generate_grub_menu_metadata() {
++    local bootlist="$1"
++
++    # Sort machineids by last_used from their main entry
++    for machineid in $(get_machines_sorted "${bootlist}"); do
++        entries="$(sort_entries_for_machineid "${bootlist}" ${machineid})"
++        main_entry="$(get_main_entry "${entries}")"
++
++        if [ -z "$main_entry" ]; then
++            continue
++        fi
++
++        main_entry_meta "${main_entry}"
++        advanced_entries_meta "${main_entry}"
++
++        main_dataset_name="$(get_field_from_entry "${main_entry}" 1)"
++        main_dataset_releasename="$(get_field_from_entry "${main_entry}" 4)"
++        # grep -v errcode != 0 if there is no match. || true to not fail with -e
++        other_entries="$(echo "${entries}" | grep -v "${main_entry}" || true)"
++        history_entries_meta "${other_entries}" "${main_dataset_name}" "${main_dataset_releasename}"
++    done
 +}
 +
 +# Cache for prepare_grub_to_access_device call
@@ -907,53 +718,42 @@ index 000000000..5229059f5
 +
 +    echo "menuentry '$(echo "${title}" | grub_quote)' ${CLASS} \${menuentry_id_option} 'gnulinux-${dataset}-${kernel_version}' {" | sed "s/^/${submenu_indentation}/"
 +
-+    if [ "${quick_boot}" = 1 ]; then
-+        echo "	recordfail" | sed "s/^/${submenu_indentation}/"
-+    fi
-+
 +    # Use ELILO's generic "efifb" when it's known to be available.
 +    # FIXME: We need an interface to select vesafb in case efifb can't be used.
 +    if [ "${GRUB_GFXPAYLOAD_LINUX}" = "" ]; then
 +        echo "	load_video" | sed "s/^/${submenu_indentation}/"
++        if grep -qx "CONFIG_FB_EFI=y" "${config}" 2> /dev/null \
++            && grep -qx "CONFIG_VT_HW_CONSOLE_BINDING=y" "${config}" 2> /dev/null; then
++            echo "	set gfxpayload=keep" | sed "s/^/$submenu_indentation/"
++        fi
 +    else
 +        if [ "${GRUB_GFXPAYLOAD_LINUX}" != xtext ]; then
 +        echo "	load_video" | sed "s/^/${submenu_indentation}/"
 +        fi
-+    fi
-+
-+    if ([ "${ubuntu_recovery}" = 0 ] || [ "${type}" != "recovery" ]) && \
-+        ([ "${GRUB_GFXPAYLOAD_LINUX}" != "" ] || [ "${gfxpayload_dynamic}" = 1 ]); then
-+        echo "	gfxmode \${linux_gfx_mode}" | sed "s/^/${submenu_indentation}/"
++        echo "	set gfxpayload=\${linux_gfx_mode}" | sed "s/^/${submenu_indentation}/"
 +    fi
 +
 +    echo "	insmod gzio" | sed "s/^/${submenu_indentation}/"
-+    echo "	if [ \"\${grub_platform}\" = xen ]; then insmod xzio; insmod lzopio; fi" | sed "s/^/${submenu_indentation}/"
 +
 +    echo "$(prepare_grub_to_access_device_cached ${boot_device} | grub_add_tab | sed "s/^/${submenu_indentation}/")"
 +
-+    if [ "${quiet_boot}" = 0 ] || [ "${type}" != simple ]; then
-+        message="$(gettext_printf "Loading Linux %s ..." ${kernel_version})"
-+        sed "s/^/${submenu_indentation}/" << EOF
++    message="$(gettext_printf "Loading Linux %s ..." ${kernel_version})"
++    sed "s/^/${submenu_indentation}/" << EOF
 +	echo '$(echo "$message" | grub_quote)'
 +EOF
-+    fi
 +
 +    linux_default_args="${GRUB_CMDLINE_LINUX} ${GRUB_CMDLINE_LINUX_DEFAULT}"
 +    if [ ${type} = "recovery" ]; then
-+        linux_default_args="${GRUB_CMDLINE_LINUX_RECOVERY} ${GRUB_CMDLINE_LINUX}"
++        linux_default_args="single ${GRUB_CMDLINE_LINUX}"
 +    fi
 +
 +    sed "s/^/${submenu_indentation}/" << EOF
 +	linux	${kernel} root=ZFS=${dataset} ro ${linux_default_args} ${kernel_additional_args}
 +EOF
 +
-+    if [ "${quiet_boot}" = 0 ] || [ "${type}" != simple ]; then
-+        message="$(gettext_printf "Loading initial ramdisk ...")"
-+        sed "s/^/${submenu_indentation}/" << EOF
-+	echo	'$(echo "$message" | grub_quote)'
-+EOF
-+    fi
++    message="$(gettext_printf "Loading initial ramdisk ...")"
 +    sed "s/^/${submenu_indentation}/" << EOF
++	echo	'$(echo "$message" | grub_quote)'
 +	initrd	${initrd}
 +EOF
 +
@@ -977,35 +777,10 @@ index 000000000..5229059f5
 +    if [ "${GRUB_DISTRIBUTOR}" = "" ] ; then
 +        OS=GNU/Linux
 +    else
-+        case ${GRUB_DISTRIBUTOR} in
-+            Ubuntu|Kubuntu)
-+            OS="${GRUB_DISTRIBUTOR}"
-+            ;;
-+            *)
-+            OS="${GRUB_DISTRIBUTOR} GNU/Linux"
-+            ;;
-+        esac
++        OS="${GRUB_DISTRIBUTOR} GNU/Linux"
 +        CLASS="--class $(echo ${GRUB_DISTRIBUTOR} | tr 'A-Z' 'a-z' | cut -d' ' -f1 | LC_ALL=C sed 's,[^[:alnum:]_],_,g') ${CLASS}"
 +    fi
 +
-+    if [ -x /lib/recovery-mode/recovery-menu ]; then
-+        GRUB_CMDLINE_LINUX_RECOVERY=recovery
-+    else
-+        GRUB_CMDLINE_LINUX_RECOVERY=single
-+    fi
-+    if [ "${ubuntu_recovery}" = 1 ]; then
-+        GRUB_CMDLINE_LINUX_RECOVERY="${GRUB_CMDLINE_LINUX_RECOVERY} nomodeset"
-+    fi
-+
-+    if [ "${vt_handoff}" = 1 ]; then
-+        for word in ${GRUB_CMDLINE_LINUX_DEFAULT}; do
-+            if [ "${word}" = splash ]; then
-+                GRUB_CMDLINE_LINUX_DEFAULT="${GRUB_CMDLINE_LINUX_DEFAULT} \${vt_handoff}"
-+            fi
-+        done
-+    fi
-+
-+    print_menu_prologue
 +
 +    # IFS is set to TAB (ASCII 0x09)
 +    echo "${menu_metadata}" |
@@ -1046,7 +821,7 @@ index 000000000..5229059f5
 +
 +                    GRUB_DISABLE_RECOVERY=${GRUB_DISABLE_RECOVERY:-}
 +                    if [ "${GRUB_DISABLE_RECOVERY}" != "true" ]; then
-+                        title="$(gettext_printf "%s%s, with Linux %s (%s)" "${last_booted_kernel_marker}" "${name}" "${kernel_version}" "$(gettext "${GRUB_RECOVERY_TITLE}")")"
++                        title="$(gettext_printf "%s%s, with Linux %s (recovery mode)" "${last_booted_kernel_marker}" "${name}" "${kernel_version}")"
 +                        zfs_linux_entry 1 "${title}" "recovery" "${dataset}" "${device}" "${initrd}" "${kernel}"
 +                    fi
 +                    at_least_one_entry=1
@@ -1074,9 +849,9 @@ index 000000000..5229059f5
 +
 +                        GRUB_DISABLE_RECOVERY="${GRUB_DISABLE_RECOVERY:-}"
 +                        if [ "${GRUB_DISABLE_RECOVERY}" != "true" ]; then
-+                            title="$(gettext_printf "Revert system only (%s)" "$(gettext "${GRUB_RECOVERY_TITLE}")")"
++                            title="$(gettext_printf "Revert system only (recovery mode)")"
 +                            zfs_linux_entry 2 "${title}" "recovery" "${dataset}" "${device}" "${initrd}" "${kernel}"
-+                            title="$(gettext_printf "Revert system and user data (%s)" "$(gettext "${GRUB_RECOVERY_TITLE}")")"
++                            title="$(gettext_printf "Revert system and user data (recovery mode)")"
 +                            zfs_linux_entry 2 "${title}" "recovery" "${dataset}" "${device}" "${initrd}" "${kernel}" "zsys-revert=userdata"
 +                        fi
 +                    # Non-zsys: boot temporarly on snapshots or rollback (destroying intermediate snapshots)
@@ -1086,7 +861,7 @@ index 000000000..5229059f5
 +
 +                        GRUB_DISABLE_RECOVERY="${GRUB_DISABLE_RECOVERY:-}"
 +                        if [ "${GRUB_DISABLE_RECOVERY}" != "true" ]; then
-+                            title="$(gettext_printf "One time boot (%s)" "$(gettext "${GRUB_RECOVERY_TITLE}")")"
++                            title="$(gettext_printf "One time boot (recovery mode)")"
 +                            zfs_linux_entry 2 "${title}" "recovery" "${dataset}" "${device}" "${initrd}" "${kernel}"
 +                        fi
 +

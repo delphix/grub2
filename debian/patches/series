@@ -4,6 +4,7 @@ dpkg-version-comparison.patch
 grub-legacy-0-based-partitions.patch
 disable-floppies.patch
 grub.cfg-400.patch
+ubuntu-zfs-enhance-support.patch
 gfxpayload-keep-default.patch
 install-stage2-confusion.patch
 mkrescue-efi-modules.patch
@@ -62,6 +63,5 @@ ubuntu-add-initrd-less-boot-fallback.patch
 ubuntu-mkconfig-leave-breadcrumbs.patch
 ubuntu-fix-lzma-decompressor-objcopy.patch
 ubuntu-clear-invalid-initrd-spacing.patch
-ubuntu-zfs-enhance-support.patch
 ubuntu-temp-keep-auto-nvram.patch
 ubuntu-add-devicetree-command-support.patch

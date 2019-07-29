@@ -1,4 +1,4 @@
-From b81e9404d10f1af1715c0c5f8783d712bf5af660 Mon Sep 17 00:00:00 2001
+From 5a7259ab44514e2b81c8374fca0012d2c9fb940e Mon Sep 17 00:00:00 2001
 From: Mario Limonciello <Mario_Limonciello@dell.com>
 Date: Mon, 13 Jan 2014 12:13:14 +0000
 Subject: Remove GNU/Linux from default distributor string for Ubuntu
@@ -12,11 +12,12 @@ Last-Update: 2013-12-25
 
 Patch-Name: mkconfig-ubuntu-distributor.patch
 ---
- util/grub.d/10_linux.in | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ util/grub.d/10_linux.in     | 9 ++++++++-
+ util/grub.d/10_linux_zfs.in | 9 ++++++++-
+ 2 files changed, 16 insertions(+), 2 deletions(-)
 
 diff --git a/util/grub.d/10_linux.in b/util/grub.d/10_linux.in
-index 0509ac680..fd87a124d 100644
+index fcd303387..19e4df4ad 100644
 --- a/util/grub.d/10_linux.in
 +++ b/util/grub.d/10_linux.in
 @@ -32,7 +32,14 @@ CLASS="--class gnu-linux --class gnu --class os"
@@ -34,4 +35,24 @@ index 0509ac680..fd87a124d 100644
 +  esac
    CLASS="--class $(echo ${GRUB_DISTRIBUTOR} | tr 'A-Z' 'a-z' | cut -d' ' -f1|LC_ALL=C sed 's,[^[:alnum:]_],_,g') ${CLASS}"
  fi
+ 
+diff --git a/util/grub.d/10_linux_zfs.in b/util/grub.d/10_linux_zfs.in
+index 20cb482e1..3e8ec4beb 100755
+--- a/util/grub.d/10_linux_zfs.in
++++ b/util/grub.d/10_linux_zfs.in
+@@ -709,7 +709,14 @@ generate_grub_menu() {
+     if [ "${GRUB_DISTRIBUTOR}" = "" ] ; then
+         OS=GNU/Linux
+     else
+-        OS="${GRUB_DISTRIBUTOR} GNU/Linux"
++        case ${GRUB_DISTRIBUTOR} in
++            Ubuntu|Kubuntu)
++            OS="${GRUB_DISTRIBUTOR}"
++            ;;
++            *)
++            OS="${GRUB_DISTRIBUTOR} GNU/Linux"
++            ;;
++        esac
+         CLASS="--class $(echo ${GRUB_DISTRIBUTOR} | tr 'A-Z' 'a-z' | cut -d' ' -f1 | LC_ALL=C sed 's,[^[:alnum:]_],_,g') ${CLASS}"
+     fi
  

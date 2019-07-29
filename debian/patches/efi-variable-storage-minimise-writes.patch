@@ -1,4 +1,4 @@
-From 90b7d66feb1e2d1c81fc258c714a4959fcf08fdb Mon Sep 17 00:00:00 2001
+From bb9a274a47ed53106d5b35de3e191844497fc353 Mon Sep 17 00:00:00 2001
 From: Colin Watson <cjwatson@ubuntu.com>
 Date: Mon, 11 Mar 2019 11:17:43 +0000
 Subject: Minimise writes to EFI variable storage
@@ -76,10 +76,10 @@ index 8acb40902..342c158e9 100644
  
  * libdevmapper 1.02.34 or later (recommended)
 diff --git a/Makefile.util.def b/Makefile.util.def
-index 8a24b23f0..59e41423b 100644
+index ce133e694..504d1c058 100644
 --- a/Makefile.util.def
 +++ b/Makefile.util.def
-@@ -558,6 +558,8 @@ program = {
+@@ -565,6 +565,8 @@ program = {
    common = grub-core/osdep/compress.c;
    extra_dist = grub-core/osdep/unix/compress.c;
    extra_dist = grub-core/osdep/basic/compress.c;
@@ -88,7 +88,7 @@ index 8a24b23f0..59e41423b 100644
    common = util/editenv.c;
    common = grub-core/osdep/blocklist.c;
    common = grub-core/osdep/config.c;
-@@ -571,12 +573,15 @@ program = {
+@@ -578,12 +580,15 @@ program = {
    common = grub-core/kern/emu/argp_common.c;
    common = grub-core/osdep/init.c;
  
@@ -104,7 +104,7 @@ index 8a24b23f0..59e41423b 100644
  
    condition = COND_HAVE_EXEC;
  };
-@@ -605,6 +610,8 @@ program = {
+@@ -612,6 +617,8 @@ program = {
    extra_dist = grub-core/osdep/basic/no_platform.c;
    extra_dist = grub-core/osdep/unix/platform.c;
    common = grub-core/osdep/compress.c;
@@ -113,7 +113,7 @@ index 8a24b23f0..59e41423b 100644
    common = util/editenv.c;
    common = grub-core/osdep/blocklist.c;
    common = grub-core/osdep/config.c;
-@@ -618,12 +625,15 @@ program = {
+@@ -625,12 +632,15 @@ program = {
    common = grub-core/kern/emu/argp_common.c;
    common = grub-core/osdep/init.c;
  
@@ -129,7 +129,7 @@ index 8a24b23f0..59e41423b 100644
  };
  
  program = {
-@@ -645,6 +655,8 @@ program = {
+@@ -652,6 +662,8 @@ program = {
    common = grub-core/osdep/platform.c;
    common = grub-core/osdep/platform_unix.c;
    common = grub-core/osdep/compress.c;
@@ -138,7 +138,7 @@ index 8a24b23f0..59e41423b 100644
    common = util/editenv.c;
    common = grub-core/osdep/blocklist.c;
    common = grub-core/osdep/config.c;
-@@ -657,12 +669,15 @@ program = {
+@@ -664,12 +676,15 @@ program = {
    common = grub-core/kern/emu/argp_common.c;
    common = grub-core/osdep/init.c;
  
@@ -154,7 +154,7 @@ index 8a24b23f0..59e41423b 100644
  };
  
  program = {
-@@ -684,6 +699,8 @@ program = {
+@@ -691,6 +706,8 @@ program = {
    common = grub-core/osdep/platform.c;
    common = grub-core/osdep/platform_unix.c;
    common = grub-core/osdep/compress.c;
@@ -163,7 +163,7 @@ index 8a24b23f0..59e41423b 100644
    common = util/editenv.c;
    common = grub-core/osdep/blocklist.c;
    common = grub-core/osdep/config.c;
-@@ -693,12 +710,15 @@ program = {
+@@ -700,12 +717,15 @@ program = {
    common = grub-core/kern/emu/argp_common.c;
    common = grub-core/osdep/init.c;
  

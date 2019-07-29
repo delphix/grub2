@@ -1,21 +1,22 @@
-From 78046b188cc844efa39237df1d66e2fdbd5cf4bc Mon Sep 17 00:00:00 2001
+From 82f1d75cd9d0415c3aef23adcc715fc3abc5fd78 Mon Sep 17 00:00:00 2001
 From: Dimitri John Ledkov <xnox@ubuntu.com>
 Date: Wed, 22 May 2019 19:57:29 +0100
-Subject: [PATCH] Add devicetree command, if a dtb is present.
+Subject: Add devicetree command, if a dtb is present.
 
 Specically support dtb paths as installed by flash-kernel.
 
 Signed-off-by: Dimitri John Ledkov <xnox@ubuntu.com>
 Bug-Debian: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=929427
 Bug-Upstream: https://lists.gnu.org/archive/html/grub-devel/2019-05/msg00121.html
+Patch-Name: ubuntu-add-devicetree-command-support.patch
 ---
  util/grub.d/10_linux.in | 19 +++++++++++++++++++
  1 file changed, 19 insertions(+)
 
-Index: grub2-2.04/util/grub.d/10_linux.in
-===================================================================
---- grub2-2.04.orig/util/grub.d/10_linux.in
-+++ grub2-2.04/util/grub.d/10_linux.in
+diff --git a/util/grub.d/10_linux.in b/util/grub.d/10_linux.in
+index a95992a77..d6937cfef 100644
+--- a/util/grub.d/10_linux.in
++++ b/util/grub.d/10_linux.in
 @@ -240,6 +240,17 @@ EOF
  EOF
          fi
