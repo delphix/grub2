@@ -1,4 +1,4 @@
-From b8a1c06ee965e05f536fecbbdcba1762049efd4e Mon Sep 17 00:00:00 2001
+From 22599496c0c4f44597edc71dcfb0415cf55c5c64 Mon Sep 17 00:00:00 2001
 From: Evan Broder <evan@ebroder.net>
 Date: Mon, 13 Jan 2014 12:13:29 +0000
 Subject: Add configure option to enable gfxpayload=keep dynamically
@@ -18,7 +18,8 @@ Patch-Name: gfxpayload-dynamic.patch
  grub-core/commands/i386/pc/hwmatch.c | 146 +++++++++++++++++++++++++++
  include/grub/file.h                  |   1 +
  util/grub.d/10_linux.in              |  37 ++++++-
- 5 files changed, 200 insertions(+), 3 deletions(-)
+ util/grub.d/10_linux_zfs.in          |  46 ++++++++-
+ 6 files changed, 243 insertions(+), 6 deletions(-)
  create mode 100644 grub-core/commands/i386/pc/hwmatch.c
 
 diff --git a/configure.ac b/configure.ac
@@ -227,7 +228,7 @@ index 31567483c..e3c4cae2b 100644
      GRUB_FILE_TYPE_LOADENV,
      GRUB_FILE_TYPE_SAVEENV,
 diff --git a/util/grub.d/10_linux.in b/util/grub.d/10_linux.in
-index 51cdb5e1d..2f5217358 100644
+index 2be66c702..09393c28e 100644
 --- a/util/grub.d/10_linux.in
 +++ b/util/grub.d/10_linux.in
 @@ -23,6 +23,7 @@ datarootdir="@datarootdir@"
@@ -238,7 +239,7 @@ index 51cdb5e1d..2f5217358 100644
  
  . "$pkgdatadir/grub-mkconfig_lib"
  
-@@ -145,9 +146,10 @@ linux_entry ()
+@@ -149,9 +150,10 @@ linux_entry ()
        if [ "x$GRUB_GFXPAYLOAD_LINUX" != xtext ]; then
  	  echo "	load_video" | sed "s/^/$submenu_indentation/"
        fi
@@ -252,7 +253,7 @@ index 51cdb5e1d..2f5217358 100644
    fi
  
    echo "	insmod gzio" | sed "s/^/$submenu_indentation/"
-@@ -226,6 +228,35 @@ prepare_root_cache=
+@@ -230,6 +232,35 @@ prepare_root_cache=
  boot_device_id=
  title_correction_code=
  
@@ -288,3 +289,81 @@ index 51cdb5e1d..2f5217358 100644
  # Extra indentation to add to menu entries in a submenu. We're not in a submenu
  # yet, so it's empty. In a submenu it will be equal to '\t' (one tab).
  submenu_indentation=""
+diff --git a/util/grub.d/10_linux_zfs.in b/util/grub.d/10_linux_zfs.in
+index 8fdb484e2..0c3395a61 100755
+--- a/util/grub.d/10_linux_zfs.in
++++ b/util/grub.d/10_linux_zfs.in
+@@ -22,6 +22,7 @@ datarootdir="@datarootdir@"
+ ubuntu_recovery="@UBUNTU_RECOVERY@"
+ quiet_boot="@QUIET_BOOT@"
+ quick_boot="@QUICK_BOOT@"
++gfxpayload_dynamic="@GFXPAYLOAD_DYNAMIC@"
+ 
+ . "${pkgdatadir}/grub-mkconfig_lib"
+ 
+@@ -645,6 +646,41 @@ generate_grub_menu_metadata() {
+     done
+ }
+ 
++# Print the configuration part common to all sections
++# Note:
++#   If 10_linux runs these part will be defined twice in grub configuration
++print_menu_prologue() {
++    # Use ELILO's generic "efifb" when it's known to be available.
++    # FIXME: We need an interface to select vesafb in case efifb can't be used.
++    GRUB_GFXPAYLOAD_LINUX="${GRUB_GFXPAYLOAD_LINUX:-}"
++    if [ "${GRUB_GFXPAYLOAD_LINUX}" != "" ] || [ "${gfxpayload_dynamic}" = 0 ]; then
++        echo "set linux_gfx_mode=${GRUB_GFXPAYLOAD_LINUX}"
++    else
++        cat << EOF
++if [ "\${recordfail}" != 1 ]; then
++  if [ -e \${prefix}/gfxblacklist.txt ]; then
++    if hwmatch \${prefix}/gfxblacklist.txt 3; then
++      if [ \${match} = 0 ]; then
++        set linux_gfx_mode=keep
++      else
++        set linux_gfx_mode=text
++      fi
++    else
++      set linux_gfx_mode=text
++    fi
++  else
++    set linux_gfx_mode=keep
++  fi
++else
++  set linux_gfx_mode=text
++fi
++EOF
++    fi
++    cat << EOF
++export linux_gfx_mode
++EOF
++}
++
+ # Cache for prepare_grub_to_access_device call
+ # $1: boot_device
+ prepare_grub_to_access_device_cached() {
+@@ -691,9 +727,11 @@ zfs_linux_entry () {
+         if [ "${GRUB_GFXPAYLOAD_LINUX}" != xtext ]; then
+         echo "	load_video" | sed "s/^/${submenu_indentation}/"
+         fi
+-        if [ "${ubuntu_recovery}" = 0 ] || [ "${type}" != "recovery" ]; then
+-            echo "	set gfxpayload=\${linux_gfx_mode}" | sed "s/^/${submenu_indentation}/"
+-        fi
++    fi
++
++    if ([ "${ubuntu_recovery}" = 0 ] || [ "${type}" != "recovery" ]) && \
++        ([ "${GRUB_GFXPAYLOAD_LINUX}" != "" ] || [ "${gfxpayload_dynamic}" = 1 ]); then
++        echo "	set gfxpayload=\${linux_gfx_mode}" | sed "s/^/${submenu_indentation}/"
+     fi
+ 
+     echo "	insmod gzio" | sed "s/^/${submenu_indentation}/"
+@@ -766,6 +804,8 @@ generate_grub_menu() {
+         GRUB_CMDLINE_LINUX_RECOVERY="${GRUB_CMDLINE_LINUX_RECOVERY} nomodeset"
+     fi
+ 
++    print_menu_prologue
++
+     # IFS is set to TAB (ASCII 0x09)
+     echo "${menu_metadata}" |
+     {

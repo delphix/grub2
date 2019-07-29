@@ -1,4 +1,4 @@
-From 43f4ea34f97f81612c2e7afb1c9e5a7d28342b77 Mon Sep 17 00:00:00 2001
+From 1ab4ea7dbcbc886f49d6893532ff24fc4233b9b0 Mon Sep 17 00:00:00 2001
 From: Chris Glass <chris.glass@canonical.com>
 Date: Fri, 9 Mar 2018 13:47:07 +0100
 Subject: UBUNTU: Added initrd-less boot capabilities.
@@ -117,10 +117,10 @@ index b7135b655..2642f66c5 100644
      cat <<EOF
  function recordfail {
 diff --git a/util/grub.d/10_linux.in b/util/grub.d/10_linux.in
-index ca10bfa87..1fbd2dd6c 100644
+index aa9666e5a..13f39b9f6 100644
 --- a/util/grub.d/10_linux.in
 +++ b/util/grub.d/10_linux.in
-@@ -114,6 +114,10 @@ if [ "$vt_handoff" = 1 ]; then
+@@ -118,6 +118,10 @@ if [ "$vt_handoff" = 1 ]; then
    done
  fi
  
@@ -131,7 +131,7 @@ index ca10bfa87..1fbd2dd6c 100644
  linux_entry ()
  {
    os="$1"
-@@ -189,31 +193,49 @@ EOF
+@@ -193,31 +197,49 @@ EOF
  	linux	${rel_dirname}/${basename}.efi.signed root=${linux_root_device_thisversion} ro ${args}
  EOF
    else

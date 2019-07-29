@@ -1,4 +1,4 @@
-From 18823a6788d21bb2e08a3b17e20fed612a65ab0e Mon Sep 17 00:00:00 2001
+From fc1a599dda8925e7f6111ec0aaf90cc4175ab3ee Mon Sep 17 00:00:00 2001
 From: Colin Watson <cjwatson@debian.org>
 Date: Sat, 3 Jan 2015 12:04:59 +0000
 Subject: Generate alternative init entries in advanced menu
@@ -18,7 +18,7 @@ Patch-Name: mkconfig-other-inits.patch
  2 files changed, 21 insertions(+)
 
 diff --git a/util/grub.d/10_linux.in b/util/grub.d/10_linux.in
-index 8a74c677b..0cd4cf5c0 100644
+index 85b30084a..dff84edea 100644
 --- a/util/grub.d/10_linux.in
 +++ b/util/grub.d/10_linux.in
 @@ -32,6 +32,7 @@ export TEXTDOMAIN=@PACKAGE@
@@ -29,7 +29,7 @@ index 8a74c677b..0cd4cf5c0 100644
  
  if [ "x${GRUB_DISTRIBUTOR}" = "x" ] ; then
    OS=GNU/Linux
-@@ -127,6 +128,8 @@ linux_entry ()
+@@ -131,6 +132,8 @@ linux_entry ()
        case $type in
  	  recovery)
  	      title="$(gettext_printf "%s, with Linux %s (%s)" "${os}" "${version}" "$(gettext "${GRUB_RECOVERY_TITLE}")")" ;;
@@ -38,7 +38,7 @@ index 8a74c677b..0cd4cf5c0 100644
  	  *)
  	      title="$(gettext_printf "%s, with Linux %s" "${os}" "${version}")" ;;
        esac
-@@ -381,6 +384,13 @@ while [ "x$list" != "x" ] ; do
+@@ -385,6 +388,13 @@ while [ "x$list" != "x" ] ; do
  
    linux_entry "${OS}" "${version}" advanced \
                "${GRUB_CMDLINE_LINUX} ${GRUB_CMDLINE_LINUX_DEFAULT}"

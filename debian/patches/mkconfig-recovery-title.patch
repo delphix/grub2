@@ -1,4 +1,4 @@
-From f64ed0fb3524e6f63bd5f92165d353041c5eb245 Mon Sep 17 00:00:00 2001
+From e8966a78c60e2a8c9490ef00c3ff44e6f91f3ba5 Mon Sep 17 00:00:00 2001
 From: Colin Watson <cjwatson@ubuntu.com>
 Date: Mon, 13 Jan 2014 12:13:33 +0000
 Subject: Add GRUB_RECOVERY_TITLE option
@@ -16,9 +16,10 @@ Patch-Name: mkconfig-recovery-title.patch
  util/grub.d/10_hurd.in      | 4 ++--
  util/grub.d/10_kfreebsd.in  | 2 +-
  util/grub.d/10_linux.in     | 2 +-
+ util/grub.d/10_linux_zfs.in | 8 ++++----
  util/grub.d/10_netbsd.in    | 2 +-
  util/grub.d/20_linux_xen.in | 2 +-
- 7 files changed, 17 insertions(+), 7 deletions(-)
+ 8 files changed, 21 insertions(+), 11 deletions(-)
 
 diff --git a/docs/grub.texi b/docs/grub.texi
 index a835d0ae4..3ec35d315 100644
@@ -90,10 +91,10 @@ index 9d8e8fd85..8301d361a 100644
  	  title="$(gettext_printf "%s, with kFreeBSD %s" "${os}" "${version}")"
        fi
 diff --git a/util/grub.d/10_linux.in b/util/grub.d/10_linux.in
-index 174d547bb..ba945582e 100644
+index cc2dd855a..2c418c5ec 100644
 --- a/util/grub.d/10_linux.in
 +++ b/util/grub.d/10_linux.in
-@@ -126,7 +126,7 @@ linux_entry ()
+@@ -130,7 +130,7 @@ linux_entry ()
    if [ x$type != xsimple ] ; then
        case $type in
  	  recovery)
@@ -102,6 +103,40 @@ index 174d547bb..ba945582e 100644
  	  *)
  	      title="$(gettext_printf "%s, with Linux %s" "${os}" "${version}")" ;;
        esac
+diff --git a/util/grub.d/10_linux_zfs.in b/util/grub.d/10_linux_zfs.in
+index b76add4fa..38d3a8df2 100755
+--- a/util/grub.d/10_linux_zfs.in
++++ b/util/grub.d/10_linux_zfs.in
+@@ -871,7 +871,7 @@ generate_grub_menu() {
+ 
+                     GRUB_DISABLE_RECOVERY=${GRUB_DISABLE_RECOVERY:-}
+                     if [ "${GRUB_DISABLE_RECOVERY}" != "true" ]; then
+-                        title="$(gettext_printf "%s%s, with Linux %s (recovery mode)" "${last_booted_kernel_marker}" "${name}" "${kernel_version}")"
++                        title="$(gettext_printf "%s%s, with Linux %s (%s)" "${last_booted_kernel_marker}" "${name}" "${kernel_version}" "$(gettext "${GRUB_RECOVERY_TITLE}")")"
+                         zfs_linux_entry 1 "${title}" "recovery" "${dataset}" "${device}" "${initrd}" "${kernel}"
+                     fi
+                     at_least_one_entry=1
+@@ -899,9 +899,9 @@ generate_grub_menu() {
+ 
+                         GRUB_DISABLE_RECOVERY="${GRUB_DISABLE_RECOVERY:-}"
+                         if [ "${GRUB_DISABLE_RECOVERY}" != "true" ]; then
+-                            title="$(gettext_printf "Revert system only (recovery mode)")"
++                            title="$(gettext_printf "Revert system only (%s)" "$(gettext "${GRUB_RECOVERY_TITLE}")")"
+                             zfs_linux_entry 2 "${title}" "recovery" "${dataset}" "${device}" "${initrd}" "${kernel}"
+-                            title="$(gettext_printf "Revert system and user data (recovery mode)")"
++                            title="$(gettext_printf "Revert system and user data (%s)" "$(gettext "${GRUB_RECOVERY_TITLE}")")"
+                             zfs_linux_entry 2 "${title}" "recovery" "${dataset}" "${device}" "${initrd}" "${kernel}" "zsys-revert=userdata"
+                         fi
+                     # Non-zsys: boot temporarly on snapshots or rollback (destroying intermediate snapshots)
+@@ -911,7 +911,7 @@ generate_grub_menu() {
+ 
+                         GRUB_DISABLE_RECOVERY="${GRUB_DISABLE_RECOVERY:-}"
+                         if [ "${GRUB_DISABLE_RECOVERY}" != "true" ]; then
+-                            title="$(gettext_printf "One time boot (recovery mode)")"
++                            title="$(gettext_printf "One time boot (%s)" "$(gettext "${GRUB_RECOVERY_TITLE}")")"
+                             zfs_linux_entry 2 "${title}" "recovery" "${dataset}" "${device}" "${initrd}" "${kernel}"
+                         fi
+ 
 diff --git a/util/grub.d/10_netbsd.in b/util/grub.d/10_netbsd.in
 index 874f59969..bb29cc046 100644
 --- a/util/grub.d/10_netbsd.in

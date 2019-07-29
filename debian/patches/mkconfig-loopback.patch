@@ -1,4 +1,4 @@
-From eac8d3f2f35c3478673698c800b21d425faf6326 Mon Sep 17 00:00:00 2001
+From 65c6e63f9136ac1a7c7219d476a6c56a809624c5 Mon Sep 17 00:00:00 2001
 From: Colin Watson <cjwatson@debian.org>
 Date: Mon, 13 Jan 2014 12:13:00 +0000
 Subject: Handle filesystems loop-mounted on file images
@@ -63,7 +63,7 @@ index b6606c16e..b05df554d 100644
  
  grub_get_device_id ()
 diff --git a/util/grub.d/10_linux.in b/util/grub.d/10_linux.in
-index dd5a60c71..8c22c79f6 100644
+index f839b3b55..d927b60ae 100644
 --- a/util/grub.d/10_linux.in
 +++ b/util/grub.d/10_linux.in
 @@ -40,6 +40,11 @@ fi
