@@ -1,3 +1,13 @@
+grub2 (2.04-1ubuntu4) eoan; urgency=medium
+
+  * d/patches/ubuntu-boot-from-multipath-dependent-symlink.patch: when / is
+    multipathed there will be multiple paths to the partition, so using
+    root=UUID= exposes the boot process to udev races.  In addition
+    grub-probe --target device / in this case reports /dev/dm-1 or similar --
+    better to use a symlink that depends on the multipath name. (LP: #1429327)
+
+ -- Michael Hudson-Doyle <michael.hudson@ubuntu.com>  Tue, 06 Aug 2019 12:37:18 +1200
+
 grub2 (2.04-1ubuntu3) eoan; urgency=medium
 
   [ Mathieu Trudel-Lapierre ]
