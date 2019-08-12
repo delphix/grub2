@@ -102,7 +102,7 @@ if test -e "${GRUB_DEVICE}" && is_multipath "${GRUB_DEVICE}"; then
     # using root=UUID= exposes the boot process to udev races. In addition
     # GRUB_DEVICE in this case will be /dev/dm-0 or similar -- better to use a
     # symlink that depends on the multipath name.
-    GRUB_DEVICE=/dev/mapper/"$(get_dm_field_dev $GRUB_DEVICE name)"
+    GRUB_DEVICE=/dev/mapper/"$(get_dm_field_for_dev $GRUB_DEVICE name)"
     GRUB_DISABLE_LINUX_UUID=true
 fi
 

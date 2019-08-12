@@ -1,3 +1,11 @@
+grub2 (2.04-1ubuntu5) eoan; urgency=medium
+
+  * d/patches/ubuntu-boot-from-multipath-dependent-symlink.patch: fix
+    mis-spelling of helper function in final computation of GRUB_DEVICE in
+    multipath case.
+
+ -- Michael Hudson-Doyle <michael.hudson@ubuntu.com>  Tue, 13 Aug 2019 08:56:16 +1200
+
 grub2 (2.04-1ubuntu4) eoan; urgency=medium
 
   * d/patches/ubuntu-boot-from-multipath-dependent-symlink.patch: when / is
