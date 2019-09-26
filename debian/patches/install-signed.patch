@@ -1,4 +1,4 @@
-From cf5f3e321dd4bf8481aafe693c2091a4850a452b Mon Sep 17 00:00:00 2001
+From 76780768baea3c3bd8dddfb4ed632a04407a986a Mon Sep 17 00:00:00 2001
 From: Colin Watson <cjwatson@ubuntu.com>
 Date: Mon, 13 Jan 2014 12:13:22 +0000
 Subject: Install signed images if UEFI Secure Boot is enabled
@@ -19,7 +19,7 @@ Patch-Name: install-signed.patch
  1 file changed, 153 insertions(+), 59 deletions(-)
 
 diff --git a/util/grub-install.c b/util/grub-install.c
-index 3b4606eef..b0c7c7c37 100644
+index 3b4606eef..a5d610e36 100644
 --- a/util/grub-install.c
 +++ b/util/grub-install.c
 @@ -80,6 +80,7 @@ static char *label_color;
@@ -250,9 +250,9 @@ index 3b4606eef..b0c7c7c37 100644
 +	    FILE *config_dst_f;
 +
 +	    shim_signed = xasprintf ("/usr/lib/shim/shim%s.efi.signed", efi_suffix);
-+	    mok_signed = xasprintf ("mm%s.efi.signed", efi_suffix);
++	    mok_signed = xasprintf ("mm%s.efi", efi_suffix);
 +	    mok_file = xasprintf ("mm%s.efi", efi_suffix);
-+	    fb_signed = xasprintf ("fb%s.efi.signed", efi_suffix);
++	    fb_signed = xasprintf ("fb%s.efi", efi_suffix);
 +	    fb_file = xasprintf ("fb%s.efi", efi_suffix);
 +
 +	    if (grub_util_is_regular (shim_signed))

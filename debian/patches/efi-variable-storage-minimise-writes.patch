@@ -1,4 +1,4 @@
-From bb9a274a47ed53106d5b35de3e191844497fc353 Mon Sep 17 00:00:00 2001
+From 90782445f25c2ea619f3185cb2454a6931c31eb8 Mon Sep 17 00:00:00 2001
 From: Colin Watson <cjwatson@ubuntu.com>
 Date: Mon, 11 Mar 2019 11:17:43 +0000
 Subject: Minimise writes to EFI variable storage
@@ -872,7 +872,7 @@ index 8aeb5c4f2..a521f1663 100644
  grub_install_register_efi (grub_device_t efidir_grub_dev,
  			   const char *efifile_path,
 diff --git a/util/grub-install.c b/util/grub-install.c
-index e1f4ef779..8949272f5 100644
+index bdb857c9c..9726f01c3 100644
 --- a/util/grub-install.c
 +++ b/util/grub-install.c
 @@ -2084,7 +2084,7 @@ main (int argc, char *argv[])

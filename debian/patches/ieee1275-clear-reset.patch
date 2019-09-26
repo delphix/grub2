@@ -1,4 +1,4 @@
-From 054477cae825e96bbfd7c03cd10c798ac0d99ea3 Mon Sep 17 00:00:00 2001
+From b62a69d2ada25673c4f615edeb6f42c6dd2f980b Mon Sep 17 00:00:00 2001
 From: Paulo Flabiano Smorigo <pfsmorigo@linux.vnet.ibm.com>
 Date: Thu, 25 Sep 2014 18:41:29 -0300
 Subject: Include a text attribute reset in the clear command for ppc

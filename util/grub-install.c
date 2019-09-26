@@ -2113,9 +2113,9 @@ main (int argc, char *argv[])
 	    FILE *config_dst_f;
 
 	    shim_signed = xasprintf ("/usr/lib/shim/shim%s.efi.signed", efi_suffix);
-	    mok_signed = xasprintf ("mm%s.efi.signed", efi_suffix);
+	    mok_signed = xasprintf ("mm%s.efi", efi_suffix);
 	    mok_file = xasprintf ("mm%s.efi", efi_suffix);
-	    fb_signed = xasprintf ("fb%s.efi.signed", efi_suffix);
+	    fb_signed = xasprintf ("fb%s.efi", efi_suffix);
 	    fb_file = xasprintf ("fb%s.efi", efi_suffix);
 
 	    if (grub_util_is_regular (shim_signed))

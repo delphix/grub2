@@ -1,3 +1,10 @@
+grub2 (2.04-1ubuntu6) eoan; urgency=medium
+
+  * debian/patches/install-signed.patch: fix paths for MokManager/fallback;
+    shim no longer ships these with a .signed suffix. (LP: #1845466)
+
+ -- Mathieu Trudel-Lapierre <cyphermox@ubuntu.com>  Thu, 26 Sep 2019 09:48:07 -0400
+
 grub2 (2.04-1ubuntu5) eoan; urgency=medium
 
   * d/patches/ubuntu-boot-from-multipath-dependent-symlink.patch: fix
