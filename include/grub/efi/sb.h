@@ -1,6 +1,7 @@
+/* sb.h - declare functions for EFI Secure Boot support */
 /*
  *  GRUB  --  GRand Unified Bootloader
- *  Copyright (C) 2016  Free Software Foundation, Inc.
+ *  Copyright (C) 2006,2007,2008,2009  Free Software Foundation, Inc.
  *
  *  GRUB is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -16,35 +17,13 @@
  *  along with GRUB.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <grub/symbol.h>
+#ifndef GRUB_EFI_SB_HEADER
+#define GRUB_EFI_SB_HEADER	1
 
-	.file	"coreboot.S"
-	.text
-	.syntax	unified
-#if !defined (__thumb2__)
-	.arch	armv7a
-	.arm
-#else
-	.arch	armv7
-	.thumb
-#endif
+#include <grub/types.h>
+#include <grub/dl.h>
 
-FUNCTION(grub_arm_pfr1)
-	mrc p15, 0, r0, c0, c1, 1
-	bx	lr
+/* Functions.  */
+int EXPORT_FUNC (grub_efi_secure_boot) (void);
 
-FUNCTION(grub_armv7_get_timer_value)
-	isb
-	mrrc p15, 1, r0, r1, c14
-	bx	lr
-
-FUNCTION(grub_armv7_get_timer_frequency)
-	mrc p15, 0, r0, c14, c0, 0
-	bx	lr
-
-int
-EXPORT_FUNC(grub_linuxefi_secure_validate) (void *data, grub_uint32_t size);
-grub_err_t
-EXPORT_FUNC(grub_efi_linux_boot) (void *kernel_address, grub_off_t offset,
-				  void *kernel_param);
-
+#endif /* ! GRUB_EFI_SB_HEADER */
