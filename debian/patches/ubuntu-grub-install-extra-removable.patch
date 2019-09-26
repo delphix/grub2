@@ -1,4 +1,4 @@
-From 63aa923f3c885eca5fdac7f1d263a23c2e6f0eba Mon Sep 17 00:00:00 2001
+From 188883e88176aa34806de499b1eecd5112493f3c Mon Sep 17 00:00:00 2001
 From: Steve McIntyre <93sam@debian.org>
 Date: Wed, 3 Dec 2014 01:25:12 +0000
 Subject: UBUNTU: Add support for forcing EFI installation to the removable
@@ -23,7 +23,7 @@ Patch-Name: ubuntu-grub-install-extra-removable.patch
  1 file changed, 133 insertions(+), 2 deletions(-)
 
 diff --git a/util/grub-install.c b/util/grub-install.c
-index f511cfc72..d51426767 100644
+index 6089f014e..0e6cef084 100644
 --- a/util/grub-install.c
 +++ b/util/grub-install.c
 @@ -56,6 +56,7 @@
