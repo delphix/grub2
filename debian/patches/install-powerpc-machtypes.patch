@@ -1,4 +1,4 @@
-From bf13bc7adb7e8fd8079b372be101402a5a1c0ae0 Mon Sep 17 00:00:00 2001
+From 9ed5ae44009b5c7990d40ebf20f01b6419671d64 Mon Sep 17 00:00:00 2001
 From: Colin Watson <cjwatson@debian.org>
 Date: Tue, 28 Jan 2014 14:40:02 +0000
 Subject: Port yaboot logic for various powerpc machine types

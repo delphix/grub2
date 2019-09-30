@@ -1,4 +1,4 @@
-From acd9c584f69fdaae6ea09c38512dd6c0af5b92ac Mon Sep 17 00:00:00 2001
+From d5351b0c2d35574b2b187d931f819d5b896ba5c1 Mon Sep 17 00:00:00 2001
 From: Didier Roche <didrocks@ubuntu.com>
 Date: Fri, 12 Jul 2019 11:06:06 -0400
 Subject: UBUNTU: Enhance ZFS grub support
@@ -22,8 +22,8 @@ Signed-off-by: Didier Roche <didier.roche@canonical.com>
 ---
  Makefile.util.def           |   7 +
  util/grub.d/10_linux.in     |   4 +
- util/grub.d/10_linux_zfs.in | 871 ++++++++++++++++++++++++++++++++++++
- 3 files changed, 882 insertions(+)
+ util/grub.d/10_linux_zfs.in | 886 ++++++++++++++++++++++++++++++++++++
+ 3 files changed, 897 insertions(+)
  create mode 100755 util/grub.d/10_linux_zfs.in
 
 diff --git a/Makefile.util.def b/Makefile.util.def
@@ -61,10 +61,10 @@ index 4532266be..a75096609 100644
  	LINUX_ROOT_DEVICE="ZFS=${rpool}${bootfs%/}"
 diff --git a/util/grub.d/10_linux_zfs.in b/util/grub.d/10_linux_zfs.in
 new file mode 100755
-index 000000000..185f75dd2
+index 000000000..a65655ab9
 --- /dev/null
 +++ b/util/grub.d/10_linux_zfs.in
-@@ -0,0 +1,871 @@
+@@ -0,0 +1,886 @@
 +#! /bin/sh
 +set -e
 +
@@ -767,6 +767,7 @@ index 000000000..185f75dd2
 +    local last_section=""
 +    local main_dataset_name=""
 +    local main_dataset=""
++    local have_zsys=""
 +
 +    if [ -z "${menu_metadata}" ]; then
 +        return
@@ -786,6 +787,7 @@ index 000000000..185f75dd2
 +    echo "${menu_metadata}" |
 +    {
 +        at_least_one_entry=0
++        have_zsys="$(which zsys || true)"
 +        while IFS="$(printf '\t')" read -r machineid iszsys section name dataset device initrd kernel opt; do
 +
 +            if [ "${last_section}" != "${section}" -a -n "${last_section}" ]; then
@@ -827,6 +829,19 @@ index 000000000..185f75dd2
 +                    at_least_one_entry=1
 +                ;;
 +                history)
++                    # Disable history for non zsys system: we identified multiple issues due to the mount generator
++                    # in upstream zfs which makes it incompatible. Don't show history for now.
++                    if [ "${iszsys}" != "yes" ]; then
++                        at_least_one_entry=0 # we already added final } when changing section
++                        continue
++                    fi
++
++                    # Disable history entries if system is a zsys one and zsys isn't installed
++                    if [ "${iszsys}" = "yes" -a -z "${have_zsys}" ]; then
++                        at_least_one_entry=0 # we already added final } when changing section
++                        continue
++                    fi
++
 +                    # Revert to a snapshot
 +                    # revert system, revert system and user data and associated recovery entries
 +                    if [ "${last_section}" != "${section}" ]; then

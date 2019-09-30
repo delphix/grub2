@@ -1,4 +1,4 @@
-From c3442cc5a7d7cdee5d82b66f1136651c7255f9a6 Mon Sep 17 00:00:00 2001
+From a1bb81f80d109c69e74f450151b77d9dabdc412e Mon Sep 17 00:00:00 2001
 From: Mathieu Trudel-Lapierre <mathieu.trudel-lapierre@canonical.com>
 Date: Tue, 16 Jul 2019 09:52:10 -0400
 Subject: UBUNTU: Temporarily keep grub-install's --auto-nvram.

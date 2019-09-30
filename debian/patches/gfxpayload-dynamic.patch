@@ -1,4 +1,4 @@
-From 5ba0dc34c58ef2dca309db3c7dc4596a9695b3bd Mon Sep 17 00:00:00 2001
+From d65d60f5846f7e7b00660bfa8fff5d6398aa0023 Mon Sep 17 00:00:00 2001
 From: Evan Broder <evan@ebroder.net>
 Date: Mon, 13 Jan 2014 12:13:29 +0000
 Subject: Add configure option to enable gfxpayload=keep dynamically
@@ -290,7 +290,7 @@ index 2be66c702..09393c28e 100644
  # yet, so it's empty. In a submenu it will be equal to '\t' (one tab).
  submenu_indentation=""
 diff --git a/util/grub.d/10_linux_zfs.in b/util/grub.d/10_linux_zfs.in
-index 8fdb484e2..0c3395a61 100755
+index f973e3fb6..7c4d5ad29 100755
 --- a/util/grub.d/10_linux_zfs.in
 +++ b/util/grub.d/10_linux_zfs.in
 @@ -22,6 +22,7 @@ datarootdir="@datarootdir@"
@@ -358,7 +358,7 @@ index 8fdb484e2..0c3395a61 100755
      fi
  
      echo "	insmod gzio" | sed "s/^/${submenu_indentation}/"
-@@ -766,6 +804,8 @@ generate_grub_menu() {
+@@ -767,6 +805,8 @@ generate_grub_menu() {
          GRUB_CMDLINE_LINUX_RECOVERY="${GRUB_CMDLINE_LINUX_RECOVERY} nomodeset"
      fi
  

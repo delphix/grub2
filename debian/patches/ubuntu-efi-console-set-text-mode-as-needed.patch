@@ -1,4 +1,4 @@
-From f4385c9be9295f24f2e71b755ecf764dcf6cfa3b Mon Sep 17 00:00:00 2001
+From 7b1c5f5bcbd304bbabf73a6128bc225f675bf75f Mon Sep 17 00:00:00 2001
 From: Hans de Goede <hdegoede@redhat.com>
 Date: Tue, 6 Mar 2018 17:11:15 +0100
 Subject: UBUNTU: EFI: Do not set text-mode until we actually need it
