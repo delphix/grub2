@@ -98,6 +98,7 @@ enum
     OPTION_FORCE,
     OPTION_FORCE_FILE_ID,
     OPTION_NO_NVRAM, 
+    OPTION_AUTO_NVRAM,
     OPTION_REMOVABLE, 
     OPTION_BOOTLOADER_ID, 
     OPTION_EFI_DIRECTORY,
@@ -165,6 +166,7 @@ argp_parser (int key, char *arg, struct argp_state *state)
     case OPTION_EDITENV:
     case OPTION_MKDEVICEMAP:
     case OPTION_NO_FLOPPY:
+    case OPTION_AUTO_NVRAM:
       return 0;
     case OPTION_ROOT_DIRECTORY:
       /* Accept for compatibility.  */
@@ -296,6 +298,7 @@ static struct argp_option options[] = {
   {"no-nvram", OPTION_NO_NVRAM, 0, 0,
    N_("don't update the `boot-device'/`Boot*' NVRAM variables. "
       "This option is only available on EFI and IEEE1275 targets."), 2},
+  {"auto-nvram", OPTION_AUTO_NVRAM, 0, OPTION_HIDDEN, 0, 2},
   {"skip-fs-probe",'s',0,      0,
    N_("do not probe for filesystems in DEVICE"), 0},
   {"no-bootsector", OPTION_NO_BOOTSECTOR, 0, 0,
