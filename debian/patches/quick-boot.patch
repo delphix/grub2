@@ -1,4 +1,4 @@
-From 65b96bae02dd7704ee1f20b36e3f0d8b02cb8bfe Mon Sep 17 00:00:00 2001
+From 4a26ac415bde73f9f27695c19e4a54c96781ca5e Mon Sep 17 00:00:00 2001
 From: Colin Watson <cjwatson@ubuntu.com>
 Date: Mon, 13 Jan 2014 12:13:28 +0000
 Subject: Add configure option to bypass boot menu if possible
@@ -281,7 +281,7 @@ index 479a8bf4e..2be66c702 100644
        save_default_entry | grub_add_tab
    fi
 diff --git a/util/grub.d/10_linux_zfs.in b/util/grub.d/10_linux_zfs.in
-index 0675bf134..8fdb484e2 100755
+index 229f2ccda..f973e3fb6 100755
 --- a/util/grub.d/10_linux_zfs.in
 +++ b/util/grub.d/10_linux_zfs.in
 @@ -21,6 +21,7 @@ prefix="@prefix@"

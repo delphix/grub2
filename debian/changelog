@@ -1,3 +1,15 @@
+grub2 (2.04-1ubuntu7) eoan; urgency=medium
+
+  * debian/patches/ubuntu-zfs-enhance-support.patch:
+    Disable history entry under some conditions:
+    - Don't show up if the system is a zsys one and zsys isn't installed
+      (LP: #1845333)
+    - Don't show for pure zfs systems: we identified multiple issues due
+      to the mount generator in upstream zfs which makes it incompatible.
+      Disable for now (LP: #1845913)
+
+ -- Didier Roche <didrocks@ubuntu.com>  Mon, 30 Sep 2019 09:35:03 +0200
+
 grub2 (2.04-1ubuntu6) eoan; urgency=medium
 
   * debian/patches/install-signed.patch: fix paths for MokManager/fallback;

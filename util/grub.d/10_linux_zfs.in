@@ -793,6 +793,7 @@ generate_grub_menu() {
     local last_section=""
     local main_dataset_name=""
     local main_dataset=""
+    local have_zsys=""
 
     if [ -z "${menu_metadata}" ]; then
         return
@@ -837,6 +838,7 @@ generate_grub_menu() {
     echo "${menu_metadata}" |
     {
         at_least_one_entry=0
+        have_zsys="$(which zsys || true)"
         while IFS="$(printf '\t')" read -r machineid iszsys section name dataset device initrd kernel opt; do
 
             if [ "${last_section}" != "${section}" -a -n "${last_section}" ]; then
@@ -878,6 +880,19 @@ generate_grub_menu() {
                     at_least_one_entry=1
                 ;;
                 history)
+                    # Disable history for non zsys system: we identified multiple issues due to the mount generator
+                    # in upstream zfs which makes it incompatible. Don't show history for now.
+                    if [ "${iszsys}" != "yes" ]; then
+                        at_least_one_entry=0 # we already added final } when changing section
+                        continue
+                    fi
+
+                    # Disable history entries if system is a zsys one and zsys isn't installed
+                    if [ "${iszsys}" = "yes" -a -z "${have_zsys}" ]; then
+                        at_least_one_entry=0 # we already added final } when changing section
+                        continue
+                    fi
+
                     # Revert to a snapshot
                     # revert system, revert system and user data and associated recovery entries
                     if [ "${last_section}" != "${section}" ]; then

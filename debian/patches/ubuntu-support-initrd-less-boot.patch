@@ -1,4 +1,4 @@
-From a79cc0a42d2d66f889a63c56a22c53148bac88c6 Mon Sep 17 00:00:00 2001
+From 9825d2e98887ec2e9a354749c213204455172b33 Mon Sep 17 00:00:00 2001
 From: Chris Glass <chris.glass@canonical.com>
 Date: Thu, 10 Nov 2016 13:44:25 -0500
 Subject: UBUNTU: Added knobs to allow non-initrd boot config
