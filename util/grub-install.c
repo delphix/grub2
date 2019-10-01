@@ -2107,21 +2107,28 @@ main (int argc, char *argv[])
 	if (uefi_secure_boot)
 	  {
 	    char *shim_signed = NULL;
-	    char *mok_signed = NULL, *mok_file = NULL;
-	    char *fb_signed = NULL, *fb_file = NULL;
+	    char *mok_file = NULL;
+	    char *bootcsv = NULL;
 	    char *config_dst;
 	    FILE *config_dst_f;
 
 	    shim_signed = xasprintf ("/usr/lib/shim/shim%s.efi.signed", efi_suffix);
-	    mok_signed = xasprintf ("mm%s.efi", efi_suffix);
 	    mok_file = xasprintf ("mm%s.efi", efi_suffix);
-	    fb_signed = xasprintf ("fb%s.efi", efi_suffix);
-	    fb_file = xasprintf ("fb%s.efi", efi_suffix);
+	    bootcsv = xasprintf ("BOOT%s.CSV", efi_suffix_upper);
 
 	    if (grub_util_is_regular (shim_signed))
 	      {
 		char *chained_base, *chained_dst;
-		char *mok_src, *mok_dst, *fb_src, *fb_dst;
+		char *mok_src, *mok_dst, *bootcsv_src, *bootcsv_dst;
+
+		/* Install grub as our chained bootloader */
+		chained_base = xasprintf ("grub%s.efi", efi_suffix);
+		chained_dst = grub_util_path_concat (2, efidir, chained_base);
+		grub_install_copy_file (efi_signed, chained_dst, 1);
+		free (chained_dst);
+		free (chained_base);
+
+		/* Now handle shim, and make this our new "default" loader. */
 		if (!removable)
 		  {
 		    free (efi_file);
@@ -2130,17 +2137,14 @@ main (int argc, char *argv[])
 		    dst = grub_util_path_concat (2, efidir, efi_file);
 		  }
 		grub_install_copy_file (shim_signed, dst, 1);
-		chained_base = xasprintf ("grub%s.efi", efi_suffix);
-		chained_dst = grub_util_path_concat (2, efidir, chained_base);
-		grub_install_copy_file (efi_signed, chained_dst, 1);
-		free (chained_dst);
-		free (chained_base);
+		free (efi_signed);
+		efi_signed = xstrdup (shim_signed);
 
-		/* Not critical, so not an error if they are not present (as it
-		   won't be for older releases); but if we have them, make
-		   sure they are installed.  */
+		/* Not critical, so not an error if it is not present (as it
+		   won't be for older releases); but if we have MokManager,
+		   make sure it gets installed.  */
 		mok_src = grub_util_path_concat (2, "/usr/lib/shim/",
-						    mok_signed);
+						    mok_file);
 		mok_dst = grub_util_path_concat (2, efidir,
 						    mok_file);
 		grub_install_copy_file (mok_src,
@@ -2148,14 +2152,13 @@ main (int argc, char *argv[])
 		free (mok_src);
 		free (mok_dst);
 
-		fb_src = grub_util_path_concat (2, "/usr/lib/shim/",
-						    fb_signed);
-		fb_dst = grub_util_path_concat (2, efidir,
-						    fb_file);
-		grub_install_copy_file (fb_src,
-					fb_dst, 0);
-		free (fb_src);
-		free (fb_dst);
+		/* Also try to install boot.csv for fallback */
+		bootcsv_src = grub_util_path_concat (2, "/usr/lib/shim/",
+						     bootcsv);
+		bootcsv_dst = grub_util_path_concat (2, efidir, bootcsv);
+		grub_install_copy_file (bootcsv_src, bootcsv_dst, 0);
+		free (bootcsv_src);
+		free (bootcsv_dst);
 	      }
 	    else
 	      grub_install_copy_file (efi_signed, dst, 1);
