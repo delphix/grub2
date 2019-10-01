@@ -1,4 +1,4 @@
-From 50e20a59d22d8c69a4999ee8904a766b13fe23da Mon Sep 17 00:00:00 2001
+From a23b591d2d2fde3891f6b59b487486917b5c939e Mon Sep 17 00:00:00 2001
 From: Steve McIntyre <93sam@debian.org>
 Date: Wed, 3 Dec 2014 01:25:12 +0000
 Subject: UBUNTU: Add support for forcing EFI installation to the removable
@@ -23,7 +23,7 @@ Patch-Name: ubuntu-grub-install-extra-removable.patch
  1 file changed, 133 insertions(+), 2 deletions(-)
 
 diff --git a/util/grub-install.c b/util/grub-install.c
-index 6089f014e..0e6cef084 100644
+index 64c292383..030464645 100644
 --- a/util/grub-install.c
 +++ b/util/grub-install.c
 @@ -56,6 +56,7 @@
@@ -209,7 +209,7 @@ index 6089f014e..0e6cef084 100644
        /* The EFI specification requires that an EFI System Partition must
  	 contain an "EFI" subdirectory, and that OS loaders are stored in
  	 subdirectories below EFI.  Vendors are expected to pick names that do
-@@ -2021,9 +2146,15 @@ main (int argc, char *argv[])
+@@ -2024,9 +2149,15 @@ main (int argc, char *argv[])
  	    fprintf (config_dst_f, "configfile $prefix/grub.cfg\n");
  	    fclose (config_dst_f);
  	    free (config_dst);

@@ -1,4 +1,4 @@
-From 9ed5ae44009b5c7990d40ebf20f01b6419671d64 Mon Sep 17 00:00:00 2001
+From b8f2e517a498d9fb39c895a50301f345ff78e906 Mon Sep 17 00:00:00 2001
 From: Colin Watson <cjwatson@debian.org>
 Date: Tue, 28 Jan 2014 14:40:02 +0000
 Subject: Port yaboot logic for various powerpc machine types
@@ -196,7 +196,7 @@ index 2631b1074..8aeb5c4f2 100644
  grub_install_register_efi (grub_device_t efidir_grub_dev,
  			   const char *efifile_path,
 diff --git a/util/grub-install.c b/util/grub-install.c
-index db964966d..9ced678c9 100644
+index f0d59c180..70d6700de 100644
 --- a/util/grub-install.c
 +++ b/util/grub-install.c
 @@ -1177,7 +1177,18 @@ main (int argc, char *argv[])

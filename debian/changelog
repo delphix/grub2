@@ -1,3 +1,14 @@
+grub2 (2.04-1ubuntu8) eoan; urgency=medium
+
+  * debian/patches/install-signed.patch -> ubuntu-install-signed.patch:
+    Really fix the installation of UEFI artefacts to the distributor path (we
+    only want shim, grub, and MokManager, and shim's boot.csv there), and to
+    the removable /EFI/BOOT path (where we want shim and fallback only).
+    Rename the patch to ubuntu- like others that are Ubuntu-specific or
+    otherwise modified to avoid such confusion at merge time in the future.
+
+ -- Mathieu Trudel-Lapierre <cyphermox@ubuntu.com>  Tue, 01 Oct 2019 11:29:24 -0400
+
 grub2 (2.04-1ubuntu7) eoan; urgency=medium
 
   * debian/patches/ubuntu-zfs-enhance-support.patch:

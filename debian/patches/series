@@ -22,7 +22,7 @@ blacklist-1440x900x32.patch
 uefi-firmware-setup.patch
 mkconfig-ubuntu-distributor.patch
 mkconfig-signed-kernel.patch
-install-signed.patch
+ubuntu-install-signed.patch
 sleep-shift.patch
 wubi-no-windows.patch
 maybe-quiet.patch
