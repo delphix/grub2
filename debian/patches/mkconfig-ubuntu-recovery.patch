@@ -1,4 +1,4 @@
-From 9fa66ab9da6aeee5481ab6ac6ec3e9847c8cc82b Mon Sep 17 00:00:00 2001
+From 9147f563ff542b1ebaaefb8ad9dc8f7c4ba88fd6 Mon Sep 17 00:00:00 2001
 From: Colin Watson <cjwatson@ubuntu.com>
 Date: Mon, 13 Jan 2014 12:13:06 +0000
 Subject: "single" -> "recovery" when friendly-recovery is installed
@@ -94,7 +94,7 @@ index d927b60ae..fcd303387 100644
  
    list=`echo $list | tr ' ' '\n' | fgrep -vx "$linux" | tr '\n' ' '`
 diff --git a/util/grub.d/10_linux_zfs.in b/util/grub.d/10_linux_zfs.in
-index 77322802e..e570e921e 100755
+index dd062a686..f3d8a14a6 100755
 --- a/util/grub.d/10_linux_zfs.in
 +++ b/util/grub.d/10_linux_zfs.in
 @@ -19,6 +19,7 @@ set -e

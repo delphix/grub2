@@ -1,4 +1,4 @@
-From 7616dc4e3221a0e8e2ef2b141393923d2f5e496e Mon Sep 17 00:00:00 2001
+From a497713a92740f6b21f9bfd1c969b903771dc76c Mon Sep 17 00:00:00 2001
 From: Colin Watson <cjwatson@ubuntu.com>
 Date: Mon, 13 Jan 2014 12:13:26 +0000
 Subject: Add configure option to reduce visual clutter at boot time
@@ -386,7 +386,7 @@ index cb1cc200e..479a8bf4e 100644
  EOF
    fi
 diff --git a/util/grub.d/10_linux_zfs.in b/util/grub.d/10_linux_zfs.in
-index 02bfd494f..229f2ccda 100755
+index efedda6c0..75f3b19c5 100755
 --- a/util/grub.d/10_linux_zfs.in
 +++ b/util/grub.d/10_linux_zfs.in
 @@ -20,6 +20,7 @@ set -e
