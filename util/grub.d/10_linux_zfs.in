@@ -841,6 +841,15 @@ generate_grub_menu() {
         have_zsys="$(which zsys || true)"
         while IFS="$(printf '\t')" read -r machineid iszsys section name dataset device initrd kernel opt; do
 
+            # Disable history for non zsys system or if systems is a zsys one and zsys isn't installed.
+            # In pure zfs systems, we identified multiple issues due to the mount generator
+            # in upstream zfs which makes it incompatible. Don't show history for now.
+            if [ "${section}" = "history" ]; then
+                if [ "${iszsys}" != "yes" ] || [ "${iszsys}" = "yes" -a -z "${have_zsys}" ]; then
+                    continue
+                fi
+            fi
+
             if [ "${last_section}" != "${section}" -a -n "${last_section}" ]; then
                 # Close previous section wrapper
                 if [ "${last_section}" != "main" ]; then
@@ -880,19 +889,6 @@ generate_grub_menu() {
                     at_least_one_entry=1
                 ;;
                 history)
-                    # Disable history for non zsys system: we identified multiple issues due to the mount generator
-                    # in upstream zfs which makes it incompatible. Don't show history for now.
-                    if [ "${iszsys}" != "yes" ]; then
-                        at_least_one_entry=0 # we already added final } when changing section
-                        continue
-                    fi
-
-                    # Disable history entries if system is a zsys one and zsys isn't installed
-                    if [ "${iszsys}" = "yes" -a -z "${have_zsys}" ]; then
-                        at_least_one_entry=0 # we already added final } when changing section
-                        continue
-                    fi
-
                     # Revert to a snapshot
                     # revert system, revert system and user data and associated recovery entries
                     if [ "${last_section}" != "${section}" ]; then

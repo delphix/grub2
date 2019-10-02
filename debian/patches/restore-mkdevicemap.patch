@@ -1,4 +1,4 @@
-From db98d5e284c3417ed99af103f935c62564a266f5 Mon Sep 17 00:00:00 2001
+From 47609117fcd4d1d00a837e8c43d648c3821cea04 Mon Sep 17 00:00:00 2001
 From: Colin Watson <cjwatson@debian.org>
 Date: Mon, 13 Jan 2014 12:13:01 +0000
 Subject: Restore grub-mkdevicemap

@@ -1,3 +1,12 @@
+grub2 (2.04-1ubuntu9) eoan; urgency=medium
+
+  * debian/patches/ubuntu-zfs-enhance-support.patch:
+    - Handle case of pure zfs only snapshots giving additional "}", and as
+      such, creating invalid grub menu.
+      Spotted by grubzfs-testsuite autopkgtests.
+
+ -- Didier Roche <didrocks@ubuntu.com>  Wed, 02 Oct 2019 09:59:19 +0200
+
 grub2 (2.04-1ubuntu8) eoan; urgency=medium
 
   * debian/patches/install-signed.patch -> ubuntu-install-signed.patch:

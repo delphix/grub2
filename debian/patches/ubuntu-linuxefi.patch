@@ -1,4 +1,4 @@
-From 1e3872186c994d5f008eee34e36fc2168c7d8760 Mon Sep 17 00:00:00 2001
+From e50d7a27d64c1c6b384dfe7d3ee7c03e228e8d13 Mon Sep 17 00:00:00 2001
 From: Matthew Garrett <mjg@redhat.com>
 Date: Wed, 27 Feb 2019 12:20:48 -0500
 Subject: UBUNTU: Add support for linuxefi

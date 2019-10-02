@@ -1,4 +1,4 @@
-From d5351b0c2d35574b2b187d931f819d5b896ba5c1 Mon Sep 17 00:00:00 2001
+From 6df797e435902086fb7a83a6c2035ccb3f077f0a Mon Sep 17 00:00:00 2001
 From: Didier Roche <didrocks@ubuntu.com>
 Date: Fri, 12 Jul 2019 11:06:06 -0400
 Subject: UBUNTU: Enhance ZFS grub support
@@ -22,8 +22,8 @@ Signed-off-by: Didier Roche <didier.roche@canonical.com>
 ---
  Makefile.util.def           |   7 +
  util/grub.d/10_linux.in     |   4 +
- util/grub.d/10_linux_zfs.in | 886 ++++++++++++++++++++++++++++++++++++
- 3 files changed, 897 insertions(+)
+ util/grub.d/10_linux_zfs.in | 882 ++++++++++++++++++++++++++++++++++++
+ 3 files changed, 893 insertions(+)
  create mode 100755 util/grub.d/10_linux_zfs.in
 
 diff --git a/Makefile.util.def b/Makefile.util.def
@@ -61,10 +61,10 @@ index 4532266be..a75096609 100644
  	LINUX_ROOT_DEVICE="ZFS=${rpool}${bootfs%/}"
 diff --git a/util/grub.d/10_linux_zfs.in b/util/grub.d/10_linux_zfs.in
 new file mode 100755
-index 000000000..a65655ab9
+index 000000000..3ca96b9f5
 --- /dev/null
 +++ b/util/grub.d/10_linux_zfs.in
-@@ -0,0 +1,886 @@
+@@ -0,0 +1,882 @@
 +#! /bin/sh
 +set -e
 +
@@ -790,6 +790,15 @@ index 000000000..a65655ab9
 +        have_zsys="$(which zsys || true)"
 +        while IFS="$(printf '\t')" read -r machineid iszsys section name dataset device initrd kernel opt; do
 +
++            # Disable history for non zsys system or if systems is a zsys one and zsys isn't installed.
++            # In pure zfs systems, we identified multiple issues due to the mount generator
++            # in upstream zfs which makes it incompatible. Don't show history for now.
++            if [ "${section}" = "history" ]; then
++                if [ "${iszsys}" != "yes" ] || [ "${iszsys}" = "yes" -a -z "${have_zsys}" ]; then
++                    continue
++                fi
++            fi
++
 +            if [ "${last_section}" != "${section}" -a -n "${last_section}" ]; then
 +                # Close previous section wrapper
 +                if [ "${last_section}" != "main" ]; then
@@ -829,19 +838,6 @@ index 000000000..a65655ab9
 +                    at_least_one_entry=1
 +                ;;
 +                history)
-+                    # Disable history for non zsys system: we identified multiple issues due to the mount generator
-+                    # in upstream zfs which makes it incompatible. Don't show history for now.
-+                    if [ "${iszsys}" != "yes" ]; then
-+                        at_least_one_entry=0 # we already added final } when changing section
-+                        continue
-+                    fi
-+
-+                    # Disable history entries if system is a zsys one and zsys isn't installed
-+                    if [ "${iszsys}" = "yes" -a -z "${have_zsys}" ]; then
-+                        at_least_one_entry=0 # we already added final } when changing section
-+                        continue
-+                    fi
-+
 +                    # Revert to a snapshot
 +                    # revert system, revert system and user data and associated recovery entries
 +                    if [ "${last_section}" != "${section}" ]; then
