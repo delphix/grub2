@@ -21,6 +21,7 @@ prefix="@prefix@"
 datarootdir="@datarootdir@"
 ubuntu_recovery="@UBUNTU_RECOVERY@"
 quiet_boot="@QUIET_BOOT@"
+quick_boot="@QUICK_BOOT@"
 
 . "${pkgdatadir}/grub-mkconfig_lib"
 
@@ -677,6 +678,10 @@ zfs_linux_entry () {
     submenu_indentation="$(printf %${submenu_level}s | tr " " "${grub_tab}")"
 
     echo "menuentry '$(echo "${title}" | grub_quote)' ${CLASS} \${menuentry_id_option} 'gnulinux-${dataset}-${kernel_version}' {" | sed "s/^/${submenu_indentation}/"
+
+    if [ "${quick_boot}" = 1 ]; then
+        echo "	recordfail" | sed "s/^/${submenu_indentation}/"
+    fi
 
     # Use ELILO's generic "efifb" when it's known to be available.
     # FIXME: We need an interface to select vesafb in case efifb can't be used.
