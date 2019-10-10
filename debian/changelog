@@ -1,3 +1,10 @@
+grub2 (2.04-1ubuntu11) eoan; urgency=medium
+
+  * Load all kernels (even those without .efi.signed) for secure boot mode
+    as those are signed kernels on ubuntu, loaded by the shim. (LP: #1847581)
+
+ -- Didier Roche <didrocks@ubuntu.com>  Thu, 10 Oct 2019 11:40:44 +0200
+
 grub2 (2.04-1ubuntu10) eoan; urgency=medium
 
   * debian/patches/ubuntu-skip-disk-by-id-lvm-pvm-uuid-entries.patch:
