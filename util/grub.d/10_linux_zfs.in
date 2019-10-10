@@ -363,15 +363,12 @@ get_dataset_info() {
             continue
         fi
 
-        # filters entry if efi/non efi
+        # Filters entry if efi/non efi.
+        # Note that for now we allow kernel without .efi.signed as those are signed kernel
+        # on ubuntu, loaded by the shim.
         case "${linux}" in
             *.efi.signed)
                 if [ "$(is_secure_boot_enabled)" = "false" ]; then
-                    continue
-                fi
-            ;;
-            *)
-                if [ "$(is_secure_boot_enabled)" = "true" ]; then
                     continue
                 fi
             ;;

@@ -1,4 +1,4 @@
-From ef4f1f633b97772717b243c029c4c30070df0f8c Mon Sep 17 00:00:00 2001
+From ca1824d0e9f835bbeaa1dfd58722ca41f5317a86 Mon Sep 17 00:00:00 2001
 From: Colin Watson <cjwatson@ubuntu.com>
 Date: Mon, 13 Jan 2014 12:13:33 +0000
 Subject: Add GRUB_RECOVERY_TITLE option
@@ -104,10 +104,10 @@ index cc2dd855a..2c418c5ec 100644
  	      title="$(gettext_printf "%s, with Linux %s" "${os}" "${version}")" ;;
        esac
 diff --git a/util/grub.d/10_linux_zfs.in b/util/grub.d/10_linux_zfs.in
-index 54eb55f44..becbfdc31 100755
+index 51a9d4b34..7ec151c36 100755
 --- a/util/grub.d/10_linux_zfs.in
 +++ b/util/grub.d/10_linux_zfs.in
-@@ -882,7 +882,7 @@ generate_grub_menu() {
+@@ -879,7 +879,7 @@ generate_grub_menu() {
  
                      GRUB_DISABLE_RECOVERY=${GRUB_DISABLE_RECOVERY:-}
                      if [ "${GRUB_DISABLE_RECOVERY}" != "true" ]; then
@@ -116,7 +116,7 @@ index 54eb55f44..becbfdc31 100755
                          zfs_linux_entry 1 "${title}" "recovery" "${dataset}" "${device}" "${initrd}" "${kernel}"
                      fi
                      at_least_one_entry=1
-@@ -910,9 +910,9 @@ generate_grub_menu() {
+@@ -907,9 +907,9 @@ generate_grub_menu() {
  
                          GRUB_DISABLE_RECOVERY="${GRUB_DISABLE_RECOVERY:-}"
                          if [ "${GRUB_DISABLE_RECOVERY}" != "true" ]; then
@@ -128,7 +128,7 @@ index 54eb55f44..becbfdc31 100755
                              zfs_linux_entry 2 "${title}" "recovery" "${dataset}" "${device}" "${initrd}" "${kernel}" "zsys-revert=userdata"
                          fi
                      # Non-zsys: boot temporarly on snapshots or rollback (destroying intermediate snapshots)
-@@ -922,7 +922,7 @@ generate_grub_menu() {
+@@ -919,7 +919,7 @@ generate_grub_menu() {
  
                          GRUB_DISABLE_RECOVERY="${GRUB_DISABLE_RECOVERY:-}"
                          if [ "${GRUB_DISABLE_RECOVERY}" != "true" ]; then
