@@ -20,6 +20,7 @@ set -e
 prefix="@prefix@"
 datarootdir="@datarootdir@"
 ubuntu_recovery="@UBUNTU_RECOVERY@"
+quiet_boot="@QUIET_BOOT@"
 
 . "${pkgdatadir}/grub-mkconfig_lib"
 
@@ -691,10 +692,12 @@ zfs_linux_entry () {
 
     echo "$(prepare_grub_to_access_device_cached ${boot_device} | grub_add_tab | sed "s/^/${submenu_indentation}/")"
 
-    message="$(gettext_printf "Loading Linux %s ..." ${kernel_version})"
-    sed "s/^/${submenu_indentation}/" << EOF
+    if [ "${quiet_boot}" = 0 ] || [ "${type}" != simple ]; then
+        message="$(gettext_printf "Loading Linux %s ..." ${kernel_version})"
+        sed "s/^/${submenu_indentation}/" << EOF
 	echo '$(echo "$message" | grub_quote)'
 EOF
+    fi
 
     linux_default_args="${GRUB_CMDLINE_LINUX} ${GRUB_CMDLINE_LINUX_DEFAULT}"
     if [ ${type} = "recovery" ]; then
@@ -705,9 +708,13 @@ EOF
 	linux	${kernel} root=ZFS=${dataset} ro ${linux_default_args} ${kernel_additional_args}
 EOF
 
-    message="$(gettext_printf "Loading initial ramdisk ...")"
-    sed "s/^/${submenu_indentation}/" << EOF
+    if [ "${quiet_boot}" = 0 ] || [ "${type}" != simple ]; then
+        message="$(gettext_printf "Loading initial ramdisk ...")"
+        sed "s/^/${submenu_indentation}/" << EOF
 	echo	'$(echo "$message" | grub_quote)'
+EOF
+    fi
+    sed "s/^/${submenu_indentation}/" << EOF
 	initrd	${initrd}
 EOF
 
