@@ -1,4 +1,4 @@
-From fa5f96f4ccfebf0762b8cea413a4d920f4206193 Mon Sep 17 00:00:00 2001
+From 33398a2432f3ca78638fb7a0ef87d7fbe36fa8a8 Mon Sep 17 00:00:00 2001
 From: Steve Langasek <steve.langasek@ubuntu.com>
 Date: Tue, 30 Oct 2018 15:04:16 -0700
 Subject: If we don't have writable grubenv and we're on EFI, always show the

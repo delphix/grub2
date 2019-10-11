@@ -1,4 +1,4 @@
-From 42cfb810fb690788c55820e00dee384ce0718e29 Mon Sep 17 00:00:00 2001
+From 7a062f88bdc03c4ad4bae1755640bb81ae352e91 Mon Sep 17 00:00:00 2001
 From: Colin Watson <cjwatson@debian.org>
 Date: Mon, 13 Jan 2014 12:12:57 +0000
 Subject: Disable gfxpayload=keep by default
@@ -39,7 +39,7 @@ index a75096609..f839b3b55 100644
        if [ "x$GRUB_GFXPAYLOAD_LINUX" != xtext ]; then
  	  echo "	load_video" | sed "s/^/$submenu_indentation/"
 diff --git a/util/grub.d/10_linux_zfs.in b/util/grub.d/10_linux_zfs.in
-index 3ca96b9f5..dd062a686 100755
+index dec9b01df..28c1959da 100755
 --- a/util/grub.d/10_linux_zfs.in
 +++ b/util/grub.d/10_linux_zfs.in
 @@ -655,10 +655,6 @@ zfs_linux_entry () {
