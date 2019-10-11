@@ -1,4 +1,4 @@
-From 34a5c5aba78130fd2a21de251969556d80026ca9 Mon Sep 17 00:00:00 2001
+From 2967dd50c69a5fdc6d81b9ca34a766f1470e1937 Mon Sep 17 00:00:00 2001
 From: Colin Watson <cjwatson@ubuntu.com>
 Date: Mon, 13 Jan 2014 12:13:21 +0000
 Subject: Generate configuration for signed UEFI kernels if available
@@ -48,7 +48,7 @@ index 19e4df4ad..cb1cc200e 100644
    basename=`basename $linux`
    dirname=`dirname $linux`
 diff --git a/util/grub.d/10_linux_zfs.in b/util/grub.d/10_linux_zfs.in
-index 27098fb18..50ce3c329 100755
+index 9c7f01896..f871e68c1 100755
 --- a/util/grub.d/10_linux_zfs.in
 +++ b/util/grub.d/10_linux_zfs.in
 @@ -282,6 +282,17 @@ get_system_directory() {

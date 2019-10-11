@@ -417,7 +417,7 @@ get_dataset_info() {
     mountpoint -q "${mntdir}/boot" && umount "${mntdir}/boot" || true
 
     # for zsys snapshots: we want to know which kernel we successful last booted with
-    last_booted_kernel=$(zfs get -H org.zsys:last-booted-kernel "${dataset}" | awk '{print $3}')
+    last_booted_kernel=$(zfs get -H com.ubuntu.zsys:last-booted-kernel "${dataset}" | awk '{print $3}')
 
     # snapshot: last_used is dataset creation time
     if [ "${is_snapshot}" = "true" ]; then
@@ -428,7 +428,7 @@ get_dataset_info() {
         if zfs mount | awk '/[ \t]+\/$/ {print $1}' | grep -q ${dataset}; then
             last_used=$(date +%s)
         else
-            last_used=$(zfs get -H org.zsys:last-used "${dataset}" | awk '{print $3}')
+            last_used=$(zfs get -H com.ubuntu.zsys:last-used "${dataset}" | awk '{print $3}')
             # case of non zsys, or zsys without annotation, take /etc/machine-id stat (as we mounted with noatime).
             # However, as systems can be relatime, if system is current mounted one, set current time (case of clone + reboot
             # within the same d).
@@ -441,7 +441,7 @@ get_dataset_info() {
         fi
     fi
 
-    is_zsys=$(zfs get -H org.zsys:bootfs "${base_dataset}" | awk '{print $3}')
+    is_zsys=$(zfs get -H com.ubuntu.zsys:bootfs "${base_dataset}" | awk '{print $3}')
 
     if [ -n "${initrd_list}" -a -n "${kernel_list}" ]; then
         echo "${dataset}\t${is_zsys}\t${machine_id}\t${pretty_name}\t${last_used}\t${initrd_device}\t${initrd_list}\t${kernel_list}\t${last_booted_kernel}"

@@ -1,4 +1,4 @@
-From 6df797e435902086fb7a83a6c2035ccb3f077f0a Mon Sep 17 00:00:00 2001
+From 7d1dae73679b1b2e2a8c456e8cb2692d2e197a7e Mon Sep 17 00:00:00 2001
 From: Didier Roche <didrocks@ubuntu.com>
 Date: Fri, 12 Jul 2019 11:06:06 -0400
 Subject: UBUNTU: Enhance ZFS grub support
@@ -61,7 +61,7 @@ index 4532266be..a75096609 100644
  	LINUX_ROOT_DEVICE="ZFS=${rpool}${bootfs%/}"
 diff --git a/util/grub.d/10_linux_zfs.in b/util/grub.d/10_linux_zfs.in
 new file mode 100755
-index 000000000..3ca96b9f5
+index 000000000..dec9b01df
 --- /dev/null
 +++ b/util/grub.d/10_linux_zfs.in
 @@ -0,0 +1,882 @@
@@ -457,7 +457,7 @@ index 000000000..3ca96b9f5
 +    mountpoint -q "${mntdir}/boot" && umount "${mntdir}/boot" || true
 +
 +    # for zsys snapshots: we want to know which kernel we successful last booted with
-+    last_booted_kernel=$(zfs get -H org.zsys:last-booted-kernel "${dataset}" | awk '{print $3}')
++    last_booted_kernel=$(zfs get -H com.ubuntu.zsys:last-booted-kernel "${dataset}" | awk '{print $3}')
 +
 +    # snapshot: last_used is dataset creation time
 +    if [ "${is_snapshot}" = "true" ]; then
@@ -468,7 +468,7 @@ index 000000000..3ca96b9f5
 +        if zfs mount | awk '/[ \t]+\/$/ {print $1}' | grep -q ${dataset}; then
 +            last_used=$(date +%s)
 +        else
-+            last_used=$(zfs get -H org.zsys:last-used "${dataset}" | awk '{print $3}')
++            last_used=$(zfs get -H com.ubuntu.zsys:last-used "${dataset}" | awk '{print $3}')
 +            # case of non zsys, or zsys without annotation, take /etc/machine-id stat (as we mounted with noatime).
 +            # However, as systems can be relatime, if system is current mounted one, set current time (case of clone + reboot
 +            # within the same d).
@@ -481,7 +481,7 @@ index 000000000..3ca96b9f5
 +        fi
 +    fi
 +
-+    is_zsys=$(zfs get -H org.zsys:bootfs "${base_dataset}" | awk '{print $3}')
++    is_zsys=$(zfs get -H com.ubuntu.zsys:bootfs "${base_dataset}" | awk '{print $3}')
 +
 +    if [ -n "${initrd_list}" -a -n "${kernel_list}" ]; then
 +        echo "${dataset}\t${is_zsys}\t${machine_id}\t${pretty_name}\t${last_used}\t${initrd_device}\t${initrd_list}\t${kernel_list}\t${last_booted_kernel}"
