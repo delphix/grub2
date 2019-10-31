@@ -1,3 +1,16 @@
+grub2 (2.04-1ubuntu13) focal; urgency=medium
+
+  * debian/patches/ubuntu-tpm-unknown-error-non-fatal.patch: treat "unknown"
+    TPM errors as non-fatal, but still write up the details as debug messages
+    so we can further track what happens with the systems throwing those up.
+    (LP: #1848892)
+  * debian/patches/ubuntu-linuxefi.patch: Drop extra check for Secure Boot
+    status in linuxefi_secure_validate(); it's unnecessary and blocking boot
+    in chainload (like chainloading Windows) when SB is disabled.
+    (LP: #1845289)
+
+ -- Mathieu Trudel-Lapierre <cyphermox@ubuntu.com>  Thu, 31 Oct 2019 17:58:47 -0400
+
 grub2 (2.04-1ubuntu12) eoan; urgency=medium
 
   * Move our identifier to com.ubuntu

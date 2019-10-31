@@ -1,4 +1,4 @@
-From 14bbb857e69c093320f369942cfe004eea7fdac9 Mon Sep 17 00:00:00 2001
+From 78a72e43f521d7900ec6ae214b2224931098757d Mon Sep 17 00:00:00 2001
 From: Matthew Garrett <mjg@redhat.com>
 Date: Wed, 27 Feb 2019 12:20:48 -0500
 Subject: UBUNTU: Add support for linuxefi
@@ -329,7 +329,7 @@ Last-Update: 2018-12-07
  grub-core/loader/efi/appleloader.c     |   7 +
  grub-core/loader/efi/chainloader.c     | 817 +++++++++++++++++++++++--
  grub-core/loader/efi/fdt.c             |   1 +
- grub-core/loader/efi/linux.c           |  92 +++
+ grub-core/loader/efi/linux.c           |  86 +++
  grub-core/loader/i386/bsd.c            |   7 +
  grub-core/loader/i386/efi/linux.c      | 379 ++++++++++++
  grub-core/loader/i386/linux.c          |  78 ++-
@@ -346,7 +346,7 @@ Last-Update: 2018-12-07
  include/grub/mips/linux.h              |   0
  include/grub/powerpc/linux.h           |   0
  include/grub/sparc64/linux.h           |   0
- 30 files changed, 1611 insertions(+), 129 deletions(-)
+ 30 files changed, 1605 insertions(+), 129 deletions(-)
  create mode 100644 grub-core/kern/efi/sb.c
  create mode 100644 grub-core/loader/efi/linux.c
  create mode 100644 grub-core/loader/i386/efi/linux.c
@@ -1714,10 +1714,10 @@ index f0c2d91be..5360e6c1f 100644
  static void *fdt;
 diff --git a/grub-core/loader/efi/linux.c b/grub-core/loader/efi/linux.c
 new file mode 100644
-index 000000000..847c1e178
+index 000000000..e372b26a1
 --- /dev/null
 +++ b/grub-core/loader/efi/linux.c
-@@ -0,0 +1,92 @@
+@@ -0,0 +1,86 @@
 +/*
 + *  GRUB  --  GRand Unified Bootloader
 + *  Copyright (C) 2014 Free Software Foundation, Inc.
@@ -1760,12 +1760,6 @@ index 000000000..847c1e178
 +  grub_efi_guid_t guid = SHIM_LOCK_GUID;
 +  grub_efi_shim_lock_t *shim_lock;
 +  int status;
-+
-+  if (! grub_efi_secure_boot())
-+    {
-+      grub_dprintf ("linuxefi", "secure boot not enabled, not validating");
-+      return 1;
-+    }
 +
 +  grub_dprintf ("linuxefi", "Locating shim protocol\n");
 +  shim_lock = grub_efi_locate_protocol(&guid, NULL);
