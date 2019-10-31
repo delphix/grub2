@@ -41,12 +41,6 @@ grub_linuxefi_secure_validate (void *data, grub_uint32_t size)
   grub_efi_shim_lock_t *shim_lock;
   int status;
 
-  if (! grub_efi_secure_boot())
-    {
-      grub_dprintf ("linuxefi", "secure boot not enabled, not validating");
-      return 1;
-    }
-
   grub_dprintf ("linuxefi", "Locating shim protocol\n");
   shim_lock = grub_efi_locate_protocol(&guid, NULL);
   grub_dprintf ("secureboot", "shim_lock: %p\n", shim_lock);
