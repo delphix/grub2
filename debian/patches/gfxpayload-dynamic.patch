@@ -1,4 +1,4 @@
-From 4bbbd6630f0cbb95c94ee597799ce3c87fca15ca Mon Sep 17 00:00:00 2001
+From 706317811beb83e683137a7038c641426d5a33b2 Mon Sep 17 00:00:00 2001
 From: Evan Broder <evan@ebroder.net>
 Date: Mon, 13 Jan 2014 12:13:29 +0000
 Subject: Add configure option to enable gfxpayload=keep dynamically
@@ -290,7 +290,7 @@ index 2be66c702..09393c28e 100644
  # yet, so it's empty. In a submenu it will be equal to '\t' (one tab).
  submenu_indentation=""
 diff --git a/util/grub.d/10_linux_zfs.in b/util/grub.d/10_linux_zfs.in
-index 364b179d1..cf7aa74b2 100755
+index 01584c7d8..a7c88f2b2 100755
 --- a/util/grub.d/10_linux_zfs.in
 +++ b/util/grub.d/10_linux_zfs.in
 @@ -22,6 +22,7 @@ datarootdir="@datarootdir@"
@@ -301,7 +301,7 @@ index 364b179d1..cf7aa74b2 100755
  
  . "${pkgdatadir}/grub-mkconfig_lib"
  
-@@ -642,6 +643,41 @@ generate_grub_menu_metadata() {
+@@ -650,6 +651,41 @@ generate_grub_menu_metadata() {
      done
  }
  
@@ -343,7 +343,7 @@ index 364b179d1..cf7aa74b2 100755
  # Cache for prepare_grub_to_access_device call
  # $1: boot_device
  prepare_grub_to_access_device_cached() {
-@@ -688,9 +724,11 @@ zfs_linux_entry () {
+@@ -701,9 +737,11 @@ zfs_linux_entry () {
          if [ "${GRUB_GFXPAYLOAD_LINUX}" != xtext ]; then
          echo "	load_video" | sed "s/^/${submenu_indentation}/"
          fi
@@ -358,7 +358,7 @@ index 364b179d1..cf7aa74b2 100755
      fi
  
      echo "	insmod gzio" | sed "s/^/${submenu_indentation}/"
-@@ -764,6 +802,8 @@ generate_grub_menu() {
+@@ -777,6 +815,8 @@ generate_grub_menu() {
          GRUB_CMDLINE_LINUX_RECOVERY="${GRUB_CMDLINE_LINUX_RECOVERY} nomodeset"
      fi
  

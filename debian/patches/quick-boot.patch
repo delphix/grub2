@@ -1,4 +1,4 @@
-From e7437ab5e3f23a510df113ebb66e512e47566b0d Mon Sep 17 00:00:00 2001
+From 516c424ab8dfb3d6fee14452f439359d966d0015 Mon Sep 17 00:00:00 2001
 From: Colin Watson <cjwatson@ubuntu.com>
 Date: Mon, 13 Jan 2014 12:13:28 +0000
 Subject: Add configure option to bypass boot menu if possible
@@ -281,7 +281,7 @@ index 479a8bf4e..2be66c702 100644
        save_default_entry | grub_add_tab
    fi
 diff --git a/util/grub.d/10_linux_zfs.in b/util/grub.d/10_linux_zfs.in
-index 3fe2da88c..364b179d1 100755
+index bc69efcbf..01584c7d8 100755
 --- a/util/grub.d/10_linux_zfs.in
 +++ b/util/grub.d/10_linux_zfs.in
 @@ -21,6 +21,7 @@ prefix="@prefix@"
@@ -292,7 +292,7 @@ index 3fe2da88c..364b179d1 100755
  
  . "${pkgdatadir}/grub-mkconfig_lib"
  
-@@ -675,6 +676,10 @@ zfs_linux_entry () {
+@@ -683,6 +684,10 @@ zfs_linux_entry () {
  
      echo "menuentry '$(echo "${title}" | grub_quote)' ${CLASS} \${menuentry_id_option} 'gnulinux-${dataset}-${kernel_version}' {" | sed "s/^/${submenu_indentation}/"
  
@@ -300,9 +300,9 @@ index 3fe2da88c..364b179d1 100755
 +        echo "	recordfail" | sed "s/^/${submenu_indentation}/"
 +    fi
 +
-     # Use ELILO's generic "efifb" when it's known to be available.
-     # FIXME: We need an interface to select vesafb in case efifb can't be used.
-     if [ "${GRUB_GFXPAYLOAD_LINUX}" = "" ]; then
+     if [ "${type}" != "recovery" ] ; then
+         GRUB_SAVEDEFAULT=${GRUB_SAVEDEFAULT:-}
+         save_default_entry | grub_add_tab | sed "s/^/${submenu_indentation}/"
 diff --git a/util/grub.d/30_os-prober.in b/util/grub.d/30_os-prober.in
 index 271044f59..da5f28876 100644
 --- a/util/grub.d/30_os-prober.in

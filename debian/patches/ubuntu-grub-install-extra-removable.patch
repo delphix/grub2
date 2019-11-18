@@ -1,4 +1,4 @@
-From bc1b915092f6ef3e474ea6636f8039506b2cf3a5 Mon Sep 17 00:00:00 2001
+From a628593c2dcd8a88cff5c8c315ec45e7a4a81e1a Mon Sep 17 00:00:00 2001
 From: Steve McIntyre <93sam@debian.org>
 Date: Wed, 3 Dec 2014 01:25:12 +0000
 Subject: UBUNTU: Add support for forcing EFI installation to the removable

@@ -1,4 +1,4 @@
-From 7d1dae73679b1b2e2a8c456e8cb2692d2e197a7e Mon Sep 17 00:00:00 2001
+From 51515c2d12651c3a282715dee5a98a34bfa174eb Mon Sep 17 00:00:00 2001
 From: Didier Roche <didrocks@ubuntu.com>
 Date: Fri, 12 Jul 2019 11:06:06 -0400
 Subject: UBUNTU: Enhance ZFS grub support
@@ -22,8 +22,8 @@ Signed-off-by: Didier Roche <didier.roche@canonical.com>
 ---
  Makefile.util.def           |   7 +
  util/grub.d/10_linux.in     |   4 +
- util/grub.d/10_linux_zfs.in | 882 ++++++++++++++++++++++++++++++++++++
- 3 files changed, 893 insertions(+)
+ util/grub.d/10_linux_zfs.in | 896 ++++++++++++++++++++++++++++++++++++
+ 3 files changed, 907 insertions(+)
  create mode 100755 util/grub.d/10_linux_zfs.in
 
 diff --git a/Makefile.util.def b/Makefile.util.def
@@ -61,10 +61,10 @@ index 4532266be..a75096609 100644
  	LINUX_ROOT_DEVICE="ZFS=${rpool}${bootfs%/}"
 diff --git a/util/grub.d/10_linux_zfs.in b/util/grub.d/10_linux_zfs.in
 new file mode 100755
-index 000000000..dec9b01df
+index 000000000..908e363b9
 --- /dev/null
 +++ b/util/grub.d/10_linux_zfs.in
-@@ -0,0 +1,882 @@
+@@ -0,0 +1,896 @@
 +#! /bin/sh
 +set -e
 +
@@ -124,8 +124,16 @@ index 000000000..dec9b01df
 +    local initial_pools="$(zpool list | awk '{if (NR>1) print $1}')"
 +    local all_pools=""
 +    local imported_pools=""
++    local err=""
 +
-+    zpool import -f -a -o cachefile=none -N 2>/dev/null
++    set +e
++    err="$(zpool import -f -a -o cachefile=none -o readonly=on -N 2>&1)"
++    # Only print stderr if the command returned an error
++    # (it can echo "No zpool to import" with success, which we don't want)
++    if [ $? -ne 0 ]; then
++        echo "Some pools couldn't be imported and will be ignored:\n${err}" >&2
++    fi
++    set -e
 +
 +    all_pools="$(zpool list | awk '{if (NR>1) print $1}')"
 +    for pool in ${all_pools}; do
@@ -212,18 +220,18 @@ index 000000000..dec9b01df
 +    local candidate_path="${mntdir}/${directory}"
 +
 +    # 1. Look for /etc/fstab first (which will mount even on top of non empty $directory)
-+    local directory_in_fstab="false"
++    local mounted_fstab_entry="false"
 +    if [ -f "${etc_dir}/fstab" ]; then
 +        mount_args=$(awk '/^[^#].*[ \t]\/'"${directory}"'[ \t]/ {print "-t", $3, $1}' "${etc_dir}/fstab")
 +        if [ -n "${mount_args}" ]; then
-+            mount -o noatime ${mount_args} "${candidate_path}"
-+            directory_in_fstab="true"
++            mounted_fstab_entry="true"
++            mount -o noatime ${mount_args} "${candidate_path}" || mounted_fstab_entry="false"
 +        fi
 +    fi
 +
 +    # If directory isn't empty. Only count if coming from /etc/fstab. Will be
 +    # handled below otherwise as we are interested in potential snapshots.
-+    if [ "${directory_in_fstab}" = "true" -a -n "$(ls ${candidate_path} 2>/dev/null)" ]; then
++    if [ "${mounted_fstab_entry}" = "true" -a -n "$(ls ${candidate_path} 2>/dev/null)" ]; then
 +        echo "${candidate_path}"
 +        return
 +    fi
@@ -452,7 +460,7 @@ index 000000000..dec9b01df
 +    initrd_list="${initrd_list%|}"
 +    kernel_list="${kernel_list%|}"
 +
-+    initrd_device=$(${grub_probe} --target=device "${boot_dir}")
++    initrd_device=$(${grub_probe} --target=device "${boot_dir}" | head -1)
 +
 +    mountpoint -q "${mntdir}/boot" && umount "${mntdir}/boot" || true
 +
@@ -718,6 +726,11 @@ index 000000000..dec9b01df
 +
 +    echo "menuentry '$(echo "${title}" | grub_quote)' ${CLASS} \${menuentry_id_option} 'gnulinux-${dataset}-${kernel_version}' {" | sed "s/^/${submenu_indentation}/"
 +
++    if [ "${type}" != "recovery" ] ; then
++        GRUB_SAVEDEFAULT=${GRUB_SAVEDEFAULT:-}
++        save_default_entry | grub_add_tab | sed "s/^/${submenu_indentation}/"
++    fi
++
 +    # Use ELILO's generic "efifb" when it's known to be available.
 +    # FIXME: We need an interface to select vesafb in case efifb can't be used.
 +    if [ "${GRUB_GFXPAYLOAD_LINUX}" = "" ]; then
@@ -904,6 +917,7 @@ index 000000000..dec9b01df
 +    dest="$2"
 +
 +    if [ -z "${content}" ]; then
++        rm -f "${dest}"
 +        touch "${dest}"
 +        return
 +    fi

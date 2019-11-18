@@ -1,4 +1,4 @@
-From 2967dd50c69a5fdc6d81b9ca34a766f1470e1937 Mon Sep 17 00:00:00 2001
+From 922ccff5daac5723be1424f9282b966160bfd16d Mon Sep 17 00:00:00 2001
 From: Colin Watson <cjwatson@ubuntu.com>
 Date: Mon, 13 Jan 2014 12:13:21 +0000
 Subject: Generate configuration for signed UEFI kernels if available
@@ -48,10 +48,10 @@ index 19e4df4ad..cb1cc200e 100644
    basename=`basename $linux`
    dirname=`dirname $linux`
 diff --git a/util/grub.d/10_linux_zfs.in b/util/grub.d/10_linux_zfs.in
-index 9c7f01896..f871e68c1 100755
+index 14a766747..df7158b05 100755
 --- a/util/grub.d/10_linux_zfs.in
 +++ b/util/grub.d/10_linux_zfs.in
-@@ -282,6 +282,17 @@ get_system_directory() {
+@@ -290,6 +290,17 @@ get_system_directory() {
      return
  }
  
@@ -69,7 +69,7 @@ index 9c7f01896..f871e68c1 100755
  # Given a filesystem or snapshot dataset, returns dataset|machine id|pretty name|last used
  # $1 is dataset we want information from
  # $2 is the temporary mount directory to use
-@@ -348,6 +359,17 @@ get_dataset_info() {
+@@ -356,6 +367,17 @@ get_dataset_info() {
              continue
          fi
  
