@@ -1,3 +1,19 @@
+grub2 (2.04-1ubuntu14) focal; urgency=medium
+
+  * debian/patches/ubuntu-zfs-enhance-support.patch:
+    - Handle the case where grub-probe returns several devices for a single
+      pool (LP: #1848856). Thanks jpb for the report and the proposed patch.
+    - Add savedefault to non-recovery entries (LP: #1850202). Thanks Deltik
+      for the patch.
+    - Do not crash on invalid fstab and report the invalid entry.
+      (LP: #1849347) Thanks Deltik for the patch.
+    - When a pool fails to import, catch and display the error message and
+      continue with other pools. Import all the pools in readonly mode so we
+      can import other pools with unsupported features (LP: #1848399) Thanks
+      satmandu for the investigation and the proposed patch
+
+ -- Jean-Baptiste Lallement <jean-baptiste.lallement@ubuntu.com>  Mon, 18 Nov 2019 11:22:43 +0100
+
 grub2 (2.04-1ubuntu13) focal; urgency=medium
 
   * debian/patches/ubuntu-tpm-unknown-error-non-fatal.patch: treat "unknown"
