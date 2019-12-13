@@ -68,3 +68,7 @@ ubuntu-add-devicetree-command-support.patch
 ubuntu-boot-from-multipath-dependent-symlink.patch
 ubuntu-skip-disk-by-id-lvm-pvm-uuid-entries.patch
 ubuntu-tpm-unknown-error-non-fatal.patch
+ubuntu-efi-allow-loopmount-chainload.patch
+cherrypick-lsefisystab-define-smbios3.patch
+cherrypick-smbios-module.patch
+cherrypick-lsefisystab-show-dtb.patch
