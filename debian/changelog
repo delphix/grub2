@@ -1,3 +1,17 @@
+grub2 (2.04-1ubuntu15) focal; urgency=medium
+
+  * ubuntu-efi-allow-loopmount-chainload.patch:
+    - Enable chainloading EFI apps from loopmounts
+  * cherrypick-lsefisystab-define-smbios3.patch:
+  * cherrypick-smbios-modules.patch:
+    - Cherrypick from 2.05 module for retrieving SMBIOS information
+  * cherrypick-lsefisystab-show-dtb.patch:
+    - If dtb is provided by the firmware / DtbLoader driver, display it in
+    human form, rather than just UUID
+  * Add smbios module to build-efi-images script
+
+ -- Dimitri John Ledkov <xnox@ubuntu.com>  Fri, 13 Dec 2019 11:24:21 +0000
+
 grub2 (2.04-1ubuntu14) focal; urgency=medium
 
   * debian/patches/ubuntu-zfs-enhance-support.patch:
