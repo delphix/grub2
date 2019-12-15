@@ -1,3 +1,10 @@
+grub2 (2.04-1ubuntu16) focal; urgency=medium
+
+  * Revert "Add smbios module to build-efi-images script" from previous
+    upload, pending review see https://bugs.launchpad.net/bugs/1856424
+
+ -- Dimitri John Ledkov <xnox@ubuntu.com>  Sun, 15 Dec 2019 01:28:49 +0000
+
 grub2 (2.04-1ubuntu15) focal; urgency=medium
 
   * ubuntu-efi-allow-loopmount-chainload.patch:
@@ -8,7 +15,6 @@ grub2 (2.04-1ubuntu15) focal; urgency=medium
   * cherrypick-lsefisystab-show-dtb.patch:
     - If dtb is provided by the firmware / DtbLoader driver, display it in
     human form, rather than just UUID
-  * Add smbios module to build-efi-images script
 
  -- Dimitri John Ledkov <xnox@ubuntu.com>  Fri, 13 Dec 2019 11:24:21 +0000
 
