@@ -129,7 +129,6 @@ CD_MODULES="
 	search_fs_file
 	search_label
 	sleep
-	smbios
 	squash4
 	test
 	true
