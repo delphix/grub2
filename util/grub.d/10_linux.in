@@ -193,11 +193,17 @@ EOF
 	linux	${rel_dirname}/${basename}.efi.signed root=${linux_root_device_thisversion} ro ${args}
 EOF
   else
-    sed "s/^/$submenu_indentation/" << EOF
-	linux	${rel_dirname}/${basename} root=${linux_root_device_thisversion} ro ${args}
+    if [ x"$GRUB_FORCE_PARTUUID" = x ]; then
+        sed "s/^/$submenu_indentation/" << EOF
+        linux	${rel_dirname}/${basename} root=${linux_root_device_thisversion} ro ${args}
 EOF
+    else
+        sed "s/^/$submenu_indentation/" << EOF
+        linux	${rel_dirname}/${basename} root=PARTUUID=${GRUB_FORCE_PARTUUID} ro ${args}
+EOF
+    fi
   fi
-  if test -n "${initrd}" ; then
+  if test -n "${initrd}" && [ x"$GRUB_DISABLE_INITRD" != xtrue ]; then
     # TRANSLATORS: ramdisk isn't identifier. Should be translated.
     if [ x"$quiet_boot" = x0 ] || [ x"$type" != xsimple ]; then
       message="$(gettext_printf "Loading initial ramdisk ...")"
