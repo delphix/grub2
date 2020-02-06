@@ -1,4 +1,4 @@
-From 516c424ab8dfb3d6fee14452f439359d966d0015 Mon Sep 17 00:00:00 2001
+From e558f5f9f50aade4df582d2770fb199fe9f569f2 Mon Sep 17 00:00:00 2001
 From: Colin Watson <cjwatson@ubuntu.com>
 Date: Mon, 13 Jan 2014 12:13:28 +0000
 Subject: Add configure option to bypass boot menu if possible
@@ -281,7 +281,7 @@ index 479a8bf4e..2be66c702 100644
        save_default_entry | grub_add_tab
    fi
 diff --git a/util/grub.d/10_linux_zfs.in b/util/grub.d/10_linux_zfs.in
-index bc69efcbf..01584c7d8 100755
+index a772bb714..5b43e8238 100755
 --- a/util/grub.d/10_linux_zfs.in
 +++ b/util/grub.d/10_linux_zfs.in
 @@ -21,6 +21,7 @@ prefix="@prefix@"
@@ -292,7 +292,7 @@ index bc69efcbf..01584c7d8 100755
  
  . "${pkgdatadir}/grub-mkconfig_lib"
  
-@@ -683,6 +684,10 @@ zfs_linux_entry () {
+@@ -690,6 +691,10 @@ zfs_linux_entry () {
  
      echo "menuentry '$(echo "${title}" | grub_quote)' ${CLASS} \${menuentry_id_option} 'gnulinux-${dataset}-${kernel_version}' {" | sed "s/^/${submenu_indentation}/"
  

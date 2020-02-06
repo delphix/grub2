@@ -1,4 +1,4 @@
-From b5319b1a7d9eac616353a9248dc6edd43a4db882 Mon Sep 17 00:00:00 2001
+From e5f10196cf1743152fbcc1051d2a1f8d7128f6b4 Mon Sep 17 00:00:00 2001
 From: Colin Watson <cjwatson@debian.org>
 Date: Fri, 16 Nov 2018 16:37:02 +0000
 Subject: bash-completion: Drop "have" checks

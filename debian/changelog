@@ -1,3 +1,11 @@
+grub2 (2.04-1ubuntu17) focal; urgency=medium
+
+  * Fix ZFS menu generation with ZFS 0.8.x where mounted datasets can’t list
+    snapshots due to an upstream change.
+    https://github.com/zfsonlinux/zfs/issues/9958
+
+ -- Didier Roche <didrocks@ubuntu.com>  Thu, 06 Feb 2020 18:20:16 +0100
+
 grub2 (2.04-1ubuntu16) focal; urgency=medium
 
   * Revert "Add smbios module to build-efi-images script" from previous
