@@ -1,3 +1,9 @@
+grub2 (2.04-1ubuntu18) focal; urgency=medium
+
+  * Cherry-pick fix from Colin W. in debian to build with python3.
+
+ -- Didier Roche <didrocks@ubuntu.com>  Thu, 06 Feb 2020 18:37:44 +0100
+
 grub2 (2.04-1ubuntu17) focal; urgency=medium
 
   * Fix ZFS menu generation with ZFS 0.8.x where mounted datasets can’t list
