@@ -1,4 +1,4 @@
-From 51515c2d12651c3a282715dee5a98a34bfa174eb Mon Sep 17 00:00:00 2001
+From 4d31eddaed89b1a0f854ffe191031e7e2edfb72a Mon Sep 17 00:00:00 2001
 From: Didier Roche <didrocks@ubuntu.com>
 Date: Fri, 12 Jul 2019 11:06:06 -0400
 Subject: UBUNTU: Enhance ZFS grub support
@@ -22,8 +22,8 @@ Signed-off-by: Didier Roche <didier.roche@canonical.com>
 ---
  Makefile.util.def           |   7 +
  util/grub.d/10_linux.in     |   4 +
- util/grub.d/10_linux_zfs.in | 896 ++++++++++++++++++++++++++++++++++++
- 3 files changed, 907 insertions(+)
+ util/grub.d/10_linux_zfs.in | 903 ++++++++++++++++++++++++++++++++++++
+ 3 files changed, 914 insertions(+)
  create mode 100755 util/grub.d/10_linux_zfs.in
 
 diff --git a/Makefile.util.def b/Makefile.util.def
@@ -61,10 +61,10 @@ index 4532266be..a75096609 100644
  	LINUX_ROOT_DEVICE="ZFS=${rpool}${bootfs%/}"
 diff --git a/util/grub.d/10_linux_zfs.in b/util/grub.d/10_linux_zfs.in
 new file mode 100755
-index 000000000..908e363b9
+index 000000000..c81366f82
 --- /dev/null
 +++ b/util/grub.d/10_linux_zfs.in
-@@ -0,0 +1,896 @@
+@@ -0,0 +1,903 @@
 +#! /bin/sh
 +set -e
 +
@@ -174,19 +174,22 @@ index 000000000..908e363b9
 +
 +    local mount_path="${mntdir}/${directory}"
 +
-+    if zfs list "${dataset}" >/dev/null 2>&1; then
-+        if ! mount -o noatime,zfsutil -t zfs "${dataset}" "${mount_path}"; then
-+            grub_warn "Failed to find a valid directory '${directory}' for dataset '${dataset}@${snapshot_name}'. Ignoring"
-+            return
-+        fi
++    if ! zfs list "${dataset}" >/dev/null 2>&1; then
++        return
++    fi
++
++    if ! mount -o noatime,zfsutil -t zfs "${dataset}" "${mount_path}"; then
++        grub_warn "Failed to find a valid directory '${directory}' for dataset '${dataset}@${snapshot_name}'. Ignoring"
++        return
 +    fi
 +
 +    local candidate_path="${mount_path}"
 +    if [ -n "${snapshot_name}" ]; then
-+        candidate_path="${candidate_path}/.zfs/snapshot/${snapshot_name}"
-+        if ! mountpoint -q "${mount_path}"; then
-+            candidate_path="${candidate_path}/${directory}"
-+        fi
++        # WORKAROUND a bug https://github.com/zfsonlinux/zfs/issues/9958
++        # Reading the content of a snapshot fails if it is not the first mount
++        # for a given dataset
++        first_mntdir=$(awk '{if ($1 == "'${dataset}'") {print $2; exit;}}' /proc/mounts)
++        candidate_path="${first_mntdir}/.zfs/snapshot/${snapshot_name}"
 +    fi
 +
 +    if [ -n "$(ls ${candidate_path} 2>/dev/null)" ]; then
@@ -258,7 +261,11 @@ index 000000000..908e363b9
 +    # 2.b) Look for current dataset (which is already mounted as /)
 +    candidate_path="${mntdir}/${directory}"
 +    if [ -n "${snapshot_name}" ]; then
-+        candidate_path="${mntdir}/.zfs/snapshot/${snapshot_name}/${directory}"
++        # WORKAROUND a bug https://github.com/zfsonlinux/zfs/issues/9958
++        # Reading the content of a snapshot fails if it is not the first mount
++        # for a given dataset
++        first_mntdir=$(awk '{if ($1 == "'${base_dataset_path}'") {print $2; exit;}}' /proc/mounts)
++        candidate_path="${first_mntdir}/.zfs/snapshot/${snapshot_name}/${directory}"
 +    fi
 +    if [ -n "$(ls ${candidate_path} 2>/dev/null)" ]; then
 +        echo "${candidate_path}"

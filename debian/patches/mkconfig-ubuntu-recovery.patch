@@ -1,4 +1,4 @@
-From aba78c3b14f85c14dc2e06a880f7e1e8e2457bec Mon Sep 17 00:00:00 2001
+From 552c07710989faf3048e7d6c6873edf5ed7a0448 Mon Sep 17 00:00:00 2001
 From: Colin Watson <cjwatson@ubuntu.com>
 Date: Mon, 13 Jan 2014 12:13:06 +0000
 Subject: "single" -> "recovery" when friendly-recovery is installed
@@ -94,7 +94,7 @@ index d927b60ae..fcd303387 100644
  
    list=`echo $list | tr ' ' '\n' | fgrep -vx "$linux" | tr '\n' ' '`
 diff --git a/util/grub.d/10_linux_zfs.in b/util/grub.d/10_linux_zfs.in
-index adeefc478..ebd9758b6 100755
+index a39b47607..2b8359454 100755
 --- a/util/grub.d/10_linux_zfs.in
 +++ b/util/grub.d/10_linux_zfs.in
 @@ -19,6 +19,7 @@ set -e
@@ -105,7 +105,7 @@ index adeefc478..ebd9758b6 100755
  
  . "${pkgdatadir}/grub-mkconfig_lib"
  
-@@ -672,7 +673,9 @@ zfs_linux_entry () {
+@@ -679,7 +680,9 @@ zfs_linux_entry () {
          if [ "${GRUB_GFXPAYLOAD_LINUX}" != xtext ]; then
          echo "	load_video" | sed "s/^/${submenu_indentation}/"
          fi
@@ -116,7 +116,7 @@ index adeefc478..ebd9758b6 100755
      fi
  
      echo "	insmod gzio" | sed "s/^/${submenu_indentation}/"
-@@ -686,7 +689,7 @@ EOF
+@@ -693,7 +696,7 @@ EOF
  
      linux_default_args="${GRUB_CMDLINE_LINUX} ${GRUB_CMDLINE_LINUX_DEFAULT}"
      if [ ${type} = "recovery" ]; then
@@ -125,7 +125,7 @@ index adeefc478..ebd9758b6 100755
      fi
  
      sed "s/^/${submenu_indentation}/" << EOF
-@@ -724,6 +727,14 @@ generate_grub_menu() {
+@@ -731,6 +734,14 @@ generate_grub_menu() {
          CLASS="--class $(echo ${GRUB_DISTRIBUTOR} | tr 'A-Z' 'a-z' | cut -d' ' -f1 | LC_ALL=C sed 's,[^[:alnum:]_],_,g') ${CLASS}"
      fi
  

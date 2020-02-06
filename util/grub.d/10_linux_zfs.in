@@ -112,19 +112,22 @@ validate_system_dataset() {
 
     local mount_path="${mntdir}/${directory}"
 
-    if zfs list "${dataset}" >/dev/null 2>&1; then
-        if ! mount -o noatime,zfsutil -t zfs "${dataset}" "${mount_path}"; then
-            grub_warn "Failed to find a valid directory '${directory}' for dataset '${dataset}@${snapshot_name}'. Ignoring"
-            return
-        fi
+    if ! zfs list "${dataset}" >/dev/null 2>&1; then
+        return
+    fi
+
+    if ! mount -o noatime,zfsutil -t zfs "${dataset}" "${mount_path}"; then
+        grub_warn "Failed to find a valid directory '${directory}' for dataset '${dataset}@${snapshot_name}'. Ignoring"
+        return
     fi
 
     local candidate_path="${mount_path}"
     if [ -n "${snapshot_name}" ]; then
-        candidate_path="${candidate_path}/.zfs/snapshot/${snapshot_name}"
-        if ! mountpoint -q "${mount_path}"; then
-            candidate_path="${candidate_path}/${directory}"
-        fi
+        # WORKAROUND a bug https://github.com/zfsonlinux/zfs/issues/9958
+        # Reading the content of a snapshot fails if it is not the first mount
+        # for a given dataset
+        first_mntdir=$(awk '{if ($1 == "'${dataset}'") {print $2; exit;}}' /proc/mounts)
+        candidate_path="${first_mntdir}/.zfs/snapshot/${snapshot_name}"
     fi
 
     if [ -n "$(ls ${candidate_path} 2>/dev/null)" ]; then
@@ -196,7 +199,11 @@ get_system_directory() {
     # 2.b) Look for current dataset (which is already mounted as /)
     candidate_path="${mntdir}/${directory}"
     if [ -n "${snapshot_name}" ]; then
-        candidate_path="${mntdir}/.zfs/snapshot/${snapshot_name}/${directory}"
+        # WORKAROUND a bug https://github.com/zfsonlinux/zfs/issues/9958
+        # Reading the content of a snapshot fails if it is not the first mount
+        # for a given dataset
+        first_mntdir=$(awk '{if ($1 == "'${base_dataset_path}'") {print $2; exit;}}' /proc/mounts)
+        candidate_path="${first_mntdir}/.zfs/snapshot/${snapshot_name}/${directory}"
     fi
     if [ -n "$(ls ${candidate_path} 2>/dev/null)" ]; then
         echo "${candidate_path}"

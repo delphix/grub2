@@ -1,4 +1,4 @@
-From 7c4f874a4c5c62e03d39bb7d108c09d15656efbc Mon Sep 17 00:00:00 2001
+From cbfad3329883de4a3604095d03bf5cdf387419d0 Mon Sep 17 00:00:00 2001
 From: Colin Watson <cjwatson@ubuntu.com>
 Date: Mon, 13 Jan 2014 12:13:30 +0000
 Subject: Add configure option to use vt.handoff=7
@@ -101,7 +101,7 @@ index 09393c28e..cc2dd855a 100644
  # FIXME: We need an interface to select vesafb in case efifb can't be used.
  if [ "x$GRUB_GFXPAYLOAD_LINUX" != x ] || [ "$gfxpayload_dynamic" = 0 ]; then
 diff --git a/util/grub.d/10_linux_zfs.in b/util/grub.d/10_linux_zfs.in
-index a7c88f2b2..a568ee139 100755
+index ea1195028..3b1caed01 100755
 --- a/util/grub.d/10_linux_zfs.in
 +++ b/util/grub.d/10_linux_zfs.in
 @@ -23,6 +23,7 @@ ubuntu_recovery="@UBUNTU_RECOVERY@"
@@ -112,7 +112,7 @@ index a7c88f2b2..a568ee139 100755
  
  . "${pkgdatadir}/grub-mkconfig_lib"
  
-@@ -655,6 +656,23 @@ generate_grub_menu_metadata() {
+@@ -662,6 +663,23 @@ generate_grub_menu_metadata() {
  # Note:
  #   If 10_linux runs these part will be defined twice in grub configuration
  print_menu_prologue() {
@@ -136,7 +136,7 @@ index a7c88f2b2..a568ee139 100755
      # Use ELILO's generic "efifb" when it's known to be available.
      # FIXME: We need an interface to select vesafb in case efifb can't be used.
      GRUB_GFXPAYLOAD_LINUX="${GRUB_GFXPAYLOAD_LINUX:-}"
-@@ -741,7 +759,7 @@ zfs_linux_entry () {
+@@ -748,7 +766,7 @@ zfs_linux_entry () {
  
      if ([ "${ubuntu_recovery}" = 0 ] || [ "${type}" != "recovery" ]) && \
          ([ "${GRUB_GFXPAYLOAD_LINUX}" != "" ] || [ "${gfxpayload_dynamic}" = 1 ]); then
@@ -145,7 +145,7 @@ index a7c88f2b2..a568ee139 100755
      fi
  
      echo "	insmod gzio" | sed "s/^/${submenu_indentation}/"
-@@ -815,6 +833,14 @@ generate_grub_menu() {
+@@ -822,6 +840,14 @@ generate_grub_menu() {
          GRUB_CMDLINE_LINUX_RECOVERY="${GRUB_CMDLINE_LINUX_RECOVERY} nomodeset"
      fi
  
