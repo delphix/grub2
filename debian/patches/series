@@ -72,3 +72,4 @@ ubuntu-efi-allow-loopmount-chainload.patch
 cherrypick-lsefisystab-define-smbios3.patch
 cherrypick-smbios-module.patch
 cherrypick-lsefisystab-show-dtb.patch
+0075-uefi-firmware-rename-fwsetup-menuentry-to-UEFI-Firmw.patch

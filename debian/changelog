@@ -1,3 +1,12 @@
+grub2 (2.04-1ubuntu19) focal; urgency=medium
+
+  * uefi-firmware: rename fwsetup menuentry to UEFI Firmware Settings
+    (LP: #1864547)
+  * build-efi-images: add smbios module to the prebuilt signed EFI images
+    (LP: #1856424)
+
+ -- Dimitri John Ledkov <xnox@ubuntu.com>  Mon, 24 Feb 2020 20:34:13 +0000
+
 grub2 (2.04-1ubuntu18) focal; urgency=medium
 
   * Cherry-pick fix from Colin W. in debian to build with python3.
