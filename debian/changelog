@@ -1,3 +1,9 @@
+grub2 (2.04-1ubuntu20) focal; urgency=medium
+
+  * build-efi-images: do not produce -installer.efi.signed. LP: #1863994
+
+ -- Dimitri John Ledkov <xnox@ubuntu.com>  Tue, 25 Feb 2020 01:11:31 +0000
+
 grub2 (2.04-1ubuntu19) focal; urgency=medium
 
   * uefi-firmware: rename fwsetup menuentry to UEFI Firmware Settings
