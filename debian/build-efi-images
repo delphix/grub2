@@ -214,9 +214,12 @@ NET_MODULES="$CD_MODULES
 # Special network boot image for d-i to use. Just the same as the
 # normal network boot image, but with a different value baked in for
 # the prefix setting
-"$grub_mkimage" -O "$platform" -o "$outdir/grubnet$efi_name-installer.efi" \
-	-d "$grub_core" -c "$workdir/grub-bootstrap.cfg" \
-	-m "$workdir/memdisk-netboot.fat" \
-	-p "${efi_vendor}-installer/$deb_arch/grub" $NET_MODULES
+#
+# but not on Ubuntu LP: #1863994
+#
+#"$grub_mkimage" -O "$platform" -o "$outdir/grubnet$efi_name-installer.efi" \
+#	-d "$grub_core" -c "$workdir/grub-bootstrap.cfg" \
+#	-m "$workdir/memdisk-netboot.fat" \
+#	-p "${efi_vendor}-installer/$deb_arch/grub" $NET_MODULES
 
 exit 0
