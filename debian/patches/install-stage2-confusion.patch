@@ -1,4 +1,4 @@
-From 10bbff18c5421061632d3a2c57c8b6c58f0ded4d Mon Sep 17 00:00:00 2001
+From e870b2a61db11a43e14c67e0367c36f056c5ea8b Mon Sep 17 00:00:00 2001
 From: Colin Watson <cjwatson@debian.org>
 Date: Mon, 13 Jan 2014 12:12:58 +0000
 Subject: If GRUB Legacy is still around, tell packaging to ignore it

@@ -1,4 +1,4 @@
-From de038d1bef91c4a9807a2df3f407a71c5e6e6332 Mon Sep 17 00:00:00 2001
+From 4aafd30cf9b7b4910d2db90d270c6e78b42a5e5a Mon Sep 17 00:00:00 2001
 From: Colin Watson <cjwatson@ubuntu.com>
 Date: Mon, 13 Jan 2014 12:13:05 +0000
 Subject: Fall back to non-EFI if booted using EFI but -efi is missing

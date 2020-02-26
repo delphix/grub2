@@ -855,7 +855,7 @@ generate_grub_menu() {
     echo "${menu_metadata}" |
     {
         at_least_one_entry=0
-        have_zsys="$(which zsys || true)"
+        have_zsys="$(which zsysd || true)"
         while IFS="$(printf '\t')" read -r machineid iszsys section name dataset device initrd kernel opt; do
 
             # Disable history for non zsys system or if systems is a zsys one and zsys isn't installed.
