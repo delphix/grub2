@@ -73,3 +73,6 @@ cherrypick-lsefisystab-define-smbios3.patch
 cherrypick-smbios-module.patch
 cherrypick-lsefisystab-show-dtb.patch
 0075-uefi-firmware-rename-fwsetup-menuentry-to-UEFI-Firmw.patch
+0076-smbios-Add-a-linux-argument-to-apply-linux-modalias-.patch
+0077-ubuntu-Make-the-linux-command-in-EFI-grub-always-try.patch
+0078-ubuntu-Update-the-linux-boot-protocol-version-check.patch
