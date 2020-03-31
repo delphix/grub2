@@ -1,4 +1,4 @@
-From 1f9f63e5a65cf04f687b06a7ac3fae37f3ec8438 Mon Sep 17 00:00:00 2001
+From 1d8ef035a1161dc3f1905522c58fe6c27cd8b039 Mon Sep 17 00:00:00 2001
 From: Colin Watson <cjwatson@ubuntu.com>
 Date: Mon, 13 Jan 2014 12:13:28 +0000
 Subject: Add configure option to bypass boot menu if possible
@@ -281,7 +281,7 @@ index 479a8bf4e..2be66c702 100644
        save_default_entry | grub_add_tab
    fi
 diff --git a/util/grub.d/10_linux_zfs.in b/util/grub.d/10_linux_zfs.in
-index 0bda062a8..82d1bcf35 100755
+index dbb64ea2c..7f5322cb2 100755
 --- a/util/grub.d/10_linux_zfs.in
 +++ b/util/grub.d/10_linux_zfs.in
 @@ -21,6 +21,7 @@ prefix="@prefix@"
@@ -292,17 +292,17 @@ index 0bda062a8..82d1bcf35 100755
  
  . "${pkgdatadir}/grub-mkconfig_lib"
  
-@@ -690,6 +691,10 @@ zfs_linux_entry () {
+@@ -733,6 +734,10 @@ zfs_linux_entry () {
  
-     echo "menuentry '$(echo "${title}" | grub_quote)' ${CLASS} \${menuentry_id_option} 'gnulinux-${dataset}-${kernel_version}' {" | sed "s/^/${submenu_indentation}/"
+     echo "${submenu_indentation}menuentry '$(echo "${title}" | grub_quote)' ${CLASS} \${menuentry_id_option} 'gnulinux-${dataset}-${kernel_version}' {"
  
 +    if [ "${quick_boot}" = 1 ]; then
-+        echo "	recordfail" | sed "s/^/${submenu_indentation}/"
++        echo "${submenu_indentation}	recordfail"
 +    fi
 +
      if [ "${type}" != "recovery" ] ; then
          GRUB_SAVEDEFAULT=${GRUB_SAVEDEFAULT:-}
-         save_default_entry | grub_add_tab | sed "s/^/${submenu_indentation}/"
+         default_entry="$(save_default_entry)"
 diff --git a/util/grub.d/30_os-prober.in b/util/grub.d/30_os-prober.in
 index 271044f59..da5f28876 100644
 --- a/util/grub.d/30_os-prober.in

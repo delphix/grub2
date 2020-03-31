@@ -1,4 +1,4 @@
-From bb9fd87c04dceae8b061d36684511074716b79d0 Mon Sep 17 00:00:00 2001
+From 01a1dc171d47030cccb5834d8af1b5f8c1698578 Mon Sep 17 00:00:00 2001
 From: Didier Roche <didrocks@ubuntu.com>
 Date: Fri, 12 Jul 2019 11:06:06 -0400
 Subject: UBUNTU: Enhance ZFS grub support
@@ -22,8 +22,8 @@ Signed-off-by: Didier Roche <didier.roche@canonical.com>
 ---
  Makefile.util.def           |   7 +
  util/grub.d/10_linux.in     |   4 +
- util/grub.d/10_linux_zfs.in | 903 ++++++++++++++++++++++++++++++++++++
- 3 files changed, 914 insertions(+)
+ util/grub.d/10_linux_zfs.in | 941 ++++++++++++++++++++++++++++++++++++
+ 3 files changed, 952 insertions(+)
  create mode 100755 util/grub.d/10_linux_zfs.in
 
 diff --git a/Makefile.util.def b/Makefile.util.def
@@ -61,10 +61,10 @@ index 4532266be..a75096609 100644
  	LINUX_ROOT_DEVICE="ZFS=${rpool}${bootfs%/}"
 diff --git a/util/grub.d/10_linux_zfs.in b/util/grub.d/10_linux_zfs.in
 new file mode 100755
-index 000000000..5be997e7b
+index 000000000..9c4873ac3
 --- /dev/null
 +++ b/util/grub.d/10_linux_zfs.in
-@@ -0,0 +1,903 @@
+@@ -0,0 +1,941 @@
 +#! /bin/sh
 +set -e
 +
@@ -363,6 +363,40 @@ index 000000000..5be997e7b
 +    return
 +}
 +
++# Try our default layout bpool as a prefered layout (fast path)
++# This is get_system_directory for boot optimized for our default installation layout
++# $1 is our current dataset name (which can have @snapshot name)
++# $2 is the temporary mount directory to use
++# return path for directory (which can be a mountpoint) if found
++try_default_layout_bpool() {
++    local root_dataset_path="$1"
++    local mntdir="$2"
++
++    dataset_basename="${root_dataset_path##*/}"
++    candidate_dataset="bpool/BOOT/${dataset_basename}"
++    dataset_properties="$(zfs get -H mountpoint,canmount ${candidate_dataset} | cut -f3 | paste -sd ' ')"
++    if [ -z "${dataset_properties}" ]; then
++        return
++    fi
++
++    rel_pool_root=$(zpool get -H altroot bpool | awk '{print $3}')
++    if [ "${rel_pool_root}" = "-" ]; then
++        rel_pool_root=""
++    fi
++
++    snapshot_name="${dataset_basename##*@}"
++    [ "${snapshot_name}" = "${dataset_basename}" ] && snapshot_name=""
++    if [ -z "${snapshot_name}" ]; then
++        if ! echo "${dataset_properties}" | grep -Eq "${rel_pool_root}/boot (on|noauto)"; then
++            return
++        fi
++    else
++        candidate_dataset=$(echo "${candidate_dataset}" | cut -d '@' -f1)
++    fi
++
++    validate_system_dataset "${candidate_dataset}" "boot" "${mntdir}" "${snapshot_name}"
++}
++
 +# Given a filesystem or snapshot dataset, returns dataset|machine id|pretty name|last used
 +# $1 is dataset we want information from
 +# $2 is the temporary mount directory to use
@@ -405,7 +439,11 @@ index 000000000..5be997e7b
 +    mountpoint -q "${mntdir}/etc" && umount "${mntdir}/etc" || true
 +
 +    # read available kernels from /boot
-+    boot_dir=$(get_system_directory "${dataset}" "boot" "false" "${mntdir}" "${etc_dir}")
++    boot_dir="$(try_default_layout_bpool "${dataset}" "${mntdir}")"
++    if [ -z "${boot_dir}" ]; then
++        boot_dir=$(get_system_directory "${dataset}" "boot" "false" "${mntdir}" "${etc_dir}")
++    fi
++
 +    if [ -z  "${boot_dir}" ]; then
 +        grub_warn "Ignoring ${dataset}"
 +        mountpoint -q "${mntdir}/boot" && umount "${mntdir}/boot" || true
@@ -518,7 +556,7 @@ index 000000000..5be997e7b
 +        boot_list="${boot_list}$(get_dataset_info ${dataset} ${mntdir})\n"
 +
 +        # get information from snapshots of this root dataset
-+        for snapshot_dataset in $(zfs list -r -H -o name -t snapshot "${dataset}" | grep "${dataset}"@); do
++        for snapshot_dataset in $(zfs list -H -o name -t snapshot "${dataset}"); do
 +            boot_list="${boot_list}$(get_dataset_info ${snapshot_dataset} ${mntdir})\n"
 +        done
 +    done
@@ -701,19 +739,25 @@ index 000000000..5be997e7b
 +
 +# Cache for prepare_grub_to_access_device call
 +# $1: boot_device
++# $2: submenu_level
 +prepare_grub_to_access_device_cached() {
 +    local boot_device="$1"
++    local submenu_level="$2"
 +
-+    local boot_device_idx=$(echo ${boot_device} | tr '/' '_')
++    local boot_device_idx="$(echo ${boot_device} | tr '/' '_')"
 +
 +    cache_file="${ZFSTMP}/$(echo boot_device${boot_device_idx})"
 +    if [ ! -f "${cache_file}" ]; then
 +        set +u
-+        echo "$(prepare_grub_to_access_device ${boot_device})" > "${cache_file}"
++        echo "$(prepare_grub_to_access_device "${boot_device}")" > "${cache_file}"
 +        set -u
++        for i in 0 1 2; do
++            submenu_indentation="$(printf %${i}s | tr " " "${grub_tab}")"
++            sed "s/^/${submenu_indentation}	/" "${cache_file}" > "${cache_file}--${i}"
++        done
 +    fi
 +
-+    cat "${cache_file}"
++    cat "${cache_file}--${submenu_level}"
 +}
 +
 +
@@ -731,53 +775,47 @@ index 000000000..5be997e7b
 +    kernel_version=$(basename "${kernel}" | sed -e "s,^[^0-9]*-,,g")
 +    submenu_indentation="$(printf %${submenu_level}s | tr " " "${grub_tab}")"
 +
-+    echo "menuentry '$(echo "${title}" | grub_quote)' ${CLASS} \${menuentry_id_option} 'gnulinux-${dataset}-${kernel_version}' {" | sed "s/^/${submenu_indentation}/"
++    echo "${submenu_indentation}menuentry '$(echo "${title}" | grub_quote)' ${CLASS} \${menuentry_id_option} 'gnulinux-${dataset}-${kernel_version}' {"
 +
 +    if [ "${type}" != "recovery" ] ; then
 +        GRUB_SAVEDEFAULT=${GRUB_SAVEDEFAULT:-}
-+        save_default_entry | grub_add_tab | sed "s/^/${submenu_indentation}/"
++        default_entry="$(save_default_entry)"
++        if [ -n "${default_entry}" ]; then
++            echo "${submenu_indentation}	${default_entry}"
++        fi
 +    fi
 +
 +    # Use ELILO's generic "efifb" when it's known to be available.
 +    # FIXME: We need an interface to select vesafb in case efifb can't be used.
 +    if [ "${GRUB_GFXPAYLOAD_LINUX}" = "" ]; then
-+        echo "	load_video" | sed "s/^/${submenu_indentation}/"
++        echo "${submenu_indentation}	load_video"
 +        if grep -qx "CONFIG_FB_EFI=y" "${config}" 2> /dev/null \
 +            && grep -qx "CONFIG_VT_HW_CONSOLE_BINDING=y" "${config}" 2> /dev/null; then
-+            echo "	set gfxpayload=keep" | sed "s/^/$submenu_indentation/"
++            echo "${submenu_indentation}	set gfxpayload=keep"
 +        fi
 +    else
-+        if [ "${GRUB_GFXPAYLOAD_LINUX}" != xtext ]; then
-+        echo "	load_video" | sed "s/^/${submenu_indentation}/"
++        if [ "${GRUB_GFXPAYLOAD_LINUX}" != "text" ]; then
++            echo "${submenu_indentation}	load_video"
 +        fi
-+        echo "	set gfxpayload=\${linux_gfx_mode}" | sed "s/^/${submenu_indentation}/"
++        echo "${submenu_indentation}	set gfxpayload=\${linux_gfx_mode}"
 +    fi
 +
-+    echo "	insmod gzio" | sed "s/^/${submenu_indentation}/"
++    echo "${submenu_indentation}	insmod gzio"
 +
-+    echo "$(prepare_grub_to_access_device_cached ${boot_device} | grub_add_tab | sed "s/^/${submenu_indentation}/")"
++    echo "$(prepare_grub_to_access_device_cached "${boot_device}" "${submenu_level}")"
 +
-+    message="$(gettext_printf "Loading Linux %s ..." ${kernel_version})"
-+    sed "s/^/${submenu_indentation}/" << EOF
-+	echo '$(echo "$message" | grub_quote)'
-+EOF
++    echo "${submenu_indentation}	echo '$(gettext_printf "Loading Linux %s ..." ${kernel_version} | grub_quote)'"
 +
 +    linux_default_args="${GRUB_CMDLINE_LINUX} ${GRUB_CMDLINE_LINUX_DEFAULT}"
 +    if [ ${type} = "recovery" ]; then
 +        linux_default_args="single ${GRUB_CMDLINE_LINUX}"
 +    fi
 +
-+    sed "s/^/${submenu_indentation}/" << EOF
-+	linux	${kernel} root=ZFS=${dataset} ro ${linux_default_args} ${kernel_additional_args}
-+EOF
++    echo "${submenu_indentation}	linux	${kernel} root=ZFS=${dataset} ro ${linux_default_args} ${kernel_additional_args}"
 +
-+    message="$(gettext_printf "Loading initial ramdisk ...")"
-+    sed "s/^/${submenu_indentation}/" << EOF
-+	echo	'$(echo "$message" | grub_quote)'
-+	initrd	${initrd}
-+EOF
-+
-+    echo "}" | sed "s/^/${submenu_indentation}/"
++    echo "${submenu_indentation}	echo '$(gettext_printf "Loading initial ramdisk ..." | grub_quote)'"
++    echo "${submenu_indentation}	initrd	${initrd}"
++    echo "${submenu_indentation}}"
 +}
 +
 +# Generate a GRUB Menu from menu meta data

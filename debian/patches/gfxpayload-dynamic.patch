@@ -1,4 +1,4 @@
-From d79e65fe83808735b42496a698da0b3843afee55 Mon Sep 17 00:00:00 2001
+From fb32f5e0554a04f6ca5ebceb372102b01b4fa5db Mon Sep 17 00:00:00 2001
 From: Evan Broder <evan@ebroder.net>
 Date: Mon, 13 Jan 2014 12:13:29 +0000
 Subject: Add configure option to enable gfxpayload=keep dynamically
@@ -290,7 +290,7 @@ index 2be66c702..09393c28e 100644
  # yet, so it's empty. In a submenu it will be equal to '\t' (one tab).
  submenu_indentation=""
 diff --git a/util/grub.d/10_linux_zfs.in b/util/grub.d/10_linux_zfs.in
-index 82d1bcf35..e11c9f4f5 100755
+index 7f5322cb2..63bbf4714 100755
 --- a/util/grub.d/10_linux_zfs.in
 +++ b/util/grub.d/10_linux_zfs.in
 @@ -22,6 +22,7 @@ datarootdir="@datarootdir@"
@@ -301,7 +301,7 @@ index 82d1bcf35..e11c9f4f5 100755
  
  . "${pkgdatadir}/grub-mkconfig_lib"
  
-@@ -657,6 +658,41 @@ generate_grub_menu_metadata() {
+@@ -694,6 +695,41 @@ generate_grub_menu_metadata() {
      done
  }
  
@@ -342,23 +342,23 @@ index 82d1bcf35..e11c9f4f5 100755
 +
  # Cache for prepare_grub_to_access_device call
  # $1: boot_device
- prepare_grub_to_access_device_cached() {
-@@ -708,9 +744,11 @@ zfs_linux_entry () {
-         if [ "${GRUB_GFXPAYLOAD_LINUX}" != xtext ]; then
-         echo "	load_video" | sed "s/^/${submenu_indentation}/"
+ # $2: submenu_level
+@@ -754,9 +790,11 @@ zfs_linux_entry () {
+         if [ "${GRUB_GFXPAYLOAD_LINUX}" != "text" ]; then
+             echo "${submenu_indentation}	load_video"
          fi
 -        if [ "${ubuntu_recovery}" = 0 ] || [ "${type}" != "recovery" ]; then
--            echo "	set gfxpayload=\${linux_gfx_mode}" | sed "s/^/${submenu_indentation}/"
+-            echo "${submenu_indentation}	set gfxpayload=\${linux_gfx_mode}"
 -        fi
 +    fi
 +
 +    if ([ "${ubuntu_recovery}" = 0 ] || [ "${type}" != "recovery" ]) && \
 +        ([ "${GRUB_GFXPAYLOAD_LINUX}" != "" ] || [ "${gfxpayload_dynamic}" = 1 ]); then
-+        echo "	set gfxpayload=\${linux_gfx_mode}" | sed "s/^/${submenu_indentation}/"
++        echo "${submenu_indentation}	set gfxpayload=\${linux_gfx_mode}"
      fi
  
-     echo "	insmod gzio" | sed "s/^/${submenu_indentation}/"
-@@ -784,6 +822,8 @@ generate_grub_menu() {
+     echo "${submenu_indentation}	insmod gzio"
+@@ -819,6 +857,8 @@ generate_grub_menu() {
          GRUB_CMDLINE_LINUX_RECOVERY="${GRUB_CMDLINE_LINUX_RECOVERY} nomodeset"
      fi
  

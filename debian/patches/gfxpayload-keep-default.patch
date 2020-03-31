@@ -1,6 +1,6 @@
-From 244d5ac58660e4c605d4a6276cc94abaf666ddbf Mon Sep 17 00:00:00 2001
-From: Colin Watson <cjwatson@debian.org>
-Date: Mon, 13 Jan 2014 12:12:57 +0000
+From 419ff96f3e878ababfbf31f3bded9d39dcc9e42d Mon Sep 17 00:00:00 2001
+From: Didier Roche <didrocks@ubuntu.com>
+Date: Tue, 31 Mar 2020 15:09:45 +0200
 Subject: Disable gfxpayload=keep by default
 
 Setting gfxpayload=keep has been known to cause efifb to be
@@ -39,17 +39,17 @@ index a75096609..f839b3b55 100644
        if [ "x$GRUB_GFXPAYLOAD_LINUX" != xtext ]; then
  	  echo "	load_video" | sed "s/^/$submenu_indentation/"
 diff --git a/util/grub.d/10_linux_zfs.in b/util/grub.d/10_linux_zfs.in
-index 5be997e7b..bd604c802 100755
+index 9c4873ac3..9f0c6a421 100755
 --- a/util/grub.d/10_linux_zfs.in
 +++ b/util/grub.d/10_linux_zfs.in
-@@ -675,10 +675,6 @@ zfs_linux_entry () {
+@@ -722,10 +722,6 @@ zfs_linux_entry () {
      # FIXME: We need an interface to select vesafb in case efifb can't be used.
      if [ "${GRUB_GFXPAYLOAD_LINUX}" = "" ]; then
-         echo "	load_video" | sed "s/^/${submenu_indentation}/"
+         echo "${submenu_indentation}	load_video"
 -        if grep -qx "CONFIG_FB_EFI=y" "${config}" 2> /dev/null \
 -            && grep -qx "CONFIG_VT_HW_CONSOLE_BINDING=y" "${config}" 2> /dev/null; then
--            echo "	set gfxpayload=keep" | sed "s/^/$submenu_indentation/"
+-            echo "${submenu_indentation}	set gfxpayload=keep"
 -        fi
      else
-         if [ "${GRUB_GFXPAYLOAD_LINUX}" != xtext ]; then
-         echo "	load_video" | sed "s/^/${submenu_indentation}/"
+         if [ "${GRUB_GFXPAYLOAD_LINUX}" != "text" ]; then
+             echo "${submenu_indentation}	load_video"

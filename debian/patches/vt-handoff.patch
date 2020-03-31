@@ -1,4 +1,4 @@
-From 6feed41be5d723e9c4b541862db186ee6e1501a3 Mon Sep 17 00:00:00 2001
+From afe698504875af5874cf5cfbdf815ee2cccd2480 Mon Sep 17 00:00:00 2001
 From: Colin Watson <cjwatson@ubuntu.com>
 Date: Mon, 13 Jan 2014 12:13:30 +0000
 Subject: Add configure option to use vt.handoff=7
@@ -101,7 +101,7 @@ index 09393c28e..cc2dd855a 100644
  # FIXME: We need an interface to select vesafb in case efifb can't be used.
  if [ "x$GRUB_GFXPAYLOAD_LINUX" != x ] || [ "$gfxpayload_dynamic" = 0 ]; then
 diff --git a/util/grub.d/10_linux_zfs.in b/util/grub.d/10_linux_zfs.in
-index e11c9f4f5..e4490fe36 100755
+index 63bbf4714..52cdb4ea4 100755
 --- a/util/grub.d/10_linux_zfs.in
 +++ b/util/grub.d/10_linux_zfs.in
 @@ -23,6 +23,7 @@ ubuntu_recovery="@UBUNTU_RECOVERY@"
@@ -112,7 +112,7 @@ index e11c9f4f5..e4490fe36 100755
  
  . "${pkgdatadir}/grub-mkconfig_lib"
  
-@@ -662,6 +663,23 @@ generate_grub_menu_metadata() {
+@@ -699,6 +700,23 @@ generate_grub_menu_metadata() {
  # Note:
  #   If 10_linux runs these part will be defined twice in grub configuration
  print_menu_prologue() {
@@ -136,16 +136,16 @@ index e11c9f4f5..e4490fe36 100755
      # Use ELILO's generic "efifb" when it's known to be available.
      # FIXME: We need an interface to select vesafb in case efifb can't be used.
      GRUB_GFXPAYLOAD_LINUX="${GRUB_GFXPAYLOAD_LINUX:-}"
-@@ -748,7 +766,7 @@ zfs_linux_entry () {
+@@ -794,7 +812,7 @@ zfs_linux_entry () {
  
      if ([ "${ubuntu_recovery}" = 0 ] || [ "${type}" != "recovery" ]) && \
          ([ "${GRUB_GFXPAYLOAD_LINUX}" != "" ] || [ "${gfxpayload_dynamic}" = 1 ]); then
--        echo "	set gfxpayload=\${linux_gfx_mode}" | sed "s/^/${submenu_indentation}/"
-+        echo "	gfxmode \${linux_gfx_mode}" | sed "s/^/${submenu_indentation}/"
+-        echo "${submenu_indentation}	set gfxpayload=\${linux_gfx_mode}"
++        echo "${submenu_indentation}	gfxmode \${linux_gfx_mode}"
      fi
  
-     echo "	insmod gzio" | sed "s/^/${submenu_indentation}/"
-@@ -822,6 +840,14 @@ generate_grub_menu() {
+     echo "${submenu_indentation}	insmod gzio"
+@@ -857,6 +875,14 @@ generate_grub_menu() {
          GRUB_CMDLINE_LINUX_RECOVERY="${GRUB_CMDLINE_LINUX_RECOVERY} nomodeset"
      fi
  

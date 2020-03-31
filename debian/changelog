@@ -1,3 +1,11 @@
+grub2 (2.04-1ubuntu23) focal; urgency=medium
+
+  [ Jean-Baptiste Lallement ]
+  [ Didier Roche ]
+  * Performance improvements for update-grub on ZFS systems (LP: #1869885)
+
+ -- Didier Roche <didrocks@ubuntu.com>  Tue, 31 Mar 2020 15:30:36 +0200
+
 grub2 (2.04-1ubuntu22) focal; urgency=medium
 
   * smbios: Add a --linux argument to apply linux modalias-like filtering
