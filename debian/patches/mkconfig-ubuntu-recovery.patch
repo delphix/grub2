@@ -1,6 +1,6 @@
-From 6916490d029b091821352ad9e0123417d5580455 Mon Sep 17 00:00:00 2001
-From: Colin Watson <cjwatson@ubuntu.com>
-Date: Mon, 13 Jan 2014 12:13:06 +0000
+From 020505e238e741897f9bbcbc29a3caa02db13b92 Mon Sep 17 00:00:00 2001
+From: Didier Roche <didrocks@ubuntu.com>
+Date: Tue, 31 Mar 2020 15:16:36 +0200
 Subject: "single" -> "recovery" when friendly-recovery is installed
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -94,7 +94,7 @@ index d927b60ae..fcd303387 100644
  
    list=`echo $list | tr ' ' '\n' | fgrep -vx "$linux" | tr '\n' ' '`
 diff --git a/util/grub.d/10_linux_zfs.in b/util/grub.d/10_linux_zfs.in
-index bd604c802..1cd81dc1b 100755
+index 9f0c6a421..dad02690b 100755
 --- a/util/grub.d/10_linux_zfs.in
 +++ b/util/grub.d/10_linux_zfs.in
 @@ -19,6 +19,7 @@ set -e
@@ -105,18 +105,18 @@ index bd604c802..1cd81dc1b 100755
  
  . "${pkgdatadir}/grub-mkconfig_lib"
  
-@@ -679,7 +680,9 @@ zfs_linux_entry () {
-         if [ "${GRUB_GFXPAYLOAD_LINUX}" != xtext ]; then
-         echo "	load_video" | sed "s/^/${submenu_indentation}/"
+@@ -726,7 +727,9 @@ zfs_linux_entry () {
+         if [ "${GRUB_GFXPAYLOAD_LINUX}" != "text" ]; then
+             echo "${submenu_indentation}	load_video"
          fi
--        echo "	set gfxpayload=\${linux_gfx_mode}" | sed "s/^/${submenu_indentation}/"
+-        echo "${submenu_indentation}	set gfxpayload=\${linux_gfx_mode}"
 +        if [ "${ubuntu_recovery}" = 0 ] || [ "${type}" != "recovery" ]; then
-+            echo "	set gfxpayload=\${linux_gfx_mode}" | sed "s/^/${submenu_indentation}/"
++            echo "${submenu_indentation}	set gfxpayload=\${linux_gfx_mode}"
 +        fi
      fi
  
-     echo "	insmod gzio" | sed "s/^/${submenu_indentation}/"
-@@ -693,7 +696,7 @@ EOF
+     echo "${submenu_indentation}	insmod gzio"
+@@ -737,7 +740,7 @@ zfs_linux_entry () {
  
      linux_default_args="${GRUB_CMDLINE_LINUX} ${GRUB_CMDLINE_LINUX_DEFAULT}"
      if [ ${type} = "recovery" ]; then
@@ -124,8 +124,8 @@ index bd604c802..1cd81dc1b 100755
 +        linux_default_args="${GRUB_CMDLINE_LINUX_RECOVERY} ${GRUB_CMDLINE_LINUX}"
      fi
  
-     sed "s/^/${submenu_indentation}/" << EOF
-@@ -731,6 +734,14 @@ generate_grub_menu() {
+     echo "${submenu_indentation}	linux	${kernel} root=ZFS=${dataset} ro ${linux_default_args} ${kernel_additional_args}"
+@@ -769,6 +772,14 @@ generate_grub_menu() {
          CLASS="--class $(echo ${GRUB_DISTRIBUTOR} | tr 'A-Z' 'a-z' | cut -d' ' -f1 | LC_ALL=C sed 's,[^[:alnum:]_],_,g') ${CLASS}"
      fi
  
