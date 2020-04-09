@@ -76,3 +76,5 @@ cherrypick-lsefisystab-show-dtb.patch
 0076-smbios-Add-a-linux-argument-to-apply-linux-modalias-.patch
 0077-ubuntu-Make-the-linux-command-in-EFI-grub-always-try.patch
 0078-ubuntu-Update-the-linux-boot-protocol-version-check.patch
+ubuntu-resilient-boot-ignore-alternative-esps.patch
+ubuntu-resilient-boot-boot-order.patch

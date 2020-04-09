@@ -2,6 +2,7 @@
 ../../debian/grub.d			etc
 ../../debian/init-select.cfg		etc/default/grub.d
 ../../debian/grub-check-signatures usr/share/grub/
+../../debian/grub-multi-install usr/lib/grub/
 ../../debian/canonical-uefi-ca.crt usr/share/grub/
 
 etc/grub.d

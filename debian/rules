@@ -563,10 +563,13 @@ override_dh_builddeb:
 ifneq (,$(SB_PACKAGE))
 	echo $(deb_version) > obj/monolithic/$(SB_PACKAGE)/version
 ifeq (yes,$(shell dpkg-vendor --derives-from Ubuntu && echo yes))
+	if [ -d obj/monolithic/$(SB_PACKAGE)/$(deb_version) ]; then \
+		rm -rf obj/monolithic/$(SB_PACKAGE)/$(deb_version); \
+	fi
 	mkdir -v obj/monolithic/$(SB_PACKAGE)/$(deb_version)
-	mv -v obj/monolithic/$(SB_PACKAGE)/* obj/monolithic/$(SB_PACKAGE)/$(deb_version) || :
+	ln -v obj/monolithic/$(SB_PACKAGE)/* obj/monolithic/$(SB_PACKAGE)/$(deb_version) || :
 endif
-	tar -c -f ../$(TARNAME) -a -C obj/monolithic/$(SB_PACKAGE) -v .
+	tar -c -f ../$(TARNAME) -a -C obj/monolithic/$(SB_PACKAGE) -v $(deb_version)
 	dpkg-distaddfile $(TARNAME) raw-uefi -
 endif
 
