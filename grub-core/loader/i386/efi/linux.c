@@ -27,6 +27,7 @@
 #include <grub/lib/cmdline.h>
 #include <grub/efi/efi.h>
 #include <grub/efi/linux.h>
+#include <grub/efi/sb.h>
 
 GRUB_MOD_LICENSE ("GPLv3+");
 
@@ -195,12 +196,15 @@ grub_cmd_linux (grub_command_t cmd __attribute__ ((unused)),
       goto fail;
     }
 
-  rc = grub_linuxefi_secure_validate (kernel, filelen);
-  if (rc < 0)
+  if (grub_efi_secure_boot ())
     {
-      grub_error (GRUB_ERR_ACCESS_DENIED, N_("%s has invalid signature"),
-		  argv[0]);
-      goto fail;
+      rc = grub_linuxefi_secure_validate (kernel, filelen);
+      if (rc < 0)
+	{
+	  grub_error (GRUB_ERR_ACCESS_DENIED, N_("%s has invalid signature"),
+		      argv[0]);
+	  goto fail;
+	}
     }
 
   params = grub_efi_allocate_pages_max (0x3fffffff,
