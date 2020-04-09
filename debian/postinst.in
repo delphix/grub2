@@ -297,6 +297,22 @@ get_mountpoint()
   echo "${boot_mountpoint:-/}"
 }
 
+# Parse /proc/mounts and find out the mount for the given device.
+# The device must be a real device in /dev, not a symlink to one.
+get_mounted_device()
+{
+  mountpoint="$1"
+  cat /proc/mounts | while read -r line; do
+    set -f
+    set -- $line
+    set +f
+    if [ "$2" = "$mountpoint" ]; then
+      echo "$1"
+      break
+    fi
+  done
+}
+
 config_item()
 {
   for x in /etc/default/grub /etc/default/grub.d/*.cfg; do
@@ -326,6 +342,14 @@ no_nvram_arg() {
 run_grub_install()
 {
     if ! grub-install $@ ; then
+        echo "Failed: grub-install $@" >&2
+        echo "WARNING: Bootloader is not properly installed, system may not be bootable" >&2
+    fi
+}
+
+run_grub_multi_install()
+{
+    if ! /usr/lib/grub/grub-multi-install $@ ; then
         echo "Failed: grub-install $@" >&2
         echo "WARNING: Bootloader is not properly installed, system may not be bootable" >&2
     fi
@@ -704,20 +728,37 @@ case "$1" in
           fi
         fi
 
-        if [ "$bootloader_id" ] && [ -d "/boot/efi/EFI/$bootloader_id" ]; then
-          case @PACKAGE@ in
-            grub-efi-ia32)  target=i386-efi ;;
-            grub-efi-amd64) target=x86_64-efi ;;
-            grub-efi-ia64)  target=ia64-efi ;;
-            grub-efi-arm)   target=arm-efi ;;
-            grub-efi-arm64) target=arm64-efi ;;
-          esac
+        # Backwards /boot/efi compatibility: Move /boot/efi into the debconf
+        # setting on upgrades and install.
+        db_get grub-efi/install_devices || true
+        if [ -z "$RET" ] && dpkg --compare-versions "$2" lt 2.04-1ubuntu24~; then
+          esp="$(get_mounted_device /boot/efi)"
+          if [ "$esp" ]; then
+            esp="$(device_to_id "$esp")"
+          fi
+          if [ "$esp" ]; then
+            db_set grub-efi/install_devices "$esp"
+            db_fset grub-efi/install_devices seen true
+          fi
+        fi
+
+        case @PACKAGE@ in
+          grub-efi-ia32)  target=i386-efi ;;
+          grub-efi-amd64) target=x86_64-efi ;;
+          grub-efi-ia64)  target=ia64-efi ;;
+          grub-efi-arm)   target=arm-efi ;;
+          grub-efi-arm64) target=arm64-efi ;;
+        esac
+        # Check /boot/grub to see if we previously installed to an ESP. We don't
+        # want to trigger the install code just by installing the package,
+        # normally the installer installs grub itself first.
+        if test -e /boot/grub/$target/core.efi; then
           db_get grub2/no_efi_extra_removable
           if [ "$RET" = true ]; then
             NO_EXTRA_REMOVABLE="--no-extra-removable"
           fi
           NO_NVRAM="$(no_nvram_arg)"
-          run_grub_install --target="$target" "$NO_EXTRA_REMOVABLE" "$NO_NVRAM"
+          run_grub_multi_install --target="$target" "$NO_EXTRA_REMOVABLE" "$NO_NVRAM"
         fi
 
         # /boot/grub/ has more chances of being accessible by GRUB

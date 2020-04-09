@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: grub_debian\n"
 "Report-Msgid-Bugs-To: grub2@packages.debian.org\n"
-"POT-Creation-Date: 2019-07-12 11:37-0400\n"
+"POT-Creation-Date: 2020-04-09 12:18+0200\n"
 "PO-Revision-Date: 2017-01-21 17:41+0900\n"
 "Last-Translator: Changwoo Ryu <cwryu@debian.org>\n"
 "Language-Team: Korean <debian-l10n-korean@lists.debian.org>\n"
@@ -67,6 +67,7 @@ msgstr ""
 #. Type: multiselect
 #. Description
 #: ../grub-pc.templates.in:3001 ../grub-pc.templates.in:4001
+#: ../templates.in:6001
 msgid "GRUB install devices:"
 msgstr "GRUB 설치 장치:"
 
@@ -82,7 +83,7 @@ msgstr ""
 
 #. Type: multiselect
 #. Description
-#: ../grub-pc.templates.in:3001
+#: ../grub-pc.templates.in:3001 ../templates.in:5001
 msgid ""
 "Running grub-install automatically is recommended in most situations, to "
 "prevent the installed GRUB core image from getting out of sync with GRUB "
@@ -120,7 +121,7 @@ msgstr ""
 
 #. Type: multiselect
 #. Description
-#: ../grub-pc.templates.in:4001
+#: ../grub-pc.templates.in:4001 ../templates.in:6001
 msgid ""
 "The GRUB boot loader was previously installed to a disk that is no longer "
 "present, or whose unique identifier has changed for some reason. It is "
@@ -150,7 +151,7 @@ msgstr "- ${DEVICE} (${SIZE} MB, ${PATH})"
 
 #. Type: boolean
 #. Description
-#: ../grub-pc.templates.in:7001
+#: ../grub-pc.templates.in:7001 ../templates.in:8001
 msgid "Writing GRUB to boot device failed - continue?"
 msgstr "GRUB을 부팅 장치에 쓰는데 실패했습니다. 계속 하시겠습니까?"
 
@@ -159,12 +160,13 @@ msgstr "GRUB을 부팅 장치에 쓰는데 실패했습니다. 계속 하시겠�
 #. Type: boolean
 #. Description
 #: ../grub-pc.templates.in:7001 ../grub-pc.templates.in:8001
+#: ../templates.in:8001
 msgid "GRUB failed to install to the following devices:"
 msgstr "다음 장치에 대해 GRUB 설치가 실패했습니다:"
 
 #. Type: boolean
 #. Description
-#: ../grub-pc.templates.in:7001
+#: ../grub-pc.templates.in:7001 ../templates.in:8001
 msgid ""
 "Do you want to continue anyway? If you do, your computer may not start up "
 "properly."
@@ -191,7 +193,7 @@ msgstr ""
 
 #. Type: boolean
 #. Description
-#: ../grub-pc.templates.in:9001
+#: ../grub-pc.templates.in:9001 ../templates.in:9001
 msgid "Continue without installing GRUB?"
 msgstr "GRUB을 설치하지 않고 계속하시겠습니까?"
 
@@ -213,7 +215,7 @@ msgstr ""
 
 #. Type: boolean
 #. Description
-#: ../grub-pc.templates.in:9001
+#: ../grub-pc.templates.in:9001 ../templates.in:9001
 msgid ""
 "If you are already using a different boot loader and want to carry on doing "
 "so, or if this is a special environment where you do not need a boot loader, "
@@ -375,15 +377,67 @@ msgstr ""
 "지 않을 수도 있습니다. 예를 들어 부팅할 때마다 PXE 서버에 연결하도록 NVRAM 변"
 "수가 설정되어 있고, 이 기능을 사용하지 않으면 계속 그렇게 동작할 것입니다."
 
-#. Type: string
+#. Type: multiselect
 #. Description
 #: ../templates.in:5001
+msgid "GRUB EFI system partitions:"
+msgstr ""
+
+#. Type: multiselect
+#. Description
+#: ../templates.in:5001
+#, fuzzy
+#| msgid ""
+#| "The grub-pc package is being upgraded. This menu allows you to select "
+#| "which devices you'd like grub-install to be automatically run for, if any."
+msgid ""
+"The grub-efi package is being upgraded. This menu allows you to select which "
+"EFI system partions you'd like grub-install to be automatically run for, if "
+"any."
+msgstr ""
+"grub-pc 패키지를 업그레이드하는 중입니다. 이 메뉴에서 (실행할 장치가 있다면) "
+"어떤 장치에 대해 grub-install을 자동으로 실행할지 설정합니다."
+
+#. Type: text
+#. Description
+#: ../templates.in:7001
+#, fuzzy
+#| msgid "${DEVICE} (${SIZE} MB; ${MODEL})"
+msgid "${DEVICE} (${SIZE} MB; ${PATH}) on ${DISK_SIZE} MB ${DISK_MODEL}"
+msgstr "${DEVICE} (${SIZE} MB, ${MODEL})"
+
+#. Type: boolean
+#. Description
+#: ../templates.in:9001
+#, fuzzy
+#| msgid ""
+#| "You chose not to install GRUB to any devices. If you continue, the boot "
+#| "loader may not be properly configured, and when this computer next starts "
+#| "up it will use whatever was previously in the boot sector. If there is an "
+#| "earlier version of GRUB 2 in the boot sector, it may be unable to load "
+#| "modules or handle the current configuration file."
+msgid ""
+"You chose not to install GRUB to any devices. If you continue, the boot "
+"loader may not be properly configured, and when this computer next starts up "
+"it will use whatever was previously configured. If there is an earlier "
+"version of GRUB 2 in the EFI system partition, it may be unable to load "
+"modules or handle the current configuration file."
+msgstr ""
+"GRUB을 어떤 장치에도 설치하지 않도록 선택하셨습니다. 계속 하시면 부트로더가 "
+"제대로 설정되지 않을 수도 있고, 다음번에 컴퓨터가 시작할 때 예전에 부트 섹터"
+"에 들어 있는 부트로더를 사용합니다. GRUB 2의 예전 버전이 부트섹터에 들어 있으"
+"면 그 예전 버전은 GRUB 모듈을 읽어들이거나 현재 설정 파일을 처리하지 못할 수"
+"도 있습니다."
+
+#. Type: string
+#. Description
+#: ../templates.in:10001
 msgid "kFreeBSD command line:"
 msgstr "kFreeBSD 명령어:"
 
 #. Type: string
 #. Description
-#: ../templates.in:5001
+#: ../templates.in:10001
 msgid ""
 "The following kFreeBSD command line was extracted from /etc/default/grub or "
 "the `kopt' parameter in GRUB Legacy's menu.lst. Please verify that it is "
@@ -395,13 +449,13 @@ msgstr ""
 
 #. Type: string
 #. Description
-#: ../templates.in:6001
+#: ../templates.in:11001
 msgid "kFreeBSD default command line:"
 msgstr "kFreeBSD 기본 명령어:"
 
 #. Type: string
 #. Description
-#: ../templates.in:6001
+#: ../templates.in:11001
 msgid ""
 "The following string will be used as kFreeBSD parameters for the default "
 "menu entry but not for the recovery mode."
@@ -411,19 +465,19 @@ msgstr ""
 
 #. Type: title
 #. Description
-#: ../templates.in:7001
+#: ../templates.in:12001
 msgid "unsigned kernels"
 msgstr ""
 
 #. Type: note
 #. Description
-#: ../templates.in:8001
+#: ../templates.in:13001
 msgid "Cannot upgrade Secure Boot enforcement policy due to unsigned kernels"
 msgstr ""
 
 #. Type: note
 #. Description
-#: ../templates.in:8001
+#: ../templates.in:13001
 msgid ""
 "Your system has UEFI Secure Boot enabled in firmware, and the following "
 "kernels present on your system are unsigned:"
@@ -431,13 +485,13 @@ msgstr ""
 
 #. Type: note
 #. Description
-#: ../templates.in:8001
+#: ../templates.in:13001
 msgid " ${unsigned_versions}"
 msgstr ""
 
 #. Type: note
 #. Description
-#: ../templates.in:8001
+#: ../templates.in:13001
 msgid ""
 "These kernels cannot be verified under Secure Boot.  To ensure your system "
 "remains bootable, GRUB will not be upgraded on your disk until these kernels "
