@@ -1,4 +1,4 @@
-From 20ada556e557cf495381d37612b7b23241a7a1e3 Mon Sep 17 00:00:00 2001
+From f93cd4fda2916af2b70228878f97cb7bbdeb234d Mon Sep 17 00:00:00 2001
 From: Didier Roche <didrocks@ubuntu.com>
 Date: Tue, 31 Mar 2020 15:20:15 +0200
 Subject: Add configure option to reduce visual clutter at boot time
@@ -386,7 +386,7 @@ index cb1cc200e..479a8bf4e 100644
  EOF
    fi
 diff --git a/util/grub.d/10_linux_zfs.in b/util/grub.d/10_linux_zfs.in
-index ea7d72b6b..dbb64ea2c 100755
+index c1dfe8ae8..1a656b2dd 100755
 --- a/util/grub.d/10_linux_zfs.in
 +++ b/util/grub.d/10_linux_zfs.in
 @@ -20,6 +20,7 @@ set -e
@@ -397,18 +397,18 @@ index ea7d72b6b..dbb64ea2c 100755
  
  . "${pkgdatadir}/grub-mkconfig_lib"
  
-@@ -757,7 +758,9 @@ zfs_linux_entry () {
+@@ -776,7 +777,9 @@ zfs_linux_entry () {
  
      echo "$(prepare_grub_to_access_device_cached "${boot_device}" "${submenu_level}")"
  
--    echo "${submenu_indentation}	echo '$(gettext_printf "Loading Linux %s ..." ${kernel_version} | grub_quote)'"
+-    echo "${submenu_indentation}	echo $(gettext_printf "Loading Linux %s ..." ${kernel_version} | grub_quote)"
 +    if [ "${quiet_boot}" = 0 ] || [ "${type}" != simple ]; then
-+        echo "${submenu_indentation}	echo '$(gettext_printf "Loading Linux %s ..." ${kernel_version} | grub_quote)'"
++        echo "${submenu_indentation}	echo $(gettext_printf "Loading Linux %s ..." ${kernel_version} | grub_quote)"
 +    fi
  
      linux_default_args="${GRUB_CMDLINE_LINUX} ${GRUB_CMDLINE_LINUX_DEFAULT}"
      if [ ${type} = "recovery" ]; then
-@@ -766,7 +769,9 @@ zfs_linux_entry () {
+@@ -785,7 +788,9 @@ zfs_linux_entry () {
  
      echo "${submenu_indentation}	linux	${kernel} root=ZFS=${dataset} ro ${linux_default_args} ${kernel_additional_args}"
  

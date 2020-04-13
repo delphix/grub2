@@ -1,4 +1,4 @@
-From 3c2d75c263972b528ff86d300a5ca8c4c1e51ad5 Mon Sep 17 00:00:00 2001
+From ec6589e2746dd882cc10122bad74b0e41074e23b Mon Sep 17 00:00:00 2001
 From: Mathieu Trudel-Lapierre <mathieu.trudel-lapierre@canonical.com>
 Date: Fri, 25 Oct 2019 10:25:04 -0400
 Subject: tpm: Pass unknown error as non-fatal, but debug print the error we
