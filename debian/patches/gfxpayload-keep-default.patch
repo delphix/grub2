@@ -1,4 +1,4 @@
-From 419ff96f3e878ababfbf31f3bded9d39dcc9e42d Mon Sep 17 00:00:00 2001
+From 6da735cfaac928da6dc1283a15a669b1ddd07979 Mon Sep 17 00:00:00 2001
 From: Didier Roche <didrocks@ubuntu.com>
 Date: Tue, 31 Mar 2020 15:09:45 +0200
 Subject: Disable gfxpayload=keep by default
@@ -39,10 +39,10 @@ index a75096609..f839b3b55 100644
        if [ "x$GRUB_GFXPAYLOAD_LINUX" != xtext ]; then
  	  echo "	load_video" | sed "s/^/$submenu_indentation/"
 diff --git a/util/grub.d/10_linux_zfs.in b/util/grub.d/10_linux_zfs.in
-index 9c4873ac3..9f0c6a421 100755
+index f50e1231a..d27634738 100755
 --- a/util/grub.d/10_linux_zfs.in
 +++ b/util/grub.d/10_linux_zfs.in
-@@ -722,10 +722,6 @@ zfs_linux_entry () {
+@@ -741,10 +741,6 @@ zfs_linux_entry () {
      # FIXME: We need an interface to select vesafb in case efifb can't be used.
      if [ "${GRUB_GFXPAYLOAD_LINUX}" = "" ]; then
          echo "${submenu_indentation}	load_video"

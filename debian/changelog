@@ -1,3 +1,19 @@
+grub2 (2.04-1ubuntu25) focal; urgency=medium
+
+  [ Jean-Baptiste Lallement ]
+  [ Didier Roche ]
+  * debian/patches/ubuntu-zfs-enhance-support.patch:
+    - fix trailing } when no advanced menu is printed
+    - ensure we unmount all temporary snapshots path before zfs collect them
+      out.
+  * debian/patches/ubuntu-speed-zsys-history.patch:
+    - Speed up navigating zsys history by reducing greatly grub.cfg file size.
+      It used to take eg 80 seconds when loading 100 system snapshots. This is
+      now instantaneous by using a function with parameters that the users can
+      still easily edit.
+
+ -- Didier Roche <didrocks@ubuntu.com>  Mon, 13 Apr 2020 15:17:42 +0200
+
 grub2 (2.04-1ubuntu24) focal; urgency=medium
 
   * Support installing to multiple ESPs (LP: #1871821)

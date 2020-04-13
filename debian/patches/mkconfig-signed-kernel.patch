@@ -1,4 +1,4 @@
-From 6a751858a54ffc7d3fe26ddcee8a0ed177bdddc6 Mon Sep 17 00:00:00 2001
+From 956c3d193e7c756f52fc0cfda463eb17ed58b4ce Mon Sep 17 00:00:00 2001
 From: Didier Roche <didrocks@ubuntu.com>
 Date: Tue, 31 Mar 2020 15:17:45 +0200
 Subject: Generate configuration for signed UEFI kernels if available
@@ -48,10 +48,10 @@ index 19e4df4ad..cb1cc200e 100644
    basename=`basename $linux`
    dirname=`dirname $linux`
 diff --git a/util/grub.d/10_linux_zfs.in b/util/grub.d/10_linux_zfs.in
-index a481fb019..ea7d72b6b 100755
+index bd5b963b6..c1dfe8ae8 100755
 --- a/util/grub.d/10_linux_zfs.in
 +++ b/util/grub.d/10_linux_zfs.in
-@@ -331,6 +331,16 @@ try_default_layout_bpool() {
+@@ -339,6 +339,16 @@ try_default_layout_bpool() {
      validate_system_dataset "${candidate_dataset}" "boot" "${mntdir}" "${snapshot_name}"
  }
  
@@ -68,7 +68,7 @@ index a481fb019..ea7d72b6b 100755
  # Given a filesystem or snapshot dataset, returns dataset|machine id|pretty name|last used
  # $1 is dataset we want information from
  # $2 is the temporary mount directory to use
-@@ -401,6 +411,17 @@ get_dataset_info() {
+@@ -409,6 +419,17 @@ get_dataset_info() {
              continue
          fi
  

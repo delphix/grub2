@@ -1,4 +1,4 @@
-From 01a1dc171d47030cccb5834d8af1b5f8c1698578 Mon Sep 17 00:00:00 2001
+From daa4db81742e0363c2b8c85b6a88ec3eca1efc19 Mon Sep 17 00:00:00 2001
 From: Didier Roche <didrocks@ubuntu.com>
 Date: Fri, 12 Jul 2019 11:06:06 -0400
 Subject: UBUNTU: Enhance ZFS grub support
@@ -22,8 +22,8 @@ Signed-off-by: Didier Roche <didier.roche@canonical.com>
 ---
  Makefile.util.def           |   7 +
  util/grub.d/10_linux.in     |   4 +
- util/grub.d/10_linux_zfs.in | 941 ++++++++++++++++++++++++++++++++++++
- 3 files changed, 952 insertions(+)
+ util/grub.d/10_linux_zfs.in | 961 ++++++++++++++++++++++++++++++++++++
+ 3 files changed, 972 insertions(+)
  create mode 100755 util/grub.d/10_linux_zfs.in
 
 diff --git a/Makefile.util.def b/Makefile.util.def
@@ -61,10 +61,10 @@ index 4532266be..a75096609 100644
  	LINUX_ROOT_DEVICE="ZFS=${rpool}${bootfs%/}"
 diff --git a/util/grub.d/10_linux_zfs.in b/util/grub.d/10_linux_zfs.in
 new file mode 100755
-index 000000000..9c4873ac3
+index 000000000..f50e1231a
 --- /dev/null
 +++ b/util/grub.d/10_linux_zfs.in
-@@ -0,0 +1,941 @@
+@@ -0,0 +1,961 @@
 +#! /bin/sh
 +set -e
 +
@@ -189,6 +189,10 @@ index 000000000..9c4873ac3
 +        # Reading the content of a snapshot fails if it is not the first mount
 +        # for a given dataset
 +        first_mntdir=$(awk '{if ($1 == "'${dataset}'") {print $2; exit;}}' /proc/mounts)
++        if [ "${first_mntdir}" = "/" ]; then
++            # prevents // on candidate_path
++            first_mntdir=""
++        fi
 +        candidate_path="${first_mntdir}/.zfs/snapshot/${snapshot_name}"
 +    fi
 +
@@ -265,6 +269,10 @@ index 000000000..9c4873ac3
 +        # Reading the content of a snapshot fails if it is not the first mount
 +        # for a given dataset
 +        first_mntdir=$(awk '{if ($1 == "'${base_dataset_path}'") {print $2; exit;}}' /proc/mounts)
++        if [ "${first_mntdir}" = "/" ]; then
++            # prevents // on candidate_path
++            first_mntdir=""
++        fi
 +        candidate_path="${first_mntdir}/.zfs/snapshot/${snapshot_name}/${directory}"
 +    fi
 +    if [ -n "$(ls ${candidate_path} 2>/dev/null)" ]; then
@@ -508,6 +516,11 @@ index 000000000..9c4873ac3
 +    initrd_device=$(${grub_probe} --target=device "${boot_dir}" | head -1)
 +
 +    mountpoint -q "${mntdir}/boot" && umount "${mntdir}/boot" || true
++    # We needed to look in / for snapshots on root dataset, umount there before zfs lazily unmount it
++    case "${boot_dir}" in /boot/.zfs/snapshot/*)
++        umount "${boot_dir}" || true
++        ;;
++    esac
 +
 +    # for zsys snapshots: we want to know which kernel we successful last booted with
 +    last_booted_kernel=$(zfs get -H com.ubuntu.zsys:last-booted-kernel "${dataset}" | awk '{print $3}')
@@ -543,6 +556,12 @@ index 000000000..9c4873ac3
 +    fi
 +
 +    umount "${mntdir}" || true
++    # We needed to look in / for snapshots on root dataset, umount the snapshot for etc before zfs lazily unmount it
++    case "${etc_dir}" in /.zfs/snapshot/*/etc)
++        snapshot_path="$(findmnt -n -o TARGET -T ${etc_dir})"
++        umount "${snapshot_path}" || true
++        ;;
++    esac
 +}
 +
 +# Scan available boot options and returns in a formatted list
@@ -804,7 +823,7 @@ index 000000000..9c4873ac3
 +
 +    echo "$(prepare_grub_to_access_device_cached "${boot_device}" "${submenu_level}")"
 +
-+    echo "${submenu_indentation}	echo '$(gettext_printf "Loading Linux %s ..." ${kernel_version} | grub_quote)'"
++    echo "${submenu_indentation}	echo $(gettext_printf "Loading Linux %s ..." ${kernel_version} | grub_quote)"
 +
 +    linux_default_args="${GRUB_CMDLINE_LINUX} ${GRUB_CMDLINE_LINUX_DEFAULT}"
 +    if [ ${type} = "recovery" ]; then
@@ -861,6 +880,7 @@ index 000000000..9c4873ac3
 +                # Close previous section wrapper
 +                if [ "${last_section}" != "main" ]; then
 +                    echo "}"    # Add grub_tabs
++                    at_least_one_entry=0
 +                fi
 +            fi
 +
