@@ -1,3 +1,19 @@
+grub2 (2.04-1ubuntu26) focal; urgency=medium
+
+  [ Julian Andres Klode ]
+  * Move /boot/efi -> debconf migration into wrapper, so it runs everywhere
+    (LP: #1872077)
+  * Display disk name and size in the ESP selection dialog, instead of ???
+
+  [ Sebastien Bacher ]
+  * debian/patches/gettext,
+    debian/patches/rules:
+    - backport upstream patches to fix the list of translated strings,
+      reported on the ubuntu-translators mailing list. The changes would
+      be overwritten by autoreconf so applying from a rules override.
+
+ -- Julian Andres Klode <juliank@ubuntu.com>  Wed, 15 Apr 2020 13:31:27 +0200
+
 grub2 (2.04-1ubuntu25) focal; urgency=medium
 
   [ Jean-Baptiste Lallement ]
