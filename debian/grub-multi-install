@@ -239,17 +239,36 @@ usable_efi_system_partitions()
 ###############################################################################
 FALLBACK_MOUNTPOINT=/var/lib/grub/esp
 
+# Initial install/upgrade from /boot/efi?
+db_fget grub-efi/install_devices seen
+seen="$RET"
+
 # Get configured value
 question=grub-efi/install_devices
 priority=high
 db_get grub-efi/install_devices
 valid=1
-for device in $RET; do
-  if [ ! -e "${device%,}" ]; then
-    valid=0
-    break
+
+# We either migrate /boot/efi over, or we check if we have invalid devices
+if [ -z "$RET" ] && [ "$seen" != "true" ]; then
+  echo "Trying to migrate /boot/efi into esp config"
+  esp="$(get_mounted_device /boot/efi)"
+  if [ "$esp" ]; then
+    esp="$(device_to_id "$esp")"
   fi
-done
+  if [ "$esp" ]; then
+    db_set grub-efi/install_devices "$esp"
+    db_fset grub-efi/install_devices seen true
+    RET="$esp"
+  fi
+else
+  for device in $RET; do
+    if [ ! -e "${device%,}" ]; then
+      valid=0
+      break
+    fi
+  done
+fi
 
 # If /boot/efi points to a device that's not in the list, trigger the
 # install_devices_disks_changed prompt below, but add the device behind
@@ -292,6 +311,7 @@ while :; do
 
   for partition_pair in $partitions; do
     partition_id="${partition_pair#*:}"
+    device="${partition_id%%-part*}"
     ids="${ids:+$ids, }$partition_id"
     describe_efi_system_partition "$(readlink -f "$device")" "$(readlink -f "$partition_id")" "$partition_id" "$(get_mountpoint "${partition_pair%%:*}")"
     RET="$(printf %s "$RET" | sed 's/,/\\,/g')"
