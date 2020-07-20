@@ -173,7 +173,7 @@ override_dh_autoreconf:
 		0003-Make-msgfmt-output-in-little-endian \
 		0004-Use-SHELL-rather-than-bin-sh; do \
 		patch -d po -p3 \
-		< "debian/patches/gettext/$$patchname.patch"; \
+		< "debian/gettext-patches/$$patchname.patch"; \
 	done
 
 debian/stamps/configure-grub-common: debian/stamps/configure-grub-$(COMMON_PLATFORM)
