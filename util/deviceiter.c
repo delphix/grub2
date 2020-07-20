@@ -589,6 +589,9 @@ grub_util_iterate_devices (int (*hook) (const char *, int, void *), void *hook_d
 	    /* Skip partition entries.  */
 	    if (strstr (entry->d_name, "-part"))
 	      continue;
+	    /* LVM might create /dev/disk/by-id/lvm-pv-uuid-<PV_UUID> symlinks */
+	    if (strstr (entry->d_name, "lvm-pv-uuid"))
+	      continue;
 	    /* Skip device-mapper entries; we'll handle the ones we want
 	       later.  */
 	    if (strncmp (entry->d_name, "dm-", sizeof ("dm-") - 1) == 0)
