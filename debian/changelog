@@ -1,3 +1,12 @@
+grub2 (2.04-1ubuntu26.2) focal; urgency=medium
+
+  * debian/postinst.in: Avoid calling grub-install on upgrade of the grub-pc
+    package, since we cannot be certain that it will install to the correct
+    disk and a grub-install failure will render the system unbootable.
+    LP: #1889556.
+
+ -- Steve Langasek <steve.langasek@ubuntu.com>  Thu, 30 Jul 2020 17:34:25 -0700
+
 grub2 (2.04-1ubuntu26.1) focal; urgency=medium
 
   [ Julian Andres Klode ]
