@@ -1,4 +1,4 @@
-From fb4d204572ca4dec63b3d3f25a3b69da97815726 Mon Sep 17 00:00:00 2001
+From 51814873e68db3d990a080f705e6562ef140b416 Mon Sep 17 00:00:00 2001
 From: Didier Roche <didrocks@ubuntu.com>
 Date: Tue, 31 Mar 2020 15:16:36 +0200
 Subject: "single" -> "recovery" when friendly-recovery is installed
@@ -24,7 +24,7 @@ Patch-Name: mkconfig-ubuntu-recovery.patch
  4 files changed, 39 insertions(+), 5 deletions(-)
 
 diff --git a/configure.ac b/configure.ac
-index 7656f2434..1e5abc67d 100644
+index 7656f2434e..1e5abc67d9 100644
 --- a/configure.ac
 +++ b/configure.ac
 @@ -1846,6 +1846,17 @@ fi
@@ -46,7 +46,7 @@ index 7656f2434..1e5abc67d 100644
  
  AC_SUBST([FONT_SOURCE])
 diff --git a/util/grub.d/10_linux.in b/util/grub.d/10_linux.in
-index d927b60ae..fcd303387 100644
+index d927b60ae2..fcd3033872 100644
 --- a/util/grub.d/10_linux.in
 +++ b/util/grub.d/10_linux.in
 @@ -20,6 +20,7 @@ set -e
@@ -94,7 +94,7 @@ index d927b60ae..fcd303387 100644
  
    list=`echo $list | tr ' ' '\n' | fgrep -vx "$linux" | tr '\n' ' '`
 diff --git a/util/grub.d/10_linux_zfs.in b/util/grub.d/10_linux_zfs.in
-index d27634738..5db1f6682 100755
+index b24587f0a5..de4d215900 100755
 --- a/util/grub.d/10_linux_zfs.in
 +++ b/util/grub.d/10_linux_zfs.in
 @@ -19,6 +19,7 @@ set -e
@@ -105,7 +105,7 @@ index d27634738..5db1f6682 100755
  
  . "${pkgdatadir}/grub-mkconfig_lib"
  
-@@ -745,7 +746,9 @@ zfs_linux_entry () {
+@@ -748,7 +749,9 @@ zfs_linux_entry () {
          if [ "${GRUB_GFXPAYLOAD_LINUX}" != "text" ]; then
              echo "${submenu_indentation}	load_video"
          fi
@@ -116,7 +116,7 @@ index d27634738..5db1f6682 100755
      fi
  
      echo "${submenu_indentation}	insmod gzio"
-@@ -756,7 +759,7 @@ zfs_linux_entry () {
+@@ -759,7 +762,7 @@ zfs_linux_entry () {
  
      linux_default_args="${GRUB_CMDLINE_LINUX} ${GRUB_CMDLINE_LINUX_DEFAULT}"
      if [ ${type} = "recovery" ]; then
@@ -125,7 +125,7 @@ index d27634738..5db1f6682 100755
      fi
  
      echo "${submenu_indentation}	linux	${kernel} root=ZFS=${dataset} ro ${linux_default_args} ${kernel_additional_args}"
-@@ -788,6 +791,14 @@ generate_grub_menu() {
+@@ -791,6 +794,14 @@ generate_grub_menu() {
          CLASS="--class $(echo ${GRUB_DISTRIBUTOR} | tr 'A-Z' 'a-z' | cut -d' ' -f1 | LC_ALL=C sed 's,[^[:alnum:]_],_,g') ${CLASS}"
      fi
  
@@ -141,7 +141,7 @@ index d27634738..5db1f6682 100755
      # IFS is set to TAB (ASCII 0x09)
      echo "${menu_metadata}" |
 diff --git a/util/grub.d/30_os-prober.in b/util/grub.d/30_os-prober.in
-index 515a68c7a..775ceb2e0 100644
+index 515a68c7aa..775ceb2e04 100644
 --- a/util/grub.d/30_os-prober.in
 +++ b/util/grub.d/30_os-prober.in
 @@ -220,7 +220,7 @@ EOF

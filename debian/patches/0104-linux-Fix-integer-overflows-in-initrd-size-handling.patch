@@ -1,4 +1,4 @@
-From 33b27a7c9ec994dd1a4f4391df9ac3a61807aa00 Mon Sep 17 00:00:00 2001
+From 5ae3595759c09e23b48fa2bb35abbe1f66c529bc Mon Sep 17 00:00:00 2001
 From: Colin Watson <cjwatson@debian.org>
 Date: Sat, 25 Jul 2020 12:15:37 +0100
 Subject: linux: Fix integer overflows in initrd size handling
@@ -14,7 +14,7 @@ Reviewed-by: Jan Setje-Eilers <jan.setjeeilers@oracle.com>
  1 file changed, 54 insertions(+), 20 deletions(-)
 
 diff --git a/grub-core/loader/linux.c b/grub-core/loader/linux.c
-index 25624ebc1..e9f819ee9 100644
+index 25624ebc11..e9f819ee95 100644
 --- a/grub-core/loader/linux.c
 +++ b/grub-core/loader/linux.c
 @@ -4,6 +4,7 @@

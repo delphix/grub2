@@ -1,4 +1,4 @@
-From 982cd5b597e964da666ebdab41c727823a50c776 Mon Sep 17 00:00:00 2001
+From 1eea32e0f58e90b1a7682f01b06c68f56349fb3d Mon Sep 17 00:00:00 2001
 From: David Michael <fedora.dm0@gmail.com>
 Date: Fri, 5 Jul 2019 08:47:09 -0400
 Subject: smbios: Add a module for retrieving SMBIOS information
@@ -33,7 +33,7 @@ Patch-Name: cherrypick-smbios-module.patch
  create mode 100644 include/grub/smbios.h
 
 diff --git a/docs/grub.texi b/docs/grub.texi
-index 1baa0fa20..d573f32cb 100644
+index 1baa0fa20f..d573f32cbb 100644
 --- a/docs/grub.texi
 +++ b/docs/grub.texi
 @@ -3976,6 +3976,7 @@ you forget a command, you can run the command @command{help}
@@ -126,7 +126,7 @@ index 1baa0fa20..d573f32cb 100644
  @subsection source
  
 diff --git a/grub-core/Makefile.core.def b/grub-core/Makefile.core.def
-index 33e75021d..9b20f3335 100644
+index 33e75021da..9b20f33355 100644
 --- a/grub-core/Makefile.core.def
 +++ b/grub-core/Makefile.core.def
 @@ -1106,6 +1106,21 @@ module = {
@@ -153,7 +153,7 @@ index 33e75021d..9b20f3335 100644
    ieee1275 = commands/ieee1275/suspend.c;
 diff --git a/grub-core/commands/efi/smbios.c b/grub-core/commands/efi/smbios.c
 new file mode 100644
-index 000000000..75202d5aa
+index 0000000000..75202d5aad
 --- /dev/null
 +++ b/grub-core/commands/efi/smbios.c
 @@ -0,0 +1,61 @@
@@ -220,7 +220,7 @@ index 000000000..75202d5aa
 +}
 diff --git a/grub-core/commands/i386/pc/smbios.c b/grub-core/commands/i386/pc/smbios.c
 new file mode 100644
-index 000000000..069d66367
+index 0000000000..069d663673
 --- /dev/null
 +++ b/grub-core/commands/i386/pc/smbios.c
 @@ -0,0 +1,52 @@
@@ -278,7 +278,7 @@ index 000000000..069d66367
 +}
 diff --git a/grub-core/commands/smbios.c b/grub-core/commands/smbios.c
 new file mode 100644
-index 000000000..7a6a391fc
+index 0000000000..7a6a391fc1
 --- /dev/null
 +++ b/grub-core/commands/smbios.c
 @@ -0,0 +1,374 @@
@@ -657,7 +657,7 @@ index 000000000..7a6a391fc
 +  grub_unregister_extcmd (cmd);
 +}
 diff --git a/grub-core/efiemu/i386/pc/cfgtables.c b/grub-core/efiemu/i386/pc/cfgtables.c
-index 492c07c46..e5fffb7d4 100644
+index 492c07c468..e5fffb7d4a 100644
 --- a/grub-core/efiemu/i386/pc/cfgtables.c
 +++ b/grub-core/efiemu/i386/pc/cfgtables.c
 @@ -22,11 +22,11 @@
@@ -696,7 +696,7 @@ index 492c07c46..e5fffb7d4 100644
      }
 diff --git a/include/grub/smbios.h b/include/grub/smbios.h
 new file mode 100644
-index 000000000..15ec260b3
+index 0000000000..15ec260b32
 --- /dev/null
 +++ b/include/grub/smbios.h
 @@ -0,0 +1,69 @@

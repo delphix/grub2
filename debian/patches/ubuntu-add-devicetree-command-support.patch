@@ -1,4 +1,4 @@
-From a30c330fb776934ef1dbaa9784960172650ecdfa Mon Sep 17 00:00:00 2001
+From 56ec016fe65a634c583cd347fc4e90992cb0c111 Mon Sep 17 00:00:00 2001
 From: Dimitri John Ledkov <xnox@ubuntu.com>
 Date: Wed, 22 May 2019 19:57:29 +0100
 Subject: Add devicetree command, if a dtb is present.
@@ -14,10 +14,10 @@ Patch-Name: ubuntu-add-devicetree-command-support.patch
  1 file changed, 19 insertions(+)
 
 diff --git a/util/grub.d/10_linux.in b/util/grub.d/10_linux.in
-index a95992a77..d6937cfef 100644
+index af1e096bd6..bbf5d73e39 100644
 --- a/util/grub.d/10_linux.in
 +++ b/util/grub.d/10_linux.in
-@@ -240,6 +240,17 @@ EOF
+@@ -254,6 +254,17 @@ EOF
  EOF
          fi
      fi
@@ -35,7 +35,7 @@ index a95992a77..d6937cfef 100644
    fi
    sed "s/^/$submenu_indentation/" << EOF
  }
-@@ -378,6 +389,14 @@ while [ "x$list" != "x" ] ; do
+@@ -389,6 +400,14 @@ while [ "x$list" != "x" ] ; do
      gettext_printf "Found initrd image: %s\n" "$(echo $initrd_display)" >&2
    fi
  

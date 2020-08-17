@@ -1,4 +1,4 @@
-From 4f4f4b1ce88642c1c13f12b425484906098590b5 Mon Sep 17 00:00:00 2001
+From c51cc4664ac67fcd7c3177ea6c6dd0d2c06c43e6 Mon Sep 17 00:00:00 2001
 From: Michael Hudson-Doyle <michael.hudson@canonical.com>
 Date: Tue, 6 Aug 2019 12:31:47 +1200
 Subject: UBUNTU: Boot from multipath-dependent symlink when / is multipathed.
@@ -16,7 +16,7 @@ Patch-Name: ubuntu-boot-from-multipath-dependent-symlink.patch
  1 file changed, 41 insertions(+)
 
 diff --git a/util/grub.d/10_linux.in b/util/grub.d/10_linux.in
-index d6937cfef..3eb0e6936 100644
+index bbf5d73e39..14a89ba13d 100644
 --- a/util/grub.d/10_linux.in
 +++ b/util/grub.d/10_linux.in
 @@ -65,6 +65,47 @@ esac

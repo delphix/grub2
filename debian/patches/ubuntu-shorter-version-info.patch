@@ -1,4 +1,4 @@
-From 5fab34cd20e9617b29ed9b632b30cbdedc287e77 Mon Sep 17 00:00:00 2001
+From 05aa4e9758b7afb0866081795e1d7c139861ac97 Mon Sep 17 00:00:00 2001
 From: Julian Andres Klode <julian.klode@canonical.com>
 Date: Thu, 8 Feb 2018 10:48:37 +0100
 Subject: UBUNTU: Show only upstream version, hide rest in package_version
@@ -17,7 +17,7 @@ Patch-Name: ubuntu-shorter-version-info.patch
  1 file changed, 4 insertions(+), 1 deletion(-)
 
 diff --git a/grub-core/normal/main.c b/grub-core/normal/main.c
-index 0aa389fa1..d25a8212c 100644
+index 0aa389fa16..d25a8212c7 100644
 --- a/grub-core/normal/main.c
 +++ b/grub-core/normal/main.c
 @@ -208,7 +208,7 @@ grub_normal_init_page (struct grub_term_output *term,

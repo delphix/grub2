@@ -1,4 +1,4 @@
-From c9bacc366d2c480e5185a2a71eff51d25b71e155 Mon Sep 17 00:00:00 2001
+From 48b735b222f112b8a9010ec2dbbf26818f8a1bf3 Mon Sep 17 00:00:00 2001
 From: Rafael David Tinoco <rafaeldtinoco@ubuntu.com>
 Date: Mon, 7 Oct 2019 22:53:32 -0300
 Subject: Skip /dev/disk/by-id/lvm-pvm-uuid entries from device iteration
@@ -44,7 +44,7 @@ Patch-Name: ubuntu-skip-disk-by-id-lvm-pvm-uuid-entries.patch
  1 file changed, 3 insertions(+)
 
 diff --git a/util/deviceiter.c b/util/deviceiter.c
-index dddc50da7..ec9a6d0ab 100644
+index dddc50da7a..ec9a6d0ab4 100644
 --- a/util/deviceiter.c
 +++ b/util/deviceiter.c
 @@ -589,6 +589,9 @@ grub_util_iterate_devices (int (*hook) (const char *, int, void *), void *hook_d

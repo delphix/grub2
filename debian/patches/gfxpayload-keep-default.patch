@@ -1,4 +1,4 @@
-From 6da735cfaac928da6dc1283a15a669b1ddd07979 Mon Sep 17 00:00:00 2001
+From 6b3668640698cff6e0f57bba665a594c11f02841 Mon Sep 17 00:00:00 2001
 From: Didier Roche <didrocks@ubuntu.com>
 Date: Tue, 31 Mar 2020 15:09:45 +0200
 Subject: Disable gfxpayload=keep by default
@@ -24,7 +24,7 @@ Patch-Name: gfxpayload-keep-default.patch
  2 files changed, 8 deletions(-)
 
 diff --git a/util/grub.d/10_linux.in b/util/grub.d/10_linux.in
-index a75096609..f839b3b55 100644
+index a75096609a..f839b3b55f 100644
 --- a/util/grub.d/10_linux.in
 +++ b/util/grub.d/10_linux.in
 @@ -118,10 +118,6 @@ linux_entry ()
@@ -39,10 +39,10 @@ index a75096609..f839b3b55 100644
        if [ "x$GRUB_GFXPAYLOAD_LINUX" != xtext ]; then
  	  echo "	load_video" | sed "s/^/$submenu_indentation/"
 diff --git a/util/grub.d/10_linux_zfs.in b/util/grub.d/10_linux_zfs.in
-index f50e1231a..d27634738 100755
+index 5ec65fa941..b24587f0a5 100755
 --- a/util/grub.d/10_linux_zfs.in
 +++ b/util/grub.d/10_linux_zfs.in
-@@ -741,10 +741,6 @@ zfs_linux_entry () {
+@@ -744,10 +744,6 @@ zfs_linux_entry () {
      # FIXME: We need an interface to select vesafb in case efifb can't be used.
      if [ "${GRUB_GFXPAYLOAD_LINUX}" = "" ]; then
          echo "${submenu_indentation}	load_video"

@@ -1,3 +1,26 @@
+grub2 (2.04-1ubuntu26.3) focal; urgency=medium
+
+  * 2.04-1ubuntu27 and 2.04-1ubuntu28 folded together for focal
+  * debian/patches/ubuntu-flavour-order.patch:
+    - Add a (hidden) GRUB_FLAVOUR_ORDER setting that can mark certain kernel
+      flavours as preferred, and specify an order between those preferred
+      flavours (LP: #1882663)
+  * debian/patches/ubuntu-zfs-enhance-support.patch:
+    - Use version_find_latest for ordering kernels, so it also supports
+      the GRUB_FLAVOUR_ORDER setting.
+  * debian/patches/ubuntu-dont-verify-loopback-images.patch:
+    - disk/loopback: Don't verify loopback images (LP: #1878541),
+      Thanks to Chris Coulson for the patch
+  * debian/patches/ubuntu-recovery-dis_ucode_ldr.patch
+    - Pass dis_ucode_ldr to kernel for recovery mode (LP: #1831789)
+  * debian/patches/ubuntu-add-initrd-less-boot-fallback.patch:
+    - Merge changes from xnox to fix multiple initrds support (LP: #1878705)
+  * debian/patches/ubuntu-clear-invalid-initrd-spacing.patch:
+    - Remove, no longer needed thanks to xnox's patch
+  * Ensure that grub-multi-install can always find templates (LP: #1879948)
+
+ -- Julian Andres Klode <juliank@ubuntu.com>  Mon, 17 Aug 2020 16:04:31 +0200
+
 grub2 (2.04-1ubuntu26.2) focal; urgency=medium
 
   * debian/postinst.in: Avoid calling grub-install on upgrade of the grub-pc

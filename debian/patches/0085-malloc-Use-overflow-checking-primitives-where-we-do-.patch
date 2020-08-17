@@ -1,4 +1,4 @@
-From 012c6974aaafae101681100dbe7abd5ef55d825d Mon Sep 17 00:00:00 2001
+From 83e59f56362e11618083f376cbf700861d6b8f2a Mon Sep 17 00:00:00 2001
 From: Peter Jones <pjones@redhat.com>
 Date: Mon, 15 Jun 2020 12:28:27 -0400
 Subject: malloc: Use overflow checking primitives where we do complex
@@ -55,7 +55,7 @@ Reviewed-by: Daniel Kiper <daniel.kiper@oracle.com>
  23 files changed, 382 insertions(+), 113 deletions(-)
 
 diff --git a/grub-core/commands/legacycfg.c b/grub-core/commands/legacycfg.c
-index 5e3ec0d5e..cc5971f4d 100644
+index 5e3ec0d5e4..cc5971f4db 100644
 --- a/grub-core/commands/legacycfg.c
 +++ b/grub-core/commands/legacycfg.c
 @@ -32,6 +32,7 @@
@@ -118,7 +118,7 @@ index 5e3ec0d5e..cc5971f4d 100644
  		  grub_free (suffix);
  		  return grub_errno;
 diff --git a/grub-core/commands/wildcard.c b/grub-core/commands/wildcard.c
-index 4a106ca04..cc3290311 100644
+index 4a106ca040..cc3290311f 100644
 --- a/grub-core/commands/wildcard.c
 +++ b/grub-core/commands/wildcard.c
 @@ -23,6 +23,7 @@
@@ -220,7 +220,7 @@ index 4a106ca04..cc3290311 100644
        return 1;
      }
 diff --git a/grub-core/disk/ldm.c b/grub-core/disk/ldm.c
-index e6323701a..58f8a53e1 100644
+index e6323701ab..58f8a53e1a 100644
 --- a/grub-core/disk/ldm.c
 +++ b/grub-core/disk/ldm.c
 @@ -25,6 +25,7 @@
@@ -291,7 +291,7 @@ index e6323701a..58f8a53e1 100644
  		    goto fail2;
  		  comp->segments = t;
 diff --git a/grub-core/font/font.c b/grub-core/font/font.c
-index 8e118b315..5edb477ac 100644
+index 8e118b315c..5edb477ac2 100644
 --- a/grub-core/font/font.c
 +++ b/grub-core/font/font.c
 @@ -30,6 +30,7 @@
@@ -318,7 +318,7 @@ index 8e118b315..5edb477ac 100644
      return 0;
  
 diff --git a/grub-core/fs/btrfs.c b/grub-core/fs/btrfs.c
-index 11272efc1..2b65bd56a 100644
+index 11272efc1a..2b65bd56a0 100644
 --- a/grub-core/fs/btrfs.c
 +++ b/grub-core/fs/btrfs.c
 @@ -40,6 +40,7 @@
@@ -375,7 +375,7 @@ index 11272efc1..2b65bd56a 100644
  	}
      }
 diff --git a/grub-core/fs/ext2.c b/grub-core/fs/ext2.c
-index 9b389802a..ac33bcd68 100644
+index 9b389802a3..ac33bcd68c 100644
 --- a/grub-core/fs/ext2.c
 +++ b/grub-core/fs/ext2.c
 @@ -46,6 +46,7 @@
@@ -410,7 +410,7 @@ index 9b389802a..ac33bcd68 100644
      return 0;
  
 diff --git a/grub-core/fs/iso9660.c b/grub-core/fs/iso9660.c
-index 4f1b52a55..7ba5b300b 100644
+index 4f1b52a552..7ba5b300bc 100644
 --- a/grub-core/fs/iso9660.c
 +++ b/grub-core/fs/iso9660.c
 @@ -28,6 +28,7 @@
@@ -514,7 +514,7 @@ index 4f1b52a55..7ba5b300b 100644
  		      grub_free (ctx.filename);
  		    grub_free (node);
 diff --git a/grub-core/fs/sfs.c b/grub-core/fs/sfs.c
-index 90f7fb379..de2b107a4 100644
+index 90f7fb3791..de2b107a4a 100644
 --- a/grub-core/fs/sfs.c
 +++ b/grub-core/fs/sfs.c
 @@ -26,6 +26,7 @@
@@ -578,7 +578,7 @@ index 90f7fb379..de2b107a4 100644
  	*grub_latin1_to_utf8 ((grub_uint8_t *) *label,
  			      (const grub_uint8_t *) data->label,
 diff --git a/grub-core/fs/squash4.c b/grub-core/fs/squash4.c
-index 95d5c1e1f..785123894 100644
+index 95d5c1e1ff..785123894e 100644
 --- a/grub-core/fs/squash4.c
 +++ b/grub-core/fs/squash4.c
 @@ -26,6 +26,7 @@
@@ -677,7 +677,7 @@ index 95d5c1e1f..785123894 100644
  	  node->ino = ino;
  	  node->stack[node->stsize].ino_chunk = grub_le_to_cpu32 (dh.ino_chunk);
 diff --git a/grub-core/fs/udf.c b/grub-core/fs/udf.c
-index a83761674..21ac7f446 100644
+index a83761674a..21ac7f4460 100644
 --- a/grub-core/fs/udf.c
 +++ b/grub-core/fs/udf.c
 @@ -28,6 +28,7 @@
@@ -786,7 +786,7 @@ index a83761674..21ac7f446 100644
    grub_free (out);
    grub_error (GRUB_ERR_BAD_FS, "invalid symlink");
 diff --git a/grub-core/fs/xfs.c b/grub-core/fs/xfs.c
-index 96ffecbfc..ea6590290 100644
+index 96ffecbfc9..ea6590290b 100644
 --- a/grub-core/fs/xfs.c
 +++ b/grub-core/fs/xfs.c
 @@ -25,6 +25,7 @@
@@ -822,7 +822,7 @@ index 96ffecbfc..ea6590290 100644
    if (! data)
      goto fail;
 diff --git a/grub-core/fs/zfs/zfs.c b/grub-core/fs/zfs/zfs.c
-index 381dde556..36d0373a6 100644
+index 381dde556d..36d0373a6a 100644
 --- a/grub-core/fs/zfs/zfs.c
 +++ b/grub-core/fs/zfs/zfs.c
 @@ -55,6 +55,7 @@
@@ -875,7 +875,7 @@ index 381dde556..36d0373a6 100644
      return 0;
    grub_memcpy (ret, nvlist, sizeof (grub_uint32_t));
 diff --git a/grub-core/fs/zfs/zfscrypt.c b/grub-core/fs/zfs/zfscrypt.c
-index 1402e0bc2..de3b015f5 100644
+index 1402e0bc29..de3b015f58 100644
 --- a/grub-core/fs/zfs/zfscrypt.c
 +++ b/grub-core/fs/zfs/zfscrypt.c
 @@ -22,6 +22,7 @@
@@ -902,7 +902,7 @@ index 1402e0bc2..de3b015f5 100644
      return grub_errno;
    key->is_passphrase = passphrase;
 diff --git a/grub-core/lib/arg.c b/grub-core/lib/arg.c
-index fd7744a6f..3288609a5 100644
+index fd7744a6ff..3288609a5e 100644
 --- a/grub-core/lib/arg.c
 +++ b/grub-core/lib/arg.c
 @@ -23,6 +23,7 @@
@@ -954,7 +954,7 @@ index fd7744a6f..3288609a5 100644
      return 0;
  
 diff --git a/grub-core/loader/i386/bsd.c b/grub-core/loader/i386/bsd.c
-index 5b9b92d6b..ef0d63afc 100644
+index 5b9b92d6ba..ef0d63afc8 100644
 --- a/grub-core/loader/i386/bsd.c
 +++ b/grub-core/loader/i386/bsd.c
 @@ -35,6 +35,7 @@
@@ -984,7 +984,7 @@ index 5b9b92d6b..ef0d63afc 100644
      return grub_errno;
  
 diff --git a/grub-core/net/dns.c b/grub-core/net/dns.c
-index e332d5eb4..906ec7d67 100644
+index e332d5eb4a..906ec7d678 100644
 --- a/grub-core/net/dns.c
 +++ b/grub-core/net/dns.c
 @@ -22,6 +22,7 @@
@@ -1013,7 +1013,7 @@ index e332d5eb4..906ec7d67 100644
  	return grub_errno;
        dns_servers_alloc = na;
 diff --git a/grub-core/normal/charset.c b/grub-core/normal/charset.c
-index d57fb72fa..4dfcc3107 100644
+index d57fb72faa..4dfcc31078 100644
 --- a/grub-core/normal/charset.c
 +++ b/grub-core/normal/charset.c
 @@ -48,6 +48,7 @@
@@ -1050,7 +1050,7 @@ index d57fb72fa..4dfcc3107 100644
  		  continue;
  		}
 diff --git a/grub-core/normal/cmdline.c b/grub-core/normal/cmdline.c
-index c57242e2e..de03fe63b 100644
+index c57242e2ea..de03fe63b3 100644
 --- a/grub-core/normal/cmdline.c
 +++ b/grub-core/normal/cmdline.c
 @@ -28,6 +28,7 @@
@@ -1086,7 +1086,7 @@ index c57242e2e..de03fe63b 100644
  	  grub_errno = GRUB_ERR_NONE;
  	  (*max_len) /= 2;
 diff --git a/grub-core/normal/menu_entry.c b/grub-core/normal/menu_entry.c
-index 1993995be..50eef918c 100644
+index 1993995be6..50eef918cf 100644
 --- a/grub-core/normal/menu_entry.c
 +++ b/grub-core/normal/menu_entry.c
 @@ -27,6 +27,7 @@
@@ -1119,7 +1119,7 @@ index 1993995be..50eef918c 100644
  
    return 1;
 diff --git a/grub-core/script/argv.c b/grub-core/script/argv.c
-index 217ec5d1e..5751fdd57 100644
+index 217ec5d1e1..5751fdd570 100644
 --- a/grub-core/script/argv.c
 +++ b/grub-core/script/argv.c
 @@ -20,6 +20,7 @@
@@ -1170,7 +1170,7 @@ index 217ec5d1e..5751fdd57 100644
      return 1;
  
 diff --git a/grub-core/script/lexer.c b/grub-core/script/lexer.c
-index c6bd3172f..5fb0cbd0b 100644
+index c6bd3172fa..5fb0cbd0bc 100644
 --- a/grub-core/script/lexer.c
 +++ b/grub-core/script/lexer.c
 @@ -24,6 +24,7 @@
@@ -1231,7 +1231,7 @@ index c6bd3172f..5fb0cbd0b 100644
      }
  
 diff --git a/grub-core/video/bitmap.c b/grub-core/video/bitmap.c
-index b2e031566..6256e209a 100644
+index b2e0315665..6256e209a6 100644
 --- a/grub-core/video/bitmap.c
 +++ b/grub-core/video/bitmap.c
 @@ -23,6 +23,7 @@
@@ -1286,7 +1286,7 @@ index b2e031566..6256e209a 100644
  
  /* Frees all resources allocated by bitmap.  */
 diff --git a/grub-core/video/readers/png.c b/grub-core/video/readers/png.c
-index 61bd64537..0157ff742 100644
+index 61bd645379..0157ff7420 100644
 --- a/grub-core/video/readers/png.c
 +++ b/grub-core/video/readers/png.c
 @@ -23,6 +23,7 @@
