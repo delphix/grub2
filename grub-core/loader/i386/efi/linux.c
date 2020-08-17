@@ -245,7 +245,7 @@ grub_cmd_linux (grub_command_t cmd __attribute__ ((unused)),
     }
 
   grub_dprintf ("linuxefi", "checking lh->version\n");
-  if (lh->version < grub_cpu_to_le16 (0x020b))
+  if (lh->version < grub_cpu_to_le16 (0x020c))
     {
       grub_error (GRUB_ERR_BAD_OS, N_("kernel too old"));
       goto fail;
