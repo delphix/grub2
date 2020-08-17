@@ -1,4 +1,4 @@
-From d4235881fe9807432c0054149ca07caace83e7cb Mon Sep 17 00:00:00 2001
+From fd60c9a66288bf80f4da18e9832436bf2e6c1e65 Mon Sep 17 00:00:00 2001
 From: Chris Coulson <chris.coulson@canonical.com>
 Date: Fri, 10 Jul 2020 11:21:14 +0100
 Subject: script: Remove unused fields from grub_script_function struct
@@ -10,7 +10,7 @@ Reviewed-by: Daniel Kiper <daniel.kiper@oracle.com>
  1 file changed, 5 deletions(-)
 
 diff --git a/include/grub/script_sh.h b/include/grub/script_sh.h
-index 360c2be1f..b382bcf09 100644
+index 360c2be1f0..b382bcf09b 100644
 --- a/include/grub/script_sh.h
 +++ b/include/grub/script_sh.h
 @@ -359,13 +359,8 @@ struct grub_script_function

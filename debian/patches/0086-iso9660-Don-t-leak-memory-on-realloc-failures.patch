@@ -1,4 +1,4 @@
-From ae8703a3dd74ec31c8f37135fc32315f926812b2 Mon Sep 17 00:00:00 2001
+From 3daaf33550e0fc35de5a51de337e7d5e4bd1bbfd Mon Sep 17 00:00:00 2001
 From: Peter Jones <pjones@redhat.com>
 Date: Sat, 4 Jul 2020 12:25:09 -0400
 Subject: iso9660: Don't leak memory on realloc() failures
@@ -10,7 +10,7 @@ Reviewed-by: Daniel Kiper <daniel.kiper@oracle.com>
  1 file changed, 20 insertions(+), 4 deletions(-)
 
 diff --git a/grub-core/fs/iso9660.c b/grub-core/fs/iso9660.c
-index 7ba5b300b..5ec4433b8 100644
+index 7ba5b300bc..5ec4433b8f 100644
 --- a/grub-core/fs/iso9660.c
 +++ b/grub-core/fs/iso9660.c
 @@ -533,14 +533,20 @@ add_part (struct iterate_dir_ctx *ctx,

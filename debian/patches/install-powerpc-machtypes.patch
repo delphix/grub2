@@ -1,4 +1,4 @@
-From 6468fe3eb25e597acd0c80e3f7b5930472328d89 Mon Sep 17 00:00:00 2001
+From 2b3e762ebb12ce0d5a562dd36d23bca5d78aa61c Mon Sep 17 00:00:00 2001
 From: Colin Watson <cjwatson@debian.org>
 Date: Tue, 28 Jan 2014 14:40:02 +0000
 Subject: Port yaboot logic for various powerpc machine types
@@ -25,7 +25,7 @@ Patch-Name: install-powerpc-machtypes.patch
  6 files changed, 119 insertions(+), 6 deletions(-)
 
 diff --git a/grub-core/osdep/basic/platform.c b/grub-core/osdep/basic/platform.c
-index a7dafd85a..6c293ed2d 100644
+index a7dafd85a9..6c293ed2d0 100644
 --- a/grub-core/osdep/basic/platform.c
 +++ b/grub-core/osdep/basic/platform.c
 @@ -30,3 +30,8 @@ grub_install_get_default_x86_platform (void)
@@ -38,7 +38,7 @@ index a7dafd85a..6c293ed2d 100644
 +  return "generic";
 +}
 diff --git a/grub-core/osdep/linux/platform.c b/grub-core/osdep/linux/platform.c
-index 2e7f72086..5b37366d4 100644
+index 2e7f720869..5b37366d4d 100644
 --- a/grub-core/osdep/linux/platform.c
 +++ b/grub-core/osdep/linux/platform.c
 @@ -24,6 +24,7 @@
@@ -125,7 +125,7 @@ index 2e7f72086..5b37366d4 100644
 +  return machtype;
 +}
 diff --git a/grub-core/osdep/unix/platform.c b/grub-core/osdep/unix/platform.c
-index 55b8f4016..9c439326a 100644
+index 55b8f40162..9c439326a0 100644
 --- a/grub-core/osdep/unix/platform.c
 +++ b/grub-core/osdep/unix/platform.c
 @@ -218,13 +218,29 @@ grub_install_register_ieee1275 (int is_prep, const char *install_device,
@@ -165,7 +165,7 @@ index 55b8f4016..9c439326a 100644
  
    free (boot_device);
 diff --git a/grub-core/osdep/windows/platform.c b/grub-core/osdep/windows/platform.c
-index 7eb53fe01..e19a3d9a8 100644
+index 7eb53fe01b..e19a3d9a8a 100644
 --- a/grub-core/osdep/windows/platform.c
 +++ b/grub-core/osdep/windows/platform.c
 @@ -128,6 +128,12 @@ grub_install_get_default_x86_platform (void)
@@ -182,7 +182,7 @@ index 7eb53fe01..e19a3d9a8 100644
  get_efi_variable (const wchar_t *varname, ssize_t *len)
  {
 diff --git a/include/grub/util/install.h b/include/grub/util/install.h
-index 2631b1074..8aeb5c4f2 100644
+index 2631b10745..8aeb5c4f20 100644
 --- a/include/grub/util/install.h
 +++ b/include/grub/util/install.h
 @@ -216,6 +216,9 @@ grub_install_get_default_arm_platform (void);
@@ -196,7 +196,7 @@ index 2631b1074..8aeb5c4f2 100644
  grub_install_register_efi (grub_device_t efidir_grub_dev,
  			   const char *efifile_path,
 diff --git a/util/grub-install.c b/util/grub-install.c
-index f0d59c180..70d6700de 100644
+index f0d59c1809..70d6700de8 100644
 --- a/util/grub-install.c
 +++ b/util/grub-install.c
 @@ -1177,7 +1177,18 @@ main (int argc, char *argv[])

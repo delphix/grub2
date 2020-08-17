@@ -1,4 +1,4 @@
-From 9e7a74bc530afaad40667b397218615fde3e44ef Mon Sep 17 00:00:00 2001
+From 5cffb625b814199eff98b73c34a92879b17fd5ac Mon Sep 17 00:00:00 2001
 From: Peter Jones <pjones@redhat.com>
 Date: Mon, 15 Jun 2020 12:15:29 -0400
 Subject: calloc: Make sure we always have an overflow-checking calloc()
@@ -22,7 +22,7 @@ Reviewed-by: Daniel Kiper <daniel.kiper@oracle.com>
  7 files changed, 85 insertions(+), 3 deletions(-)
 
 diff --git a/grub-core/kern/emu/misc.c b/grub-core/kern/emu/misc.c
-index 65db79baa..dfd8a8ec4 100644
+index 65db79baa1..dfd8a8ec48 100644
 --- a/grub-core/kern/emu/misc.c
 +++ b/grub-core/kern/emu/misc.c
 @@ -85,6 +85,18 @@ grub_util_error (const char *fmt, ...)
@@ -45,7 +45,7 @@ index 65db79baa..dfd8a8ec4 100644
  xmalloc (grub_size_t size)
  {
 diff --git a/grub-core/kern/emu/mm.c b/grub-core/kern/emu/mm.c
-index f262e95e3..145b01d37 100644
+index f262e95e38..145b01d371 100644
 --- a/grub-core/kern/emu/mm.c
 +++ b/grub-core/kern/emu/mm.c
 @@ -25,6 +25,16 @@
@@ -66,7 +66,7 @@ index f262e95e3..145b01d37 100644
  grub_malloc (grub_size_t size)
  {
 diff --git a/grub-core/kern/mm.c b/grub-core/kern/mm.c
-index ee88ff611..f2822a836 100644
+index ee88ff6118..f2822a8364 100644
 --- a/grub-core/kern/mm.c
 +++ b/grub-core/kern/mm.c
 @@ -67,8 +67,10 @@
@@ -133,7 +133,7 @@ index ee88ff611..f2822a836 100644
  grub_debug_malloc (const char *file, int line, grub_size_t size)
  {
 diff --git a/grub-core/lib/libgcrypt_wrap/mem.c b/grub-core/lib/libgcrypt_wrap/mem.c
-index beeb661a3..74c6eafe5 100644
+index beeb661a3c..74c6eafe52 100644
 --- a/grub-core/lib/libgcrypt_wrap/mem.c
 +++ b/grub-core/lib/libgcrypt_wrap/mem.c
 @@ -4,6 +4,7 @@
@@ -169,7 +169,7 @@ index beeb661a3..74c6eafe5 100644
      grub_fatal ("gcry_xcalloc failed");
    return ret;
 diff --git a/grub-core/lib/posix_wrap/stdlib.h b/grub-core/lib/posix_wrap/stdlib.h
-index 3b46f47ff..7a8d385e9 100644
+index 3b46f47ff5..7a8d385e97 100644
 --- a/grub-core/lib/posix_wrap/stdlib.h
 +++ b/grub-core/lib/posix_wrap/stdlib.h
 @@ -21,6 +21,7 @@
@@ -195,7 +195,7 @@ index 3b46f47ff..7a8d385e9 100644
  
  static inline void *
 diff --git a/include/grub/emu/misc.h b/include/grub/emu/misc.h
-index ce464cfd0..ff9c48a64 100644
+index ce464cfd00..ff9c48a649 100644
 --- a/include/grub/emu/misc.h
 +++ b/include/grub/emu/misc.h
 @@ -47,6 +47,7 @@ grub_util_device_is_mapped (const char *dev);
@@ -207,7 +207,7 @@ index ce464cfd0..ff9c48a64 100644
  void * EXPORT_FUNC(xrealloc) (void *ptr, grub_size_t size) WARN_UNUSED_RESULT;
  char * EXPORT_FUNC(xstrdup) (const char *str) WARN_UNUSED_RESULT;
 diff --git a/include/grub/mm.h b/include/grub/mm.h
-index 28e2e53eb..9c38dd3ca 100644
+index 28e2e53eb3..9c38dd3ca5 100644
 --- a/include/grub/mm.h
 +++ b/include/grub/mm.h
 @@ -29,6 +29,7 @@

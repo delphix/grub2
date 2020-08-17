@@ -1,4 +1,4 @@
-From 125b4317bafb66a6e9381041102c7d789c296ea4 Mon Sep 17 00:00:00 2001
+From c58c9d77ccd16511db098247b5cbba5abcaac99f Mon Sep 17 00:00:00 2001
 From: Ian Campbell <ijc@debian.org>
 Date: Sun, 30 Nov 2014 12:12:52 +0000
 Subject: Arrange to insmod xzio and lzopio when booting a kernel as a Xen
@@ -21,7 +21,7 @@ Patch-Name: insmod-xzio-and-lzopio-on-xen.patch
  2 files changed, 2 insertions(+)
 
 diff --git a/util/grub.d/10_linux.in b/util/grub.d/10_linux.in
-index 2c418c5ec..85b30084a 100644
+index 2c418c5ec8..85b30084ad 100644
 --- a/util/grub.d/10_linux.in
 +++ b/util/grub.d/10_linux.in
 @@ -166,6 +166,7 @@ linux_entry ()
@@ -33,10 +33,10 @@ index 2c418c5ec..85b30084a 100644
    if [ x$dirname = x/ ]; then
      if [ -z "${prepare_root_cache}" ]; then
 diff --git a/util/grub.d/10_linux_zfs.in b/util/grub.d/10_linux_zfs.in
-index b068f0e96..efdb8afae 100755
+index 4477fa6061..4c48abef01 100755
 --- a/util/grub.d/10_linux_zfs.in
 +++ b/util/grub.d/10_linux_zfs.in
-@@ -835,6 +835,7 @@ zfs_linux_entry () {
+@@ -838,6 +838,7 @@ zfs_linux_entry () {
      fi
  
      echo "${submenu_indentation}	insmod gzio"

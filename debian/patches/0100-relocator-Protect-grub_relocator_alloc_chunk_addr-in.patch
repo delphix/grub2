@@ -1,4 +1,4 @@
-From e4356ccb73aa1d54d319999de4ce46e2e1f79b59 Mon Sep 17 00:00:00 2001
+From d1e511e940a1f2577f568e11076df02c7a221042 Mon Sep 17 00:00:00 2001
 From: Alexey Makhalov <amakhalov@vmware.com>
 Date: Wed, 15 Jul 2020 06:42:37 +0000
 Subject: relocator: Protect grub_relocator_alloc_chunk_addr() input args
@@ -19,7 +19,7 @@ Reviewed-by: Daniel Kiper <daniel.kiper@oracle.com>
  4 files changed, 31 insertions(+), 10 deletions(-)
 
 diff --git a/grub-core/loader/i386/linux.c b/grub-core/loader/i386/linux.c
-index 991eb29db..4e14eb188 100644
+index 991eb29db9..4e14eb1887 100644
 --- a/grub-core/loader/i386/linux.c
 +++ b/grub-core/loader/i386/linux.c
 @@ -36,6 +36,7 @@
@@ -47,7 +47,7 @@ index 991eb29db..4e14eb188 100644
       return err;
      real_mode_mem = get_virtual_current_address (ch);
 diff --git a/grub-core/loader/i386/pc/linux.c b/grub-core/loader/i386/pc/linux.c
-index 3866f048b..81ab3c0c1 100644
+index 3866f048bb..81ab3c0c15 100644
 --- a/grub-core/loader/i386/pc/linux.c
 +++ b/grub-core/loader/i386/pc/linux.c
 @@ -36,6 +36,7 @@
@@ -74,7 +74,7 @@ index 3866f048b..81ab3c0c1 100644
    if (! grub_linux_is_bzimage
        && GRUB_LINUX_ZIMAGE_ADDR + grub_linux16_prot_size
 diff --git a/grub-core/loader/i386/xen.c b/grub-core/loader/i386/xen.c
-index 8f662c8ac..cd24874ca 100644
+index 8f662c8ac8..cd24874ca3 100644
 --- a/grub-core/loader/i386/xen.c
 +++ b/grub-core/loader/i386/xen.c
 @@ -41,6 +41,7 @@
@@ -111,7 +111,7 @@ index 8f662c8ac..cd24874ca 100644
      goto fail;
    kern_chunk_src = get_virtual_current_address (ch);
 diff --git a/grub-core/loader/xnu.c b/grub-core/loader/xnu.c
-index 2f0ebd0b8..3fd653993 100644
+index 2f0ebd0b8b..3fd653993f 100644
 --- a/grub-core/loader/xnu.c
 +++ b/grub-core/loader/xnu.c
 @@ -35,6 +35,7 @@

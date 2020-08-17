@@ -1,4 +1,4 @@
-From e66b6951c463ed36d7c3a8cff50c5dbdfa29e99a Mon Sep 17 00:00:00 2001
+From e1cc8a0711a700332db770c6e741d60ca2f9cce8 Mon Sep 17 00:00:00 2001
 From: Colin Watson <cjwatson@ubuntu.com>
 Date: Mon, 13 Jan 2014 12:13:22 +0000
 Subject: UBUNTU: Install signed images if UEFI Secure Boot is enabled
@@ -19,7 +19,7 @@ Patch-Name: ubuntu-install-signed.patch
  1 file changed, 156 insertions(+), 59 deletions(-)
 
 diff --git a/util/grub-install.c b/util/grub-install.c
-index 3b4606eef..e1e40cf2b 100644
+index 3b4606eef1..e1e40cf2b5 100644
 --- a/util/grub-install.c
 +++ b/util/grub-install.c
 @@ -80,6 +80,7 @@ static char *label_color;

@@ -1,4 +1,4 @@
-From 7d3dea454253718d765c5dea62b893c5d5ef10ec Mon Sep 17 00:00:00 2001
+From 52a152744b026f62a412ae10d17f3756c44a687f Mon Sep 17 00:00:00 2001
 From: Mathieu Trudel-Lapierre <mathieu.trudel-lapierre@canonical.com>
 Date: Fri, 14 Dec 2018 13:46:14 -0500
 Subject: UBUNTU: grub-mkconfig: leave a trace of what files were sourced to
@@ -11,7 +11,7 @@ Signed-off-by: Mathieu Trudel-Lapierre <mathieu.trudel-lapierre@canonical.com>
  1 file changed, 2 insertions(+)
 
 diff --git a/util/grub-mkconfig.in b/util/grub-mkconfig.in
-index 29bdad0c1..72f1e25a0 100644
+index 29bdad0c12..72f1e25a03 100644
 --- a/util/grub-mkconfig.in
 +++ b/util/grub-mkconfig.in
 @@ -162,10 +162,12 @@ if [ "x${GRUB_EARLY_INITRD_LINUX_STOCK}" = "x" ]; then

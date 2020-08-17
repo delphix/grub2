@@ -1,4 +1,4 @@
-From 9fc5ac5172d7ceae3625258059d9e4b7c8baef76 Mon Sep 17 00:00:00 2001
+From 9082c7d5ed8d9ffb15a12d6bcb10a86ca9c8a860 Mon Sep 17 00:00:00 2001
 From: Peter Jones <pjones@redhat.com>
 Date: Sun, 19 Jul 2020 15:48:20 -0400
 Subject: lvm: fix two more potential data-dependent alloc overflows
@@ -15,7 +15,7 @@ Signed-off-by: Peter Jones <pjones@redhat.com>
  1 file changed, 31 insertions(+), 8 deletions(-)
 
 diff --git a/grub-core/disk/lvm.c b/grub-core/disk/lvm.c
-index d1df640b3..d154f7c01 100644
+index d1df640b31..d154f7c01b 100644
 --- a/grub-core/disk/lvm.c
 +++ b/grub-core/disk/lvm.c
 @@ -25,6 +25,7 @@

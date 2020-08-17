@@ -245,6 +245,14 @@ EOF
         linux_root_device_thisversion="PARTUUID=${GRUB_FORCE_PARTUUID}"
     fi
     message="$(gettext_printf "Loading initial ramdisk ...")"
+    initrd_path=
+    for i in ${initrd}; do
+        initrd_path="${initrd_path} ${rel_dirname}/${i}"
+    done
+    initrd_path_only_early=
+    for i in ${initrd_early}; do
+        initrd_path_only_early="${initrd_path_only_early} ${rel_dirname}/${i}"
+    done
     if test -n "${initrd}" && [ x"$GRUB_FORCE_PARTUUID" != x ]; then
         sed "s/^/$submenu_indentation/" << EOF
 	if [ "\${initrdfail}" = 1 ]; then
@@ -255,11 +263,17 @@ EOF
 	  echo	'$(echo "$message" | grub_quote)'
 EOF
         fi
-
         sed "s/^/$submenu_indentation/" << EOF
-	  initrd	${rel_dirname}/${initrd}
+	  initrd	$(echo $initrd_path)
 	else
 	  linux	${rel_dirname}/${basename} root=${linux_root_device_thisversion} ro ${args} panic=-1
+EOF
+        if [ -n "$initrd_path_only_early" ]; then
+          sed "s/^/$submenu_indentation/" << EOF
+	  initrd	$(echo $initrd_path_only_early)
+EOF
+        fi
+        sed "s/^/$submenu_indentation/" << EOF
 	fi
 	initrdfail
 EOF
@@ -277,7 +291,7 @@ EOF
 EOF
             fi
             sed "s/^/$submenu_indentation/" << EOF
-	initrd	${rel_dirname}/${initrd}
+	initrd	$(echo $initrd_path)
 EOF
         fi
     fi
@@ -318,6 +332,10 @@ case "$machine" in
     mipsel|mips64el) GENKERNEL_ARCH="mipsel" ;;
     arm*) GENKERNEL_ARCH="arm" ;;
     *) GENKERNEL_ARCH="$machine" ;;
+esac
+
+case "$GENKERNEL_ARCH" in
+  x86*) GRUB_CMDLINE_LINUX_RECOVERY="$GRUB_CMDLINE_LINUX_RECOVERY dis_ucode_ldr";;
 esac
 
 prepare_boot_cache=
@@ -418,10 +436,7 @@ while [ "x$list" != "x" ] ; do
 
   initrd=
   if test -n "${initrd_early}" || test -n "${initrd_real}"; then
-    initrd="${initrd_real}"
-    if test -n "${initrd_early}"; then
-        initrd="${initrd_early} ${initrd}"
-    fi
+    initrd="${initrd_early} ${initrd_real}"
 
     initrd_display=
     for i in ${initrd}; do

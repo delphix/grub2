@@ -1,4 +1,4 @@
-From 05c83490bed811e5dd5cde7c59bb56cc2db751d6 Mon Sep 17 00:00:00 2001
+From f59fbf2d6ae70d8872d8b680cfccb6e139410944 Mon Sep 17 00:00:00 2001
 From: Chris Coulson <chris.coulson@canonical.com>
 Date: Wed, 11 Mar 2020 16:46:41 +0100
 Subject: ubuntu: Update the linux boot protocol version check.
@@ -11,7 +11,7 @@ check accordingly.
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/grub-core/loader/i386/efi/linux.c b/grub-core/loader/i386/efi/linux.c
-index fe3ca2c59..2929da7a2 100644
+index fe3ca2c596..2929da7a29 100644
 --- a/grub-core/loader/i386/efi/linux.c
 +++ b/grub-core/loader/i386/efi/linux.c
 @@ -245,7 +245,7 @@ grub_cmd_linux (grub_command_t cmd __attribute__ ((unused)),

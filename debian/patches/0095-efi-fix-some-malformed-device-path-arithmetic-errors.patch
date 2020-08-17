@@ -1,4 +1,4 @@
-From 3be69af50aa08c128d570ddf4acd8767115bbb7e Mon Sep 17 00:00:00 2001
+From c9148b4f42091e840b2659504401dab230f7d817 Mon Sep 17 00:00:00 2001
 From: Peter Jones <pjones@redhat.com>
 Date: Sun, 19 Jul 2020 16:53:27 -0400
 Subject: efi: fix some malformed device path arithmetic errors.
@@ -24,7 +24,7 @@ Signed-off-by: Peter Jones <pjones@redhat.com>
  4 files changed, 88 insertions(+), 21 deletions(-)
 
 diff --git a/grub-core/kern/efi/efi.c b/grub-core/kern/efi/efi.c
-index dc31caa21..b1a8b39b4 100644
+index dc31caa213..b1a8b39b49 100644
 --- a/grub-core/kern/efi/efi.c
 +++ b/grub-core/kern/efi/efi.c
 @@ -332,7 +332,7 @@ grub_efi_get_filename (grub_efi_device_path_t *dp0)
@@ -150,7 +150,7 @@ index dc31caa21..b1a8b39b4 100644
    return 0;
  }
 diff --git a/grub-core/loader/efi/chainloader.c b/grub-core/loader/efi/chainloader.c
-index b9a2df34b..f8a34cd49 100644
+index b9a2df34b1..f8a34cd491 100644
 --- a/grub-core/loader/efi/chainloader.c
 +++ b/grub-core/loader/efi/chainloader.c
 @@ -126,6 +126,12 @@ copy_file_path (grub_efi_file_path_device_path_t *fp,
@@ -188,7 +188,7 @@ index b9a2df34b..f8a34cd49 100644
  	break;
        d = GRUB_EFI_NEXT_DEVICE_PATH (d);
 diff --git a/grub-core/loader/i386/xnu.c b/grub-core/loader/i386/xnu.c
-index b7d176b5d..c50cb5410 100644
+index b7d176b5d3..c50cb54109 100644
 --- a/grub-core/loader/i386/xnu.c
 +++ b/grub-core/loader/i386/xnu.c
 @@ -516,14 +516,15 @@ grub_cmd_devprop_load (grub_command_t cmd __attribute__ ((unused)),
@@ -212,7 +212,7 @@ index b7d176b5d..c50cb5410 100644
        dev = grub_xnu_devprop_add_device (dpstart, (char *) buf
  					 - (char *) dpstart);
 diff --git a/include/grub/efi/api.h b/include/grub/efi/api.h
-index 9824fbcd0..08bff60b5 100644
+index 9824fbcd0d..08bff60b51 100644
 --- a/include/grub/efi/api.h
 +++ b/include/grub/efi/api.h
 @@ -640,6 +640,7 @@ typedef struct grub_efi_device_path grub_efi_device_path_protocol_t;

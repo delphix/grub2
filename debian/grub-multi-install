@@ -8,6 +8,13 @@ set -e
 
 . /usr/share/debconf/confmodule
 
+# shamelessly stolen from ucf:
+#
+# Load our templates, just in case our template has
+# not been loaded or the Debconf DB lost or corrupted
+# since then.
+db_x_loadtemplatefile "$(dpkg-query --control-path grub-common templates)" grub-common
+
 ###############################################################################
 #                       COPY FROM POSTINST
 ###############################################################################
