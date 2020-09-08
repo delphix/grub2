@@ -380,7 +380,7 @@ while :; do
         continue
       fi
     else
-      break # noninteractive
+      exit 1 # noninteractive
     fi
   fi
 
@@ -402,7 +402,7 @@ while :; do
         db_fset grub-efi/install_devices_empty seen false
       fi
     else
-      break # noninteractive
+      exit 1 # noninteractive
     fi
   else
     break
