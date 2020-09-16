@@ -107,3 +107,4 @@ ubuntu-flavour-order.patch
 ubuntu-dont-verify-loopback-images.patch
 ubuntu-recovery-dis_ucode_ldr.patch
 grub-install-backup-and-restore.patch
+ubuntu-linuxefi-arm64.patch
