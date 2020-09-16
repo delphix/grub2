@@ -1,3 +1,9 @@
+grub2 (2.04-1ubuntu26.5) focal; urgency=medium
+
+  * ubuntu-linuxefi-arm64.patch: Fix build on armhf (LP: #1862279)
+
+ -- Julian Andres Klode <juliank@ubuntu.com>  Wed, 16 Sep 2020 13:01:19 +0200
+
 grub2 (2.04-1ubuntu26.4) focal; urgency=medium
 
   * grub-install: cherry-pick patch from grub-devel to make grub-install
