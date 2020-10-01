@@ -402,7 +402,14 @@ while :; do
         db_fset grub-efi/install_devices_empty seen false
       fi
     else
-      exit 1 # noninteractive
+      # if question was seen we are done
+      # Otherwise, abort
+      db_fget grub-efi/install_devices_empty seen
+      if [ "$RET" = true ]; then
+        break
+      else
+        exit 1
+      fi
     fi
   else
     break

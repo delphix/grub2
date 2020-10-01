@@ -1,4 +1,4 @@
-From 277b7127a92c9d2c075a70957f0cefc4ebe48e8b Mon Sep 17 00:00:00 2001
+From 67fbc0db9b2d5324861bbbca36ab718569f824d2 Mon Sep 17 00:00:00 2001
 From: Julian Andres Klode <julian.klode@canonical.com>
 Date: Fri, 11 Sep 2020 11:28:08 +0200
 Subject: Cherry-pick back parts of "Load arm with SB enabled."
@@ -13,11 +13,11 @@ Bug-Ubuntu: https://bugs.launchpad.net/bugs/1862279
 Origin: vendor, https://github.com/rhboot/grub2/commit/2786ab864cf00c15123320671f653e9a36ba12b4
 Patch-Name: ubuntu-linuxefi-arm64.patch
 ---
- grub-core/loader/arm64/linux.c | 103 ++++++++++++++++++---------------
- 1 file changed, 56 insertions(+), 47 deletions(-)
+ grub-core/loader/arm64/linux.c | 106 +++++++++++++++++----------------
+ 1 file changed, 56 insertions(+), 50 deletions(-)
 
 diff --git a/grub-core/loader/arm64/linux.c b/grub-core/loader/arm64/linux.c
-index 3f5496fc55..39ebcf5b52 100644
+index 3f5496fc55..130e9c09b4 100644
 --- a/grub-core/loader/arm64/linux.c
 +++ b/grub-core/loader/arm64/linux.c
 @@ -43,6 +43,8 @@ static int loaded;
@@ -67,7 +67,7 @@ index 3f5496fc55..39ebcf5b52 100644
    return GRUB_ERR_NONE;
  
  failure:
-@@ -118,62 +142,43 @@ failure:
+@@ -118,70 +142,48 @@ failure:
    return grub_error(GRUB_ERR_BAD_OS, "failed to install/update FDT");
  }
  
@@ -107,12 +107,12 @@ index 3f5496fc55..39ebcf5b52 100644
 -  mempath[0].memory_type = GRUB_EFI_LOADER_DATA;
 -  mempath[0].start_address = addr;
 -  mempath[0].end_address = addr + size;
--
++  grub_err_t retval;
+ 
 -  mempath[1].header.type = GRUB_EFI_END_DEVICE_PATH_TYPE;
 -  mempath[1].header.subtype = GRUB_EFI_END_ENTIRE_DEVICE_PATH_SUBTYPE;
 -  mempath[1].header.length = sizeof (grub_efi_device_path_t);
-+  grub_err_t retval;
- 
+-
 -  b = grub_efi_system_table->boot_services;
 -  status = b->load_image (0, grub_efi_image_handle,
 -			  (grub_efi_device_path_t *) mempath,
@@ -157,7 +157,15 @@ index 3f5496fc55..39ebcf5b52 100644
  }
  
  static grub_err_t
-@@ -297,6 +302,7 @@ grub_cmd_linux (grub_command_t cmd __attribute__ ((unused)),
+ grub_linux_boot (void)
+ {
+-  if (finalize_params_linux () != GRUB_ERR_NONE)
+-    return grub_errno;
+-
+   return (grub_arch_efi_linux_boot_image((grub_addr_t)kernel_addr,
+                                           kernel_size, linux_args));
+ }
+@@ -297,6 +299,7 @@ grub_cmd_linux (grub_command_t cmd __attribute__ ((unused)),
  {
    grub_file_t file = 0;
    struct linux_arch_kernel_header lh;
@@ -165,7 +173,7 @@ index 3f5496fc55..39ebcf5b52 100644
    grub_err_t err;
    int rc;
  
-@@ -354,6 +360,9 @@ grub_cmd_linux (grub_command_t cmd __attribute__ ((unused)),
+@@ -354,6 +357,9 @@ grub_cmd_linux (grub_command_t cmd __attribute__ ((unused)),
          }
      }
  

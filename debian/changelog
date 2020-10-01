@@ -1,3 +1,12 @@
+grub2 (2.04-1ubuntu26.6) focal; urgency=medium
+
+  * postinst.in, grub-multi-install: fix logic of skipping installing onto
+    any device, if one chose to not install bootloader on any device. LP:
+    #1896608
+  * Do not finalize params twice on arm64. LP: #1897819
+
+ -- Dimitri John Ledkov <xnox@ubuntu.com>  Thu, 01 Oct 2020 23:19:24 +0800
+
 grub2 (2.04-1ubuntu26.5) focal; urgency=medium
 
   * ubuntu-linuxefi-arm64.patch: Fix build on armhf (LP: #1862279)
