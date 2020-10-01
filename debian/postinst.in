@@ -685,7 +685,14 @@ case "$1" in
                   db_fset grub-pc/install_devices_empty seen false
                 fi
               else
-                exit 1 # noninteractive
+                # if question was seen we are done
+                # Otherwise, abort
+                db_fget grub-pc/install_devices_empty seen
+                if [ "$RET" = true ]; then
+                  break
+                else
+                  exit 1
+                fi
               fi
             else
               break

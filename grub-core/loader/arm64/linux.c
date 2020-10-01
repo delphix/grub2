@@ -184,9 +184,6 @@ grub_arch_efi_linux_boot_image (grub_addr_t addr, grub_size_t size, char *args)
 static grub_err_t
 grub_linux_boot (void)
 {
-  if (finalize_params_linux () != GRUB_ERR_NONE)
-    return grub_errno;
-
   return (grub_arch_efi_linux_boot_image((grub_addr_t)kernel_addr,
                                           kernel_size, linux_args));
 }
