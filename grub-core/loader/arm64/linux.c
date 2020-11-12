@@ -34,6 +34,7 @@
 #include <grub/i18n.h>
 #include <grub/lib/cmdline.h>
 #include <grub/verify.h>
+#include <grub/efi/sb.h>
 
 GRUB_MOD_LICENSE ("GPLv3+");
 
@@ -342,11 +343,15 @@ grub_cmd_linux (grub_command_t cmd __attribute__ ((unused)),
 
   grub_dprintf ("linux", "kernel @ %p\n", kernel_addr);
 
-  rc = grub_linuxefi_secure_validate (kernel_addr, kernel_size);
-  if (rc < 0)
+  if (grub_efi_secure_boot ())
     {
-      grub_error (GRUB_ERR_INVALID_COMMAND, N_("%s has invalid signature"), argv[0]);
-      goto fail;
+      rc = grub_linuxefi_secure_validate (kernel_addr, kernel_size);
+      if (rc <= 0)
+        {
+          grub_error (GRUB_ERR_INVALID_COMMAND,
+		      N_("%s has invalid signature"), argv[0]);
+          goto fail;
+        }
     }
 
   cmdline_size = grub_loader_cmdline_size (argc, argv) + sizeof (LINUX_IMAGE);
