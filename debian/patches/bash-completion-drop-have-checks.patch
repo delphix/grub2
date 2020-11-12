@@ -16,7 +16,7 @@ Patch-Name: bash-completion-drop-have-checks.patch
  1 file changed, 13 insertions(+), 26 deletions(-)
 
 diff --git a/util/bash-completion.d/grub-completion.bash.in b/util/bash-completion.d/grub-completion.bash.in
-index 44bf135b9f..d4235e7ef8 100644
+index 44bf135b9..d4235e7ef 100644
 --- a/util/bash-completion.d/grub-completion.bash.in
 +++ b/util/bash-completion.d/grub-completion.bash.in
 @@ -166,13 +166,11 @@ _grub_set_entry () {

@@ -26,7 +26,7 @@ Reviewed-by: Daniel Kiper <daniel.kiper@oracle.com>
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/grub-core/lib/relocator.c b/grub-core/lib/relocator.c
-index 5847aac364..f2c1944c28 100644
+index 5847aac36..f2c1944c2 100644
 --- a/grub-core/lib/relocator.c
 +++ b/grub-core/lib/relocator.c
 @@ -1386,8 +1386,8 @@ grub_relocator_alloc_chunk_align (struct grub_relocator *rel,

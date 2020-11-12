@@ -15,7 +15,7 @@ Signed-off-by: Peter Jones <pjones@redhat.com>
  1 file changed, 31 insertions(+), 8 deletions(-)
 
 diff --git a/grub-core/disk/lvm.c b/grub-core/disk/lvm.c
-index d1df640b31..d154f7c01b 100644
+index d1df640b3..d154f7c01 100644
 --- a/grub-core/disk/lvm.c
 +++ b/grub-core/disk/lvm.c
 @@ -25,6 +25,7 @@

@@ -27,7 +27,7 @@ Reviewed-by: Daniel Kiper <daniel.kiper@oracle.com>
  4 files changed, 19 insertions(+), 4 deletions(-)
 
 diff --git a/grub-core/script/execute.c b/grub-core/script/execute.c
-index c8d6806fe0..7e028e1355 100644
+index c8d6806fe..7e028e135 100644
 --- a/grub-core/script/execute.c
 +++ b/grub-core/script/execute.c
 @@ -838,7 +838,9 @@ grub_script_function_call (grub_script_function_t func, int argc, char **args)
@@ -41,7 +41,7 @@ index c8d6806fe0..7e028e1355 100644
    function_return = 0;
    active_loops = loops;
 diff --git a/grub-core/script/function.c b/grub-core/script/function.c
-index d36655e510..3aad04bf9d 100644
+index d36655e51..3aad04bf9 100644
 --- a/grub-core/script/function.c
 +++ b/grub-core/script/function.c
 @@ -34,6 +34,7 @@ grub_script_function_create (struct grub_script_arg *functionname_arg,
@@ -76,7 +76,7 @@ index d36655e510..3aad04bf9d 100644
    else
      {
 diff --git a/grub-core/script/parser.y b/grub-core/script/parser.y
-index 4f0ab8319e..f80b86b6f1 100644
+index 4f0ab8319..f80b86b6f 100644
 --- a/grub-core/script/parser.y
 +++ b/grub-core/script/parser.y
 @@ -289,7 +289,8 @@ function: "function" "name"
@@ -90,7 +90,7 @@ index 4f0ab8319e..f80b86b6f1 100644
  
  	    state->scripts = $<scripts>3;
 diff --git a/include/grub/script_sh.h b/include/grub/script_sh.h
-index b382bcf09b..6c48e07512 100644
+index b382bcf09..6c48e0751 100644
 --- a/include/grub/script_sh.h
 +++ b/include/grub/script_sh.h
 @@ -361,6 +361,8 @@ struct grub_script_function

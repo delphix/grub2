@@ -15,7 +15,7 @@ Patch-Name: ubuntu-efi-console-set-text-mode-as-needed.patch
  1 file changed, 45 insertions(+), 23 deletions(-)
 
 diff --git a/grub-core/term/efi/console.c b/grub-core/term/efi/console.c
-index 4840cc59d3..b61da7d0d0 100644
+index 4840cc59d..b61da7d0d 100644
 --- a/grub-core/term/efi/console.c
 +++ b/grub-core/term/efi/console.c
 @@ -24,6 +24,11 @@

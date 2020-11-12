@@ -17,7 +17,7 @@ Patch-Name: ubuntu-speed-zsys-history.patch
  1 file changed, 56 insertions(+), 21 deletions(-)
 
 diff --git a/util/grub.d/10_linux_zfs.in b/util/grub.d/10_linux_zfs.in
-index 4c48abef01..712d832802 100755
+index 4c48abef0..712d83280 100755
 --- a/util/grub.d/10_linux_zfs.in
 +++ b/util/grub.d/10_linux_zfs.in
 @@ -803,9 +803,10 @@ zfs_linux_entry () {

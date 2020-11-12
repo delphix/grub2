@@ -18,7 +18,7 @@ Patch-Name: ubuntu-support-initrd-less-boot.patch
  4 files changed, 38 insertions(+), 4 deletions(-)
 
 diff --git a/docs/grub.info b/docs/grub.info
-index 7cc7d92128..f804b7800e 100644
+index 7cc7d9212..f804b7800 100644
 --- a/docs/grub.info
 +++ b/docs/grub.info
 @@ -1436,6 +1436,19 @@ it must be quoted.  For example:
@@ -42,7 +42,7 @@ index 7cc7d92128..f804b7800e 100644
  existing configurations, but have better replacements:
  
 diff --git a/docs/grub.texi b/docs/grub.texi
-index 3ec35d315a..1baa0fa20f 100644
+index 3ec35d315..1baa0fa20 100644
 --- a/docs/grub.texi
 +++ b/docs/grub.texi
 @@ -1541,6 +1541,19 @@ This option sets the English text of the string that will be displayed in
@@ -66,7 +66,7 @@ index 3ec35d315a..1baa0fa20f 100644
  
  The following options are still accepted for compatibility with existing
 diff --git a/util/grub-mkconfig.in b/util/grub-mkconfig.in
-index 9c1da64771..29bdad0c12 100644
+index 9c1da6477..29bdad0c1 100644
 --- a/util/grub-mkconfig.in
 +++ b/util/grub-mkconfig.in
 @@ -256,7 +256,9 @@ export GRUB_DEFAULT \
@@ -81,7 +81,7 @@ index 9c1da64771..29bdad0c12 100644
  if test "x${grub_cfg}" != "x"; then
    rm -f "${grub_cfg}.new"
 diff --git a/util/grub.d/10_linux.in b/util/grub.d/10_linux.in
-index dff84edea5..aa9666e5ad 100644
+index dff84edea..aa9666e5a 100644
 --- a/util/grub.d/10_linux.in
 +++ b/util/grub.d/10_linux.in
 @@ -193,11 +193,17 @@ EOF

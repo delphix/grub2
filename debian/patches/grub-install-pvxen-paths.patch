@@ -28,7 +28,7 @@ v2: Respect bootdir, create /boot/xen as needed.
  1 file changed, 22 insertions(+), 2 deletions(-)
 
 diff --git a/util/grub-install.c b/util/grub-install.c
-index 70d6700de8..64c292383f 100644
+index 70d6700de..64c292383 100644
 --- a/util/grub-install.c
 +++ b/util/grub-install.c
 @@ -2058,6 +2058,28 @@ main (int argc, char *argv[])

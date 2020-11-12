@@ -14,7 +14,7 @@ Patch-Name: probe-fusionio.patch
  2 files changed, 32 insertions(+)
 
 diff --git a/grub-core/osdep/linux/getroot.c b/grub-core/osdep/linux/getroot.c
-index 90d92d3ad5..7adc0f30ee 100644
+index 90d92d3ad..7adc0f30e 100644
 --- a/grub-core/osdep/linux/getroot.c
 +++ b/grub-core/osdep/linux/getroot.c
 @@ -950,6 +950,19 @@ grub_util_part_to_disk (const char *os_dev, struct stat *st,
@@ -38,7 +38,7 @@ index 90d92d3ad5..7adc0f30ee 100644
  
    return path;
 diff --git a/util/deviceiter.c b/util/deviceiter.c
-index a4971ef429..dddc50da7a 100644
+index a4971ef42..dddc50da7 100644
 --- a/util/deviceiter.c
 +++ b/util/deviceiter.c
 @@ -383,6 +383,12 @@ get_nvme_disk_name (char *name, int controller, int namespace)

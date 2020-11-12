@@ -9,7 +9,7 @@ LP: #1864547
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/util/grub.d/30_uefi-firmware.in b/util/grub.d/30_uefi-firmware.in
-index 3c9f533d8c..b072d219f6 100644
+index 3c9f533d8..b072d219f 100644
 --- a/util/grub.d/30_uefi-firmware.in
 +++ b/util/grub.d/30_uefi-firmware.in
 @@ -32,9 +32,9 @@ OsIndications="$efi_vars_dir/OsIndicationsSupported-$EFI_GLOBAL_VARIABLE/data"

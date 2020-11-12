@@ -19,7 +19,7 @@ Patch-Name: ubuntu-recovery-dis_ucode_ldr.patch
  2 files changed, 19 insertions(+), 9 deletions(-)
 
 diff --git a/util/grub.d/10_linux.in b/util/grub.d/10_linux.in
-index 14a89ba13d..49e627228f 100644
+index 14a89ba13..49e627228 100644
 --- a/util/grub.d/10_linux.in
 +++ b/util/grub.d/10_linux.in
 @@ -334,6 +334,10 @@ case "$machine" in
@@ -34,7 +34,7 @@ index 14a89ba13d..49e627228f 100644
  prepare_root_cache=
  boot_device_id=
 diff --git a/util/grub.d/10_linux_zfs.in b/util/grub.d/10_linux_zfs.in
-index 712d832802..d9b79e29a7 100755
+index 712d83280..d9b79e29a 100755
 --- a/util/grub.d/10_linux_zfs.in
 +++ b/util/grub.d/10_linux_zfs.in
 @@ -41,6 +41,16 @@ imported_pools=""

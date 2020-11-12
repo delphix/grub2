@@ -108,3 +108,5 @@ ubuntu-dont-verify-loopback-images.patch
 ubuntu-recovery-dis_ucode_ldr.patch
 grub-install-backup-and-restore.patch
 ubuntu-linuxefi-arm64.patch
+ubuntu-linuxefi-arm64-set-base-addr.patch
+tftp-rollover-block-counter.patch

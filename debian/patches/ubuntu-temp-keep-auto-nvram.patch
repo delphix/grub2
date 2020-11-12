@@ -10,7 +10,7 @@ Patch-Name: ubuntu-temp-keep-auto-nvram.patch
  1 file changed, 3 insertions(+)
 
 diff --git a/util/grub-install.c b/util/grub-install.c
-index 63462e4e09..bf8eb65b33 100644
+index 63462e4e0..bf8eb65b3 100644
 --- a/util/grub-install.c
 +++ b/util/grub-install.c
 @@ -98,6 +98,7 @@ enum

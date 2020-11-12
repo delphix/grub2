@@ -34,7 +34,7 @@ Reviewed-by: Daniel Kiper <daniel.kiper@oracle.com>
  1 file changed, 53 insertions(+), 118 deletions(-)
 
 diff --git a/grub-core/net/tftp.c b/grub-core/net/tftp.c
-index a0817a075d..e6566fa176 100644
+index a0817a075..e6566fa17 100644
 --- a/grub-core/net/tftp.c
 +++ b/grub-core/net/tftp.c
 @@ -25,7 +25,6 @@

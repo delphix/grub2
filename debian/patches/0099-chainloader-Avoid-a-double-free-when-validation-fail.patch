@@ -8,7 +8,7 @@ Subject: chainloader: Avoid a double free when validation fails
  1 file changed, 6 insertions(+), 3 deletions(-)
 
 diff --git a/grub-core/loader/efi/chainloader.c b/grub-core/loader/efi/chainloader.c
-index d0c53077e8..144a6549df 100644
+index d0c53077e..144a6549d 100644
 --- a/grub-core/loader/efi/chainloader.c
 +++ b/grub-core/loader/efi/chainloader.c
 @@ -1085,6 +1085,9 @@ grub_cmd_chainloader (grub_command_t cmd __attribute__ ((unused)),

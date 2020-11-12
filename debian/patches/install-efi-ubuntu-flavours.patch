@@ -17,7 +17,7 @@ Patch-Name: install-efi-ubuntu-flavours.patch
  1 file changed, 2 insertions(+)
 
 diff --git a/util/grub-install.c b/util/grub-install.c
-index e1e40cf2b5..f0d59c1809 100644
+index e1e40cf2b..f0d59c180 100644
 --- a/util/grub-install.c
 +++ b/util/grub-install.c
 @@ -1115,6 +1115,8 @@ main (int argc, char *argv[])

@@ -11,7 +11,7 @@ Signed-off-by: Mathieu Trudel-Lapierre <mathieu.trudel-lapierre@canonical.com>
  1 file changed, 2 insertions(+)
 
 diff --git a/util/grub-mkconfig.in b/util/grub-mkconfig.in
-index 29bdad0c12..72f1e25a03 100644
+index 29bdad0c1..72f1e25a0 100644
 --- a/util/grub-mkconfig.in
 +++ b/util/grub-mkconfig.in
 @@ -162,10 +162,12 @@ if [ "x${GRUB_EARLY_INITRD_LINUX_STOCK}" = "x" ]; then

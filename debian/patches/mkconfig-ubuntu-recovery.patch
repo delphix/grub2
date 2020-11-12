@@ -24,7 +24,7 @@ Patch-Name: mkconfig-ubuntu-recovery.patch
  4 files changed, 39 insertions(+), 5 deletions(-)
 
 diff --git a/configure.ac b/configure.ac
-index 7656f2434e..1e5abc67d9 100644
+index 7656f2434..1e5abc67d 100644
 --- a/configure.ac
 +++ b/configure.ac
 @@ -1846,6 +1846,17 @@ fi
@@ -46,7 +46,7 @@ index 7656f2434e..1e5abc67d9 100644
  
  AC_SUBST([FONT_SOURCE])
 diff --git a/util/grub.d/10_linux.in b/util/grub.d/10_linux.in
-index d927b60ae2..fcd3033872 100644
+index d927b60ae..fcd303387 100644
 --- a/util/grub.d/10_linux.in
 +++ b/util/grub.d/10_linux.in
 @@ -20,6 +20,7 @@ set -e
@@ -94,7 +94,7 @@ index d927b60ae2..fcd3033872 100644
  
    list=`echo $list | tr ' ' '\n' | fgrep -vx "$linux" | tr '\n' ' '`
 diff --git a/util/grub.d/10_linux_zfs.in b/util/grub.d/10_linux_zfs.in
-index b24587f0a5..de4d215900 100755
+index b24587f0a..de4d21590 100755
 --- a/util/grub.d/10_linux_zfs.in
 +++ b/util/grub.d/10_linux_zfs.in
 @@ -19,6 +19,7 @@ set -e
@@ -141,7 +141,7 @@ index b24587f0a5..de4d215900 100755
      # IFS is set to TAB (ASCII 0x09)
      echo "${menu_metadata}" |
 diff --git a/util/grub.d/30_os-prober.in b/util/grub.d/30_os-prober.in
-index 515a68c7aa..775ceb2e04 100644
+index 515a68c7a..775ceb2e0 100644
 --- a/util/grub.d/30_os-prober.in
 +++ b/util/grub.d/30_os-prober.in
 @@ -220,7 +220,7 @@ EOF

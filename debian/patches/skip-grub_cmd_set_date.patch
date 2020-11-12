@@ -12,7 +12,7 @@ Patch-Name: skip-grub_cmd_set_date.patch
  1 file changed, 3 insertions(+)
 
 diff --git a/tests/grub_cmd_set_date.in b/tests/grub_cmd_set_date.in
-index aac120a6c5..1bb5be4ca7 100644
+index aac120a6c..1bb5be4ca 100644
 --- a/tests/grub_cmd_set_date.in
 +++ b/tests/grub_cmd_set_date.in
 @@ -1,6 +1,9 @@
