@@ -27,7 +27,7 @@ Patch-Name: cherrypick-lsefisystab-show-dtb.patch
  1 file changed, 1 insertion(+)
 
 diff --git a/grub-core/commands/efi/lsefisystab.c b/grub-core/commands/efi/lsefisystab.c
-index 7c039c5097..902788250e 100644
+index 7c039c509..902788250 100644
 --- a/grub-core/commands/efi/lsefisystab.c
 +++ b/grub-core/commands/efi/lsefisystab.c
 @@ -40,6 +40,7 @@ static const struct guid_mapping guid_mappings[] =

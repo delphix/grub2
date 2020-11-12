@@ -13,7 +13,7 @@ Patch-Name: ubuntu-resilient-boot-ignore-alternative-esps.patch
  1 file changed, 125 insertions(+), 5 deletions(-)
 
 diff --git a/grub-core/osdep/unix/efivar.c b/grub-core/osdep/unix/efivar.c
-index 4a58328b42..41d39c4489 100644
+index 4a58328b4..41d39c448 100644
 --- a/grub-core/osdep/unix/efivar.c
 +++ b/grub-core/osdep/unix/efivar.c
 @@ -37,9 +37,11 @@

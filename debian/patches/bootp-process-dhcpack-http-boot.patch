@@ -24,7 +24,7 @@ Patch-Name: bootp-process-dhcpack-http-boot.patch
  2 files changed, 60 insertions(+), 1 deletion(-)
 
 diff --git a/grub-core/net/bootp.c b/grub-core/net/bootp.c
-index 21c1824efb..558d97ba1e 100644
+index 21c1824ef..558d97ba1 100644
 --- a/grub-core/net/bootp.c
 +++ b/grub-core/net/bootp.c
 @@ -154,7 +154,7 @@ struct grub_dhcp_request_options
@@ -109,7 +109,7 @@ index 21c1824efb..558d97ba1e 100644
        },
        GRUB_NET_BOOTP_END,
 diff --git a/include/grub/net.h b/include/grub/net.h
-index 58cff96d2a..b5f9e617e5 100644
+index 58cff96d2..b5f9e617e 100644
 --- a/include/grub/net.h
 +++ b/include/grub/net.h
 @@ -523,6 +523,7 @@ enum

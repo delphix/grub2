@@ -19,7 +19,7 @@ Patch-Name: vt-handoff.patch
  3 files changed, 65 insertions(+), 2 deletions(-)
 
 diff --git a/configure.ac b/configure.ac
-index dbc429ce0a..e382c7480d 100644
+index dbc429ce0..e382c7480 100644
 --- a/configure.ac
 +++ b/configure.ac
 @@ -1890,6 +1890,17 @@ else
@@ -41,7 +41,7 @@ index dbc429ce0a..e382c7480d 100644
  
  AC_SUBST([FONT_SOURCE])
 diff --git a/util/grub.d/10_linux.in b/util/grub.d/10_linux.in
-index 09393c28ee..cc2dd855ab 100644
+index 09393c28e..cc2dd855a 100644
 --- a/util/grub.d/10_linux.in
 +++ b/util/grub.d/10_linux.in
 @@ -24,6 +24,7 @@ ubuntu_recovery="@UBUNTU_RECOVERY@"
@@ -101,7 +101,7 @@ index 09393c28ee..cc2dd855ab 100644
  # FIXME: We need an interface to select vesafb in case efifb can't be used.
  if [ "x$GRUB_GFXPAYLOAD_LINUX" != x ] || [ "$gfxpayload_dynamic" = 0 ]; then
 diff --git a/util/grub.d/10_linux_zfs.in b/util/grub.d/10_linux_zfs.in
-index 8cd7d12851..48a4e68976 100755
+index 8cd7d1285..48a4e6897 100755
 --- a/util/grub.d/10_linux_zfs.in
 +++ b/util/grub.d/10_linux_zfs.in
 @@ -23,6 +23,7 @@ ubuntu_recovery="@UBUNTU_RECOVERY@"

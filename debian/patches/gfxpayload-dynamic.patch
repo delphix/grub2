@@ -23,7 +23,7 @@ Patch-Name: gfxpayload-dynamic.patch
  create mode 100644 grub-core/commands/i386/pc/hwmatch.c
 
 diff --git a/configure.ac b/configure.ac
-index 7dda5bb32b..dbc429ce0a 100644
+index 7dda5bb32..dbc429ce0 100644
 --- a/configure.ac
 +++ b/configure.ac
 @@ -1879,6 +1879,17 @@ else
@@ -45,7 +45,7 @@ index 7dda5bb32b..dbc429ce0a 100644
  
  AC_SUBST([FONT_SOURCE])
 diff --git a/grub-core/Makefile.core.def b/grub-core/Makefile.core.def
-index 474a63e68c..aadb4cdff8 100644
+index 474a63e68..aadb4cdff 100644
 --- a/grub-core/Makefile.core.def
 +++ b/grub-core/Makefile.core.def
 @@ -971,6 +971,14 @@ module = {
@@ -65,7 +65,7 @@ index 474a63e68c..aadb4cdff8 100644
    common = commands/keystatus.c;
 diff --git a/grub-core/commands/i386/pc/hwmatch.c b/grub-core/commands/i386/pc/hwmatch.c
 new file mode 100644
-index 0000000000..6de07cecc8
+index 000000000..6de07cecc
 --- /dev/null
 +++ b/grub-core/commands/i386/pc/hwmatch.c
 @@ -0,0 +1,146 @@
@@ -216,7 +216,7 @@ index 0000000000..6de07cecc8
 +  grub_unregister_command (cmd);
 +}
 diff --git a/include/grub/file.h b/include/grub/file.h
-index 31567483cc..e3c4cae2b5 100644
+index 31567483c..e3c4cae2b 100644
 --- a/include/grub/file.h
 +++ b/include/grub/file.h
 @@ -122,6 +122,7 @@ enum grub_file_type
@@ -228,7 +228,7 @@ index 31567483cc..e3c4cae2b5 100644
      GRUB_FILE_TYPE_LOADENV,
      GRUB_FILE_TYPE_SAVEENV,
 diff --git a/util/grub.d/10_linux.in b/util/grub.d/10_linux.in
-index 2be66c7028..09393c28ee 100644
+index 2be66c702..09393c28e 100644
 --- a/util/grub.d/10_linux.in
 +++ b/util/grub.d/10_linux.in
 @@ -23,6 +23,7 @@ datarootdir="@datarootdir@"
@@ -290,7 +290,7 @@ index 2be66c7028..09393c28ee 100644
  # yet, so it's empty. In a submenu it will be equal to '\t' (one tab).
  submenu_indentation=""
 diff --git a/util/grub.d/10_linux_zfs.in b/util/grub.d/10_linux_zfs.in
-index ec4b49d9d7..8cd7d12851 100755
+index ec4b49d9d..8cd7d1285 100755
 --- a/util/grub.d/10_linux_zfs.in
 +++ b/util/grub.d/10_linux_zfs.in
 @@ -22,6 +22,7 @@ datarootdir="@datarootdir@"

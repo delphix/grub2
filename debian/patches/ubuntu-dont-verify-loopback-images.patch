@@ -22,7 +22,7 @@ Patch-Name: ubuntu-dont-verify-loopback-images.patch
  1 file changed, 2 insertions(+), 1 deletion(-)
 
 diff --git a/grub-core/disk/loopback.c b/grub-core/disk/loopback.c
-index ccb4b167cc..210201d22d 100644
+index ccb4b167c..210201d22 100644
 --- a/grub-core/disk/loopback.c
 +++ b/grub-core/disk/loopback.c
 @@ -86,7 +86,8 @@ grub_cmd_loopback (grub_extcmd_context_t ctxt, int argc, char **args)

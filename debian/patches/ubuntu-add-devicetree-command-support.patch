@@ -14,7 +14,7 @@ Patch-Name: ubuntu-add-devicetree-command-support.patch
  1 file changed, 19 insertions(+)
 
 diff --git a/util/grub.d/10_linux.in b/util/grub.d/10_linux.in
-index af1e096bd6..bbf5d73e39 100644
+index af1e096bd..bbf5d73e3 100644
 --- a/util/grub.d/10_linux.in
 +++ b/util/grub.d/10_linux.in
 @@ -254,6 +254,17 @@ EOF

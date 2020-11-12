@@ -44,7 +44,7 @@ Patch-Name: ubuntu-skip-disk-by-id-lvm-pvm-uuid-entries.patch
  1 file changed, 3 insertions(+)
 
 diff --git a/util/deviceiter.c b/util/deviceiter.c
-index dddc50da7a..ec9a6d0ab4 100644
+index dddc50da7..ec9a6d0ab 100644
 --- a/util/deviceiter.c
 +++ b/util/deviceiter.c
 @@ -589,6 +589,9 @@ grub_util_iterate_devices (int (*hook) (const char *, int, void *), void *hook_d

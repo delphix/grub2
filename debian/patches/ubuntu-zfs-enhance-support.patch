@@ -27,7 +27,7 @@ Signed-off-by: Didier Roche <didier.roche@canonical.com>
  create mode 100755 util/grub.d/10_linux_zfs.in
 
 diff --git a/Makefile.util.def b/Makefile.util.def
-index 969d32f009..bac85e2840 100644
+index 969d32f00..bac85e284 100644
 --- a/Makefile.util.def
 +++ b/Makefile.util.def
 @@ -482,6 +482,13 @@ script = {
@@ -45,7 +45,7 @@ index 969d32f009..bac85e2840 100644
    name = '10_xnu';
    common = util/grub.d/10_xnu.in;
 diff --git a/util/grub.d/10_linux.in b/util/grub.d/10_linux.in
-index 4532266be6..a75096609a 100644
+index 4532266be..a75096609 100644
 --- a/util/grub.d/10_linux.in
 +++ b/util/grub.d/10_linux.in
 @@ -71,6 +71,10 @@ case x"$GRUB_FS" in
@@ -61,7 +61,7 @@ index 4532266be6..a75096609a 100644
  	LINUX_ROOT_DEVICE="ZFS=${rpool}${bootfs%/}"
 diff --git a/util/grub.d/10_linux_zfs.in b/util/grub.d/10_linux_zfs.in
 new file mode 100755
-index 0000000000..5ec65fa941
+index 000000000..5ec65fa94
 --- /dev/null
 +++ b/util/grub.d/10_linux_zfs.in
 @@ -0,0 +1,964 @@

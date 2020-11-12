@@ -1,3 +1,12 @@
+grub2 (2.04-1ubuntu26.7) focal; urgency=medium
+
+  * Avoid "EFI stub: FIRMWARE BUG" message when booting >= 5.7 kernels
+    on arm64 by setting the image base address before jumping to the
+    PE/COFF entry point LP: #1900774
+  * Fix tftp timeouts when fetching large files. LP: #1900773
+
+ -- dann frazier <dannf@ubuntu.com>  Thu, 12 Nov 2020 16:15:13 -0700
+
 grub2 (2.04-1ubuntu26.6) focal; urgency=medium
 
   * postinst.in, grub-multi-install: fix logic of skipping installing onto

@@ -10,7 +10,7 @@ Reviewed-by: Daniel Kiper <daniel.kiper@oracle.com>
  1 file changed, 5 deletions(-)
 
 diff --git a/include/grub/script_sh.h b/include/grub/script_sh.h
-index 360c2be1f0..b382bcf09b 100644
+index 360c2be1f..b382bcf09 100644
 --- a/include/grub/script_sh.h
 +++ b/include/grub/script_sh.h
 @@ -359,13 +359,8 @@ struct grub_script_function

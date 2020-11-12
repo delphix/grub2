@@ -15,7 +15,7 @@ Reviewed-by: Daniel Kiper <daniel.kiper@oracle.com>
  1 file changed, 4 insertions(+), 1 deletion(-)
 
 diff --git a/grub-core/gfxmenu/gui_image.c b/grub-core/gfxmenu/gui_image.c
-index 29784ed2d9..6b2e976f16 100644
+index 29784ed2d..6b2e976f1 100644
 --- a/grub-core/gfxmenu/gui_image.c
 +++ b/grub-core/gfxmenu/gui_image.c
 @@ -195,7 +195,10 @@ load_image (grub_gui_image_t self, const char *path)

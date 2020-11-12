@@ -19,7 +19,7 @@ Patch-Name: ubuntu-install-signed.patch
  1 file changed, 156 insertions(+), 59 deletions(-)
 
 diff --git a/util/grub-install.c b/util/grub-install.c
-index 3b4606eef1..e1e40cf2b5 100644
+index 3b4606eef..e1e40cf2b 100644
 --- a/util/grub-install.c
 +++ b/util/grub-install.c
 @@ -80,6 +80,7 @@ static char *label_color;

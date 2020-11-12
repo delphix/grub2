@@ -17,7 +17,7 @@ Patch-Name: ubuntu-shorter-version-info.patch
  1 file changed, 4 insertions(+), 1 deletion(-)
 
 diff --git a/grub-core/normal/main.c b/grub-core/normal/main.c
-index 0aa389fa16..d25a8212c7 100644
+index 0aa389fa1..d25a8212c 100644
 --- a/grub-core/normal/main.c
 +++ b/grub-core/normal/main.c
 @@ -208,7 +208,7 @@ grub_normal_init_page (struct grub_term_output *term,

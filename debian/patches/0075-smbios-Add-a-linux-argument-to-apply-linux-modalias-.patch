@@ -16,7 +16,7 @@ Origin: upstream, https://git.savannah.gnu.org/cgit/grub.git/commit/?id=87049f97
  1 file changed, 24 insertions(+)
 
 diff --git a/grub-core/commands/smbios.c b/grub-core/commands/smbios.c
-index 7a6a391fc1..1a9086ddd4 100644
+index 7a6a391fc..1a9086ddd 100644
 --- a/grub-core/commands/smbios.c
 +++ b/grub-core/commands/smbios.c
 @@ -64,6 +64,21 @@ grub_smbios_get_eps3 (void)

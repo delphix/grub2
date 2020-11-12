@@ -16,7 +16,7 @@ Reviewed-by: Jan Setje-Eilers <jan.setjeeilers@oracle.com>
  1 file changed, 6 insertions(+)
 
 diff --git a/grub-core/font/font.c b/grub-core/font/font.c
-index 5edb477ac2..d09bb38d89 100644
+index 5edb477ac..d09bb38d8 100644
 --- a/grub-core/font/font.c
 +++ b/grub-core/font/font.c
 @@ -532,6 +532,12 @@ grub_font_load (const char *filename)

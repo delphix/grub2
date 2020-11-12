@@ -23,7 +23,7 @@ Patch-Name: ubuntu-grub-install-extra-removable.patch
  1 file changed, 133 insertions(+), 2 deletions(-)
 
 diff --git a/util/grub-install.c b/util/grub-install.c
-index 64c292383f..0304646453 100644
+index 64c292383..030464645 100644
 --- a/util/grub-install.c
 +++ b/util/grub-install.c
 @@ -56,6 +56,7 @@

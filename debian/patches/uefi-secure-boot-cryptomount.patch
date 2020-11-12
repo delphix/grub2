@@ -19,7 +19,7 @@ Patch-Name: uefi-secure-boot-cryptomount.patch
  1 file changed, 17 insertions(+)
 
 diff --git a/util/grub-install.c b/util/grub-install.c
-index 0304646453..4bad8de612 100644
+index 030464645..4bad8de61 100644
 --- a/util/grub-install.c
 +++ b/util/grub-install.c
 @@ -1546,6 +1546,23 @@ main (int argc, char *argv[])

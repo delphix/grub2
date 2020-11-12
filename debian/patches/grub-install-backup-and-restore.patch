@@ -28,7 +28,7 @@ Patch-Name: grub-install-backup-and-restore.patch
  2 files changed, 91 insertions(+), 16 deletions(-)
 
 diff --git a/configure.ac b/configure.ac
-index 1819188f9f..6a88b9b0c0 100644
+index 1819188f9..6a88b9b0c 100644
 --- a/configure.ac
 +++ b/configure.ac
 @@ -420,7 +420,7 @@ else
@@ -41,7 +41,7 @@ index 1819188f9f..6a88b9b0c0 100644
  
  # glibc 2.25 still includes sys/sysmacros.h in sys/types.h but emits deprecation
 diff --git a/util/grub-install-common.c b/util/grub-install-common.c
-index 447504d3f4..a883b6daef 100644
+index 447504d3f..a883b6dae 100644
 --- a/util/grub-install-common.c
 +++ b/util/grub-install-common.c
 @@ -185,38 +185,113 @@ grub_install_mkdir_p (const char *dst)
