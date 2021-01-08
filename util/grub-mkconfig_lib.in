@@ -295,8 +295,28 @@ version_test_gt ()
 
 version_find_latest ()
 {
+  #
+  # Delphix: we define the latest kernel version as the one listed in the
+  # package-list file of the delphix-entire package.
+  #
+  appliance_platform=$(cat /var/lib/delphix-appliance/platform)
+  if [ "x$appliance_platform" = "x" ]; then
+    echo "Error: file /var/lib/delphix-appliance/platform empty or missing" >&2
+    return 1
+  fi
+  delphix_pkgs_list="/usr/share/doc/delphix-entire-${appliance_platform}/packages.list.gz"
+  delphix_latest=$(zcat "$delphix_pkgs_list" | grep '^delphix-kernel-' | cut -d= -f1 | sed 's/delphix-kernel-//')
+  if [ "x$delphix_latest" = "x" ]; then
+    echo "Error: Failed to retrieve latest delphix-kernel version from '$delphix_pkgs_list'" >&2
+    return 1
+  fi
+
   version_find_latest_a=""
   for i in "$@" ; do
+    if echo "$i" | grep -q "$delphix_latest\$" ; then
+      echo "$i"
+      return
+    fi
     if version_test_gt "$i" "$version_find_latest_a" ; then
       version_find_latest_a="$i"
     fi
