@@ -658,34 +658,39 @@ grub_cmd_linux (grub_command_t cmd __attribute__ ((unused)),
 
 #ifdef GRUB_MACHINE_EFI
   using_linuxefi = 0;
-  if (grub_efi_secure_boot ())
+
+  grub_dl_t mod;
+  grub_command_t linuxefi_cmd;
+
+  grub_dprintf ("linux", "Trying linuxefi\n");
+
+  mod = grub_dl_load ("linuxefi");
+  if (mod)
     {
-      /* linuxefi requires a successful signature check and then hand over
-	 to the kernel without calling ExitBootServices. */
-      grub_dl_t mod;
-      grub_command_t linuxefi_cmd;
-
-      grub_dprintf ("linux", "Secure Boot enabled: trying linuxefi\n");
-
-      mod = grub_dl_load ("linuxefi");
-      if (mod)
+      grub_dl_ref (mod);
+      linuxefi_cmd = grub_command_find ("linuxefi");
+      initrdefi_cmd = grub_command_find ("initrdefi");
+      if (linuxefi_cmd && initrdefi_cmd)
 	{
-	  grub_dl_ref (mod);
-	  linuxefi_cmd = grub_command_find ("linuxefi");
-	  initrdefi_cmd = grub_command_find ("initrdefi");
-	  if (linuxefi_cmd && initrdefi_cmd)
+	  (linuxefi_cmd->func) (linuxefi_cmd, argc, argv);
+	  if (grub_errno == GRUB_ERR_NONE)
 	    {
-	      (linuxefi_cmd->func) (linuxefi_cmd, argc, argv);
-	      if (grub_errno == GRUB_ERR_NONE)
-		{
-		  grub_dprintf ("linux", "Handing off to linuxefi\n");
-		  using_linuxefi = 1;
-		  return GRUB_ERR_NONE;
-		}
-	      grub_dprintf ("linux", "linuxefi failed (%d)\n", grub_errno);
+	      grub_dprintf ("linux", "Handing off to linuxefi\n");
+	      using_linuxefi = 1;
+	      return GRUB_ERR_NONE;
+	    }
+	  else if (grub_efi_secure_boot ())
+	    {
+	      grub_dprintf ("linux", "linuxefi failed and secure boot is enabled (%d)\n", grub_errno);
 	      goto fail;
 	    }
 	}
+    }
+
+  if (grub_efi_secure_boot ())
+    {
+      grub_dprintf("linux", "Unable to hand off to linuxefi and secure boot is enabled\n");
+      goto fail;
     }
 #endif
 
