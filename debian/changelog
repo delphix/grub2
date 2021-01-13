@@ -1,3 +1,24 @@
+grub2 (2.04-1ubuntu26.8) focal; urgency=medium
+
+  * debian/patches/grub-install-backup-and-restore.patch: Fix-up the patch
+    to correctly initialyze the names of the modules to restore. LP:
+    #1907085
+  * rhboot-f34-make-exit-take-a-return-code.patch,
+    rhboot-f34-dont-use-int-for-efi-status.patch: allow grub to exit
+    non-zero under EFI, this should allow falling back to the next
+    BootOrder BootEntry. LP: #1865515
+  * rhboot-f34-tcp-add-window-scaling-support.patch: speed up netboot
+    transfer speed. LP: #1911439
+  * rhboot-f34-support-non-ethernet.patch,
+    ubuntu-fixup-rhboot-f34-support-non-ethernet.patch,
+    ubuntu-fixup-rhboot-f34-support-non-ethernet-2.patch:
+    add support for link layer addresses of up to 32-bytes. LP: #1911439
+  * rhboot-f34-make-pmtimer-tsc-calibration-fast.patch:
+    speed up calibration time, especially when booting VMs. LP: #1911439
+  * minilzo: built using the distribution's minilzo. LP: #1911440
+
+ -- Dimitri John Ledkov <xnox@ubuntu.com>  Wed, 13 Jan 2021 14:12:38 +0000
+
 grub2 (2.04-1ubuntu26.7) focal; urgency=medium
 
   * Avoid "EFI stub: FIRMWARE BUG" message when booting >= 5.7 kernels
