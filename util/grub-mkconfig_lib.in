@@ -299,7 +299,17 @@ version_find_latest ()
   #
   # Delphix: we define the latest kernel version as the one listed in the
   # package-list file of the delphix-entire package.
+  # Note that during initial image creation, we install the delphix-entire
+  # package at the end. If this command is invoked before that it would fail
+  # to query the package-list file. As a workaround, when there's only one
+  # kernel available, which would be the case during initial image creation, we
+  # return it directly.
   #
+  if [ "$#" -lt 2 ]; then
+    echo "$1"
+    return
+  fi
+
   appliance_platform=$(cat /var/lib/delphix-appliance/platform)
   if [ "x$appliance_platform" = "x" ]; then
     echo "Error: file /var/lib/delphix-appliance/platform empty or missing" >&2
