@@ -20,6 +20,7 @@ set -e
 prefix="@prefix@"
 datarootdir="@datarootdir@"
 ubuntu_recovery="@UBUNTU_RECOVERY@"
+quiet_boot="@QUIET_BOOT@"
 
 . "${pkgdatadir}/grub-mkconfig_lib"
 
@@ -779,7 +780,9 @@ zfs_linux_entry () {
 
     echo "$(prepare_grub_to_access_device_cached "${boot_device}" "${submenu_level}")"
 
-    echo "${submenu_indentation}	echo $(gettext_printf "Loading Linux %s ..." ${kernel_version} | grub_quote)"
+    if [ "${quiet_boot}" = 0 ] || [ "${type}" != simple ]; then
+        echo "${submenu_indentation}	echo $(gettext_printf "Loading Linux %s ..." ${kernel_version} | grub_quote)"
+    fi
 
     linux_default_args="${GRUB_CMDLINE_LINUX} ${GRUB_CMDLINE_LINUX_DEFAULT}"
     if [ ${type} = "recovery" ]; then
@@ -788,7 +791,9 @@ zfs_linux_entry () {
 
     echo "${submenu_indentation}	linux	${kernel} root=ZFS=${dataset} ro ${linux_default_args} ${kernel_additional_args}"
 
-    echo "${submenu_indentation}	echo '$(gettext_printf "Loading initial ramdisk ..." | grub_quote)'"
+    if [ "${quiet_boot}" = 0 ] || [ "${type}" != simple ]; then
+        echo "${submenu_indentation}	echo '$(gettext_printf "Loading initial ramdisk ..." | grub_quote)'"
+    fi
     echo "${submenu_indentation}	initrd	${initrd}"
     echo "${submenu_indentation}}"
 }
