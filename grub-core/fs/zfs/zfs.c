@@ -3432,18 +3432,11 @@ grub_zfs_nvlist_lookup_uint64 (const char *nvlist, const char *name,
   return 1;
 }
 
-char *
-grub_zfs_nvlist_lookup_string (const char *nvlist, const char *name)
+static char *
+nvpair_value_string (const char *nvpair, grub_size_t size)
 {
-  char *nvpair;
-  char *ret;
   grub_size_t slen;
-  grub_size_t size;
-  int found;
-
-  found = nvlist_find_value (nvlist, name, DATA_TYPE_STRING, &nvpair, &size, 0);
-  if (!found)
-    return 0;
+  char *ret;
   if (size < 4)
     {
       grub_error (GRUB_ERR_BAD_FS, "invalid string");
@@ -3458,6 +3451,19 @@ grub_zfs_nvlist_lookup_string (const char *nvlist, const char *name)
   grub_memcpy (ret, nvpair + 4, slen);
   ret[slen] = 0;
   return ret;
+}
+
+char *
+grub_zfs_nvlist_lookup_string (const char *nvlist, const char *name)
+{
+  char *nvpair;
+  grub_size_t size;
+  int found;
+
+  found = nvlist_find_value (nvlist, name, DATA_TYPE_STRING, &nvpair, &size, 0);
+  if (!found)
+    return 0;
+  return nvpair_value_string (nvpair, size);
 }
 
 char *
@@ -3811,29 +3817,40 @@ grub_zfs_envblk_open (struct grub_file *file)
       if (err == GRUB_ERR_NONE)
 	{
 	  size_t size = sizeof (vbe->vbe_bootenv);
-	  char *buf = grub_malloc (size);
+	  char *buf = grub_malloc (sizeof (*vbe));
+	  grub_uint64_t version;
+
 	  vbe = (vdev_boot_envblock_t *)data->file_buf;
-	  if (vbe->vbe_version == VB_RAW)
+	  version = grub_zfs_to_cpu64 (vbe->vbe_version, GRUB_ZFS_BIG_ENDIAN);
+	      
+	  if (version == VB_RAW)
 	    {
 	      grub_strncpy (buf, vbe->vbe_bootenv, size - 1);
+	      file->size = grub_strnlen (buf, size);
 	    }
-	  else if (vbe->vbe_version == VB_NVLIST)
+	  else if (version == VB_NVLIST)
 	    {
 	      size_t count;
 	      char *nvl = vbe->vbe_bootenv;
 	      const char *nvp = NULL;
 	      grub_memset (buf, '#', size);
-	      grub_snprintf (buf, size, "%s", GRUB_ENVBLK_SIGNATURE);
+	      *(grub_uint64_t *)buf = vbe->vbe_version;
+	      count = sizeof (grub_uint64_t);
+	      count += grub_snprintf (buf + count, size - count, "%s", GRUB_ENVBLK_SIGNATURE);
+	      if (count < size)
+	        buf[count] = '#';
 	      buf[size - 1] = '\0';
-	      count = grub_strchr(buf, '#') - buf;
 	      while ((nvp = nvlist_next_nvpair (nvl, nvp)) != NULL)
 		{
 		  char *name, *value = NULL;
 		  int rc = 0;
-		  grub_size_t len;
-		  nvpair_name (nvp, &name, &len);
-		  nvpair_value (nvp, &value, &len, NULL);
-		  rc = grub_snprintf (buf + count, size - count, "%s=%s\n", name, value);
+		  grub_size_t len1, len2 = 0;
+		  nvpair_name (nvp, &name, &len1);
+		  if (grub_strcmp (name, "version") == 0)
+		    continue;
+
+		  nvpair_value (nvp, &value, &len2, NULL);
+		  rc = grub_snprintf (buf + count, size - count, "%s=%s\n", name, nvpair_value_string(value, len2));
 		  if (rc < 0)
 		    {
 		      grub_free (buf);
@@ -3845,16 +3862,17 @@ grub_zfs_envblk_open (struct grub_file *file)
 		      grub_free (buf);
 		      return grub_error (GRUB_ERR_BAD_FILE_TYPE, N_("envblk too large"));
 		    }
+		  buf[count] = '#';
 		}
+	      file->size = grub_strnlen (buf + 8, size - 8);
 	    }
 	  else
 	    {
-	      return grub_error (GRUB_ERR_BAD_FILE_TYPE, N_("Invalid bootenv type %d\n"), vbe->vbe_version);
+	      return grub_error (GRUB_ERR_BAD_FILE_TYPE, N_("Invalid bootenv type %llu\n"), (unsigned long long)version);
 	    }
 
 	  grub_free (data->file_buf);
 	  data->file_buf = buf;
-	  file->size = grub_strnlen (buf, size);
 	  return err;
 	}
     }
@@ -3951,11 +3969,11 @@ static grub_ssize_t
 grub_zfs_envblk_read (grub_file_t file, char *buf, grub_size_t len)
 {
   struct grub_zfs_data *data = (struct grub_zfs_data *) file->data;
-  grub_ssize_t olen = len;
+  grub_size_t olen = len, real_size = file->size + offsetof (vdev_boot_envblock_t, vbe_bootenv);
   grub_uint64_t offset = file->offset + offsetof (vdev_boot_envblock_t, vbe_bootenv);
 
-  if (len + file->offset > file->size)
-    olen = file->size - file->offset;
+  if (olen + offset > real_size )
+    olen = real_size - offset;
   grub_memmove (buf, data->file_buf + offset, olen);
   return olen;
 }
@@ -4051,6 +4069,7 @@ grub_zfs_envblk_write (struct grub_file *file, char *buf, grub_size_t len)
     return GRUB_ERR_OUT_OF_RANGE;
 
   grub_memmove (data->file_buf + offset, buf, len);
+  vbe->vbe_version = grub_zfs_to_cpu64 (VB_RAW, GRUB_ZFS_BIG_ENDIAN);
 
   for (l = 0; l < VDEV_LABELS / 2; l++)
     {
