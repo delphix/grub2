@@ -1,3 +1,11 @@
+grub2 (2.04-1ubuntu26.12) focal; urgency=medium
+
+  * Bump the version number in the replaces for grub-efi-* to account for
+    newer packages in bionic from grub2-unsigned shipping the kernel hook
+    conffiles.  LP: #1928674.
+
+ -- Steve Langasek <steve.langasek@ubuntu.com>  Wed, 19 May 2021 22:50:50 -0700
+
 grub2 (2.04-1ubuntu26.11) focal; urgency=medium
 
   [ Dimitri John Ledkov & Steve Langasek ]
