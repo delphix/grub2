@@ -1085,6 +1085,9 @@ grub_cmd_chainloader (grub_command_t cmd __attribute__ ((unused)),
   if (rc > 0)
     {
       grub_file_close (file);
+      if (orig_dev)
+	dev = orig_dev;
+      grub_device_close (dev);
       grub_loader_set (grub_secureboot_chainloader_boot,
 		       grub_secureboot_chainloader_unload, 0);
       return 0;
@@ -1093,14 +1096,14 @@ grub_cmd_chainloader (grub_command_t cmd __attribute__ ((unused)),
     {
       grub_load_and_start_image(boot_image);
       grub_file_close (file);
+      if (orig_dev)
+	dev = orig_dev;
+      grub_device_close (dev);
       grub_loader_set (grub_chainloader_boot, grub_chainloader_unload, 0);
 
       return 0;
     }
   // -1 fall-through to fail
-
-  grub_file_close (file);
-  grub_device_close (dev);
 
 fail:
   if (orig_dev)
