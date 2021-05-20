@@ -130,7 +130,7 @@ grub_util_load_config (struct grub_util_config *cfg)
   if (num_cfgpaths == 0)
     goto out;
 
-  sorted_cfgpaths = xmalloc (num_cfgpaths * sizeof (*sorted_cfgpaths));
+  sorted_cfgpaths = xcalloc (num_cfgpaths, sizeof (*sorted_cfgpaths));
   i = 0;
   if (grub_util_is_regular (cfgfile))
     sorted_cfgpaths[i++] = xstrdup (cfgfile);
