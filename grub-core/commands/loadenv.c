@@ -79,6 +79,98 @@ open_envblk_file (char *filename,
   return file;
 }
 
+static grub_file_t
+open_envblk_block (grub_fs_t fs, grub_device_t dev, enum grub_file_type type)
+{
+  if (fs->fs_envblk_open) {
+    return grub_file_envblk_open (fs, dev, type | GRUB_FILE_TYPE_NO_DECOMPRESS);
+  }
+  return NULL;
+}
+
+static grub_file_t
+open_envblk (grub_extcmd_context_t ctxt, enum grub_file_type type)
+{
+  struct grub_arg_list *state = ctxt->state;
+  grub_file_t file = NULL;
+  grub_device_t device = NULL;
+  const char *source;
+  grub_fs_t fs = NULL;
+  char *filename = state[0].set ? state[0].arg : NULL;
+
+  source = grub_env_get ("grubenv_src");
+  if (! source || ! grub_strcmp (source, GRUB_ENVBLK_SRC_BLK))
+    {
+      char *device_name;
+      const char *prefix;
+      grub_dprintf ("loadenv", "checking for envblk\n");
+
+      prefix = grub_env_get ("prefix");
+      if (! prefix)
+        {
+          grub_error (GRUB_ERR_FILE_NOT_FOUND, N_("variable `%s' isn't set"), "prefix");
+          return NULL;
+        }
+
+      device_name = grub_file_get_device_name (prefix);
+      if (grub_errno)
+	return NULL;
+
+      device = grub_device_open (device_name);
+      if (! device) {
+	grub_free (device_name);
+	return NULL;
+      }
+
+      fs = grub_fs_probe (device);
+      if (! fs) {
+	grub_device_close (device);
+	grub_free (device_name);
+	return NULL;
+      }
+
+      /* We have to reopen the device here because it was closed in grub_fs_probe. */
+      device = grub_device_open (device_name);
+      grub_free (device_name);
+      if (! device)
+	return NULL;
+
+    }
+  if (! source)
+    {
+      if (fs->fs_envblk_open)
+	{
+	  source = GRUB_ENVBLK_SRC_BLK;
+	  grub_dprintf ("loadenv", "envblk support detected\n");
+	}
+      else
+	{
+	  source = GRUB_ENVBLK_SRC_FILE;
+	  grub_dprintf ("loadenv", "envblk support not detected\n");
+	}
+    }
+
+  if (! grub_strcmp (source, GRUB_ENVBLK_SRC_FILE))
+    {
+      if (device)
+        grub_device_close (device);
+      file = open_envblk_file (filename, type);
+
+      if (! file)
+	return NULL;
+    }
+  else if (! grub_strcmp (source, GRUB_ENVBLK_SRC_BLK))
+    {
+      file = open_envblk_block (fs, device, type);
+      if (! file)
+	{
+	  grub_device_close (device);
+	  return NULL;
+	}
+    }
+  return file;
+}
+
 static grub_envblk_t
 read_envblk_file (grub_file_t file)
 {
@@ -166,7 +258,7 @@ grub_cmd_load_env (grub_extcmd_context_t ctxt, int argc, char **args)
   whitelist.list = args;
 
   /* state[0] is the -f flag; state[1] is the --skip-sig flag */
-  file = open_envblk_file ((state[0].set) ? state[0].arg : 0,
+  file = open_envblk (ctxt,
 			   GRUB_FILE_TYPE_LOADENV
 			   | (state[1].set
 			      ? GRUB_FILE_TYPE_SKIP_SIGNATURE : GRUB_FILE_TYPE_NONE));
@@ -204,7 +296,7 @@ grub_cmd_list_env (grub_extcmd_context_t ctxt,
   grub_file_t file;
   grub_envblk_t envblk;
 
-  file = open_envblk_file ((state[0].set) ? state[0].arg : 0,
+  file = open_envblk (ctxt,
 			   GRUB_FILE_TYPE_LOADENV
 			   | (state[1].set
 			      ? GRUB_FILE_TYPE_SKIP_SIGNATURE : GRUB_FILE_TYPE_NONE));
@@ -390,7 +482,7 @@ grub_cmd_save_env (grub_extcmd_context_t ctxt, int argc, char **args)
   if (! argc)
     return grub_error (GRUB_ERR_BAD_ARGUMENT, "no variable is specified");
 
-  file = open_envblk_file ((state[0].set) ? state[0].arg : 0,
+  file = open_envblk (ctxt,
 			   GRUB_FILE_TYPE_SAVEENV
 			   | GRUB_FILE_TYPE_SKIP_SIGNATURE);
   if (! file)
@@ -409,7 +501,7 @@ grub_cmd_save_env (grub_extcmd_context_t ctxt, int argc, char **args)
   if (! envblk)
     goto fail;
 
-  if (check_blocklists (envblk, ctx.head, file))
+  if (! grub_file_envblk (file) && check_blocklists (envblk, ctx.head, file))
     goto fail;
 
   while (argc)
@@ -432,7 +524,15 @@ grub_cmd_save_env (grub_extcmd_context_t ctxt, int argc, char **args)
       args++;
     }
 
-  write_blocklists (envblk, ctx.head, file);
+  if (grub_file_envblk (file))
+    {
+      grub_file_seek (file, 0);
+      file->fs->fs_envblk_write (file, grub_envblk_buffer (envblk), grub_envblk_size (envblk));
+    }
+  else
+    {
+      write_blocklists (envblk, ctx.head, file);
+    }
 
  fail:
   if (envblk)

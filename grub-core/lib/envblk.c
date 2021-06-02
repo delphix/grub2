@@ -224,7 +224,7 @@ grub_envblk_delete (grub_envblk_t envblk, const char *name)
 }
 
 void
-grub_envblk_iterate (grub_envblk_t envblk,
+grub_envblk_iterate (const grub_envblk_t envblk,
                      void *hook_data,
                      int hook (const char *name, const char *value, void *hook_data))
 {

@@ -57,14 +57,39 @@ grub_file_get_device_name (const char *name)
   return 0;
 }
 
+/* Apply all relevant filters to the provided grub file. */
+static grub_file_t
+grub_apply_file_filters (grub_file_t file, enum grub_file_type type)
+{
+  grub_file_filter_id_t filter;
+  grub_file_t last_file = NULL;
+  const char *name = file->name;
+
+  for (filter = 0; file && filter < ARRAY_SIZE (grub_file_filters);
+       filter++)
+    if (grub_file_filters[filter])
+      {
+        last_file = file;
+        file = grub_file_filters[filter] (file, type);
+        if (file && file != last_file)
+          {
+            file->name = grub_strdup (name);
+            grub_errno = GRUB_ERR_NONE;
+          }
+      }
+  if (!file)
+    grub_file_close (last_file);
+
+  return file;
+}
+
 grub_file_t
 grub_file_open (const char *name, enum grub_file_type type)
 {
-  grub_device_t device = 0;
-  grub_file_t file = 0, last_file = 0;
+  grub_device_t device = NULL;
+  grub_file_t file = NULL;
   char *device_name;
   const char *file_name;
-  grub_file_filter_id_t filter;
 
   device_name = grub_file_get_device_name (name);
   if (grub_errno)
@@ -113,22 +138,7 @@ grub_file_open (const char *name, enum grub_file_type type)
   file->name = grub_strdup (name);
   grub_errno = GRUB_ERR_NONE;
 
-  for (filter = 0; file && filter < ARRAY_SIZE (grub_file_filters);
-       filter++)
-    if (grub_file_filters[filter])
-      {
-	last_file = file;
-	file = grub_file_filters[filter] (file, type);
-	if (file && file != last_file)
-	  {
-	    file->name = grub_strdup (name);
-	    grub_errno = GRUB_ERR_NONE;
-	  }
-      }
-  if (!file)
-    grub_file_close (last_file);
-
-  return file;
+  return grub_apply_file_filters(file, type);
 
  fail:
   if (device)
@@ -139,6 +149,28 @@ grub_file_open (const char *name, enum grub_file_type type)
   grub_free (file);
 
   return 0;
+}
+
+grub_file_t
+grub_file_envblk_open (grub_fs_t fs, grub_device_t device,
+                       enum grub_file_type type)
+{
+  grub_file_t file = NULL;
+  file = (grub_file_t) grub_zalloc (sizeof (*file));
+  if (! file)
+    return NULL;
+  file->device = device;
+  file->envblk = 1;
+
+  if ((fs->fs_envblk_open) (file) != GRUB_ERR_NONE) {
+    grub_free(file);
+    return NULL;
+  }
+
+  file->fs = fs;
+  grub_errno = GRUB_ERR_NONE;
+
+  return grub_apply_file_filters(file, type);
 }
 
 grub_disk_read_hook_t grub_file_progress_hook;
@@ -177,6 +209,9 @@ grub_file_read (grub_file_t file, void *buf, grub_size_t len)
       file->read_hook_data = file;
       file->progress_offset = file->offset;
     }
+  if (grub_file_envblk (file))
+    res = (file->fs->fs_envblk_read) (file, buf, len);
+  else
   res = (file->fs->fs_read) (file, buf, len);
   file->read_hook = read_hook;
   file->read_hook_data = read_hook_data;
@@ -189,7 +224,9 @@ grub_file_read (grub_file_t file, void *buf, grub_size_t len)
 grub_err_t
 grub_file_close (grub_file_t file)
 {
-  if (file->fs->fs_close)
+  if (grub_file_envblk (file) && file->fs->fs_envblk_close)
+    (file->fs->fs_envblk_close) (file);
+  else if (file->fs->fs_close)
     (file->fs->fs_close) (file);
 
   if (file->device)

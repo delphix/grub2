@@ -49,7 +49,8 @@ confflags = \
 	CC=$(CC) TARGET_CC=$(CC) \
 	--libdir=\$${prefix}/lib --libexecdir=\$${prefix}/lib \
 	--enable-grub-mkfont \
-	--disable-grub-emu-usb
+	--disable-grub-emu-usb \
+	--enable-libzfs=yes
 substvars =
 
 AUTOGEN_DEB_FILES = config templates preinst postinst postrm dirs install links maintscript bash-completion

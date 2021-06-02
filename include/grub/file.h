@@ -171,6 +171,9 @@ struct grub_file
 
   /* Caller-specific data passed to the read hook.  */
   void *read_hook_data;
+
+  /* If the file is an FS's envblock, which uses separate functions for interaction. */
+  int envblk;
 };
 typedef struct grub_file *grub_file_t;
 
@@ -212,6 +215,7 @@ grub_ssize_t EXPORT_FUNC(grub_file_read) (grub_file_t file, void *buf,
 					  grub_size_t len);
 grub_off_t EXPORT_FUNC(grub_file_seek) (grub_file_t file, grub_off_t offset);
 grub_err_t EXPORT_FUNC(grub_file_close) (grub_file_t file);
+grub_file_t EXPORT_FUNC(grub_file_envblk_open) (grub_fs_t fs, grub_device_t device, enum grub_file_type type);
 
 /* Return value of grub_file_size() in case file size is unknown. */
 #define GRUB_FILE_SIZE_UNKNOWN	 0xffffffffffffffffULL
@@ -232,6 +236,12 @@ static inline int
 grub_file_seekable (const grub_file_t file)
 {
   return !file->not_easily_seekable;
+}
+
+static inline int
+grub_file_envblk (const grub_file_t file)
+{
+  return file->envblk;
 }
 
 grub_file_t
