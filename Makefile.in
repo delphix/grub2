@@ -116,7 +116,7 @@ noinst_PROGRAMS =
 platform_PROGRAMS =
 TESTS = example_unit_test$(EXEEXT) printf_test$(EXEEXT) \
 	date_test$(EXEEXT) $(am__EXEEXT_5) cmp_test$(EXEEXT) \
-	ext234_test squashfs_test iso9660_test hfsplus_test ntfs_test \
+	ext234_test iso9660_test hfsplus_test ntfs_test \
 	reiserfs_test fat_test minixfs_test xfs_test f2fs_test \
 	nilfs2_test romfs_test exfat_test tar_test udf_test hfs_test \
 	jfs_test btrfs_test zfs_test cpio_test example_scripted_test \
@@ -2640,7 +2640,7 @@ pkgdata_DATA = $(am__append_93) grub-mkconfig_lib
 bin_SCRIPTS = grub-kbdcomp
 sbin_SCRIPTS = grub-mkconfig grub-set-default grub-reboot
 platform_DATA = 
-check_SCRIPTS = ext234_test squashfs_test iso9660_test hfsplus_test \
+check_SCRIPTS = ext234_test iso9660_test hfsplus_test \
 	ntfs_test reiserfs_test fat_test minixfs_test xfs_test \
 	f2fs_test nilfs2_test romfs_test exfat_test tar_test udf_test \
 	hfs_test jfs_test btrfs_test zfs_test cpio_test \
@@ -2872,7 +2872,7 @@ CLEANFILES = $(nodist_libgrubkern_a_SOURCES) \
 	$(am__append_89) grub-mkconfig $(am__append_90) \
 	grub-set-default $(am__append_91) grub-reboot \
 	grub-mkconfig_lib $(am__append_92) grub-kbdcomp grub-shell \
-	grub-shell-tester grub-fs-tester ext234_test squashfs_test \
+	grub-shell-tester grub-fs-tester ext234_test \
 	iso9660_test hfsplus_test ntfs_test reiserfs_test fat_test \
 	minixfs_test xfs_test f2fs_test nilfs2_test romfs_test \
 	exfat_test tar_test udf_test hfs_test jfs_test btrfs_test \
