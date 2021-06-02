@@ -832,16 +832,6 @@ ext234_test: $(top_builddir)/config.status tests/ext234_test.in
 CLEANFILES += ext234_test
 EXTRA_DIST += 
 dist_noinst_DATA += tests/ext234_test.in 
-check_SCRIPTS += squashfs_test
-TESTS += squashfs_test
-
-squashfs_test: $(top_builddir)/config.status tests/squashfs_test.in 
-	(for x in tests/squashfs_test.in ; do cat $(srcdir)/"$$x"; done) | $(top_builddir)/config.status --file=$@:-
-	chmod a+x squashfs_test
-	
-CLEANFILES += squashfs_test
-EXTRA_DIST += 
-dist_noinst_DATA += tests/squashfs_test.in 
 check_SCRIPTS += iso9660_test
 TESTS += iso9660_test
 

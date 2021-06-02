@@ -781,12 +781,6 @@ script = {
 
 script = {
   testcase;
-  name = squashfs_test;
-  common = tests/squashfs_test.in;
-};
-
-script = {
-  testcase;
   name = iso9660_test;
   common = tests/iso9660_test.in;
 };
