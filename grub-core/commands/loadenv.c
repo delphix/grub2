@@ -471,7 +471,6 @@ save_env_read_hook (grub_disk_addr_t sector, unsigned offset, unsigned length,
 static grub_err_t
 grub_cmd_save_env (grub_extcmd_context_t ctxt, int argc, char **args)
 {
-  struct grub_arg_list *state = ctxt->state;
   grub_file_t file;
   grub_envblk_t envblk;
   struct grub_cmd_save_env_ctx ctx = {
