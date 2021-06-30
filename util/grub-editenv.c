@@ -208,9 +208,8 @@ grub_zfs_get_bootenv (void *arg, char **buf, size_t *size)
   nvpair_t *nvp = NULL;
   size_t count;
   u_int64_t version;
-  if (error == -1)
+  if (error != 0)
     {
-      error = libzfs_errno (zpool_get_handle (zhp));
       return error;
     }
   nvlist_size (nvl, size, NV_ENCODE_NATIVE);
@@ -367,7 +366,7 @@ open_envblk (const char *name)
     return open_envblk_file(name);
 
   rc = fs_envblk->spec->fs_read(fs_envblk->data, &buf, &size);
-  if (rc < 0)
+  if (rc != 0)
     {
       grub_util_error (_("cannot read envblock: %s"), strerror (errno));
       return NULL;
