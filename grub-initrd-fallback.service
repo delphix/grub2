@@ -8,6 +8,3 @@ Type=oneshot
 ExecStart=/usr/bin/grub-editenv /boot/grub/grubenv unset initrdfail
 ExecStart=/usr/bin/grub-editenv /boot/grub/grubenv unset prev_entry
 TimeoutSec=0
-
-[Install]
-WantedBy=multi-user.target rescue.target emergency.target
