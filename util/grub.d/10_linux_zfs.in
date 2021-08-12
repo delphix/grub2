@@ -21,6 +21,7 @@ prefix="@prefix@"
 datarootdir="@datarootdir@"
 ubuntu_recovery="@UBUNTU_RECOVERY@"
 quiet_boot="@QUIET_BOOT@"
+quick_boot="@QUICK_BOOT@"
 
 . "${pkgdatadir}/grub-mkconfig_lib"
 
@@ -754,6 +755,10 @@ zfs_linux_entry () {
     submenu_indentation="$(printf %${submenu_level}s | tr " " "${grub_tab}")"
 
     echo "${submenu_indentation}menuentry '$(echo "${title}" | grub_quote)' ${CLASS} \${menuentry_id_option} 'gnulinux-${dataset}-${kernel_version}' {"
+
+    if [ "${quick_boot}" = 1 ]; then
+        echo "${submenu_indentation}	recordfail"
+    fi
 
     if [ "${type}" != "recovery" ] ; then
         GRUB_SAVEDEFAULT=${GRUB_SAVEDEFAULT:-}
