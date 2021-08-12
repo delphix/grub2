@@ -270,6 +270,21 @@ version_test_gt ()
   if [ "x$version_test_gt_b" = "x" ] ; then
     return 0
   fi
+
+  # GRUB_FLAVOUR_ORDER is an ordered list of kernels, in decreasing
+  # priority. Any items in the list take precedence over other kernels,
+  # and earlier flavours are preferred over later ones.
+  for flavour in ${GRUB_FLAVOUR_ORDER:-}; do
+    version_test_gt_a_preferred=$(echo "$version_test_gt_a" | grep --  "-[0-9]*-$flavour\$")
+    version_test_gt_b_preferred=$(echo "$version_test_gt_b" | grep --  "-[0-9]*-$flavour\$")
+
+    if [ -n "$version_test_gt_a_preferred" -a -z "$version_test_gt_b_preferred" ] ; then
+      return 0
+    elif [ -z "$version_test_gt_a_preferred" -a -n "$version_test_gt_b_preferred" ] ; then
+      return 1
+    fi
+  done
+
   case "$version_test_gt_a:$version_test_gt_b" in
     *.old:*.old) ;;
     *.old:*) version_test_gt_a="`echo "$version_test_gt_a" | sed -e 's/\.old$//'`" ; version_test_gt_cmp=gt ;;
