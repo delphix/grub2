@@ -40,7 +40,6 @@
 #include <argp.h>
 #pragma GCC diagnostic error "-Wmissing-prototypes"
 #pragma GCC diagnostic error "-Wmissing-declarations"
-#include <assert.h>
 
 #include "progname.h"
 
@@ -127,8 +126,8 @@ block, use `rm %s'."),
 
 struct fs_envblk_spec {
   const char *fs_name;
-  int (*fs_read) (void *, char **, size_t *);
-  int (*fs_write) (void *, const grub_envblk_t);
+  int (*fs_read) (void *, char *, size_t, off_t);
+  int (*fs_write) (void *, const char *);
   int (*fs_init) (grub_device_t, void **);
   void (*fs_fini) (void *);
 };
@@ -151,7 +150,7 @@ grub_zfs_init (grub_device_t dev, void **out)
   int err;
   char *name;
   zpool_handle_t *zhp;
-  nvlist_t *nvl;
+  char buf[16];
 
   if (g_zfs == NULL)
     return -1;
@@ -168,14 +167,13 @@ grub_zfs_init (grub_device_t dev, void **out)
       return -1;
     }
   /* If bootenv support isn't present on this system, don't try to use the envblk. */
-  err = zpool_get_bootenv (zhp, &nvl);
+  err = zpool_get_bootenv (zhp, buf, 16, 0);
   if (err == -1 && libzfs_errno(zpool_get_handle(zhp)) == EZFS_IOC_NOTSUPPORTED)
     {
       zpool_close(zhp);
       libzfs_fini(g_zfs);
       return -1;
     }
-  nvlist_free(nvl);
 
   *out = zhp;
   return 0;
@@ -190,122 +188,23 @@ grub_zfs_fini (void *arg)
   libzfs_fini(g_zfs);
 }
 
-typedef enum vbe_vers {
-        VB_RAW = 0,
-        VB_NVLIST = 1
-} vbe_vers_t;
-
-/*
- * We need to convert ZFS's nvlist to a buffer we can manipulate in a
- * platform-agnostic fashion.
- */
+/* We need to convert ZFS's error returning pattern to the one we expect */
 static int
-grub_zfs_get_bootenv (void *arg, char **buf, size_t *size)
+grub_zfs_get_bootenv (void *arg, char *buf, size_t size, off_t offset)
 {
   zpool_handle_t *zhp = arg;
-  nvlist_t *nvl;
-  int error = zpool_get_bootenv (zhp, &nvl);
-  nvpair_t *nvp = NULL;
-  size_t count;
-  u_int64_t version;
-  if (error != 0)
-    {
-      return error;
-    }
-  nvlist_size (nvl, size, NV_ENCODE_NATIVE);
-  *size *= 2;
-  if (*size < GRUB_ENVBLK_DEFAULT_SIZE)
-    *size = GRUB_ENVBLK_DEFAULT_SIZE;
-  *buf = malloc (*size);
-  if (nvlist_lookup_uint64 (nvl, "version", &version) != 0)
-    {
-      free (*buf);
-      nvlist_free (nvl);
-      return -1;
-    }
-  if (version == VB_RAW)
-    {
-      char *raw;
-      if (nvlist_lookup_string (nvl, "grub:envmap", &raw) != 0)
-        {
-          free (*buf);
-          nvlist_free (nvl);
-          return -1;
-        }
-      strncpy (*buf, raw, *size);
-      *size = strlen (raw);
-      nvlist_free (nvl);
-      return 0;
-    }
-  grub_util_create_envblk_buffer (*buf, *size);
-  count = (strchr (*buf, '\n') - *buf) + 1;
-  /*
-   * NVLIST format envblocks contain a series of STRING values. No other types
-   * are allowed, except for the UINT64 version field. Each string value
-   * represents one entry in the envblock.
-   */
-  while ((nvp = nvlist_next_nvpair (nvl, nvp)) != NULL)
-    {
-      char *name, *value;
-      int rc;
-      name = nvpair_name (nvp);
-      if (nvpair_type (nvp) == DATA_TYPE_UINT64)
-        {
-          assert (strcmp(name, "version") == 0);
-          continue;
-        }
-      assert (nvpair_type (nvp) == DATA_TYPE_STRING);
-      nvpair_value_string (nvp, &value);
-      rc = snprintf (*buf + count, *size - count, "%s=%s\n", name, value);
-      if (rc < 0)
-        grub_util_error (_("cannot write nvlist entry %s to buffer"), name);
-      else if (rc < grub_strlen (name) + grub_strlen (value) + 2)
-        grub_util_error (_("envblock contents too large for buffer"));
-      count += rc;
-      assert (count < *size);
-    }
-  if (count < GRUB_ENVBLK_DEFAULT_SIZE)
-    {
-      memset (*buf + count, '#', GRUB_ENVBLK_DEFAULT_SIZE - count - 1);
-      count = GRUB_ENVBLK_DEFAULT_SIZE - 1;
-      (*buf)[count] = '\0';
-      count++;
-    }
-  nvlist_free (nvl);
-  *size = strlen (*buf);
-  return 0;
-}
-
-static int
-nvlist_add_cb (const char *name, const char *value, void *hook_data)
-{
-  nvlist_t *nvl = hook_data;
-  return nvlist_add_string (nvl, name, value);
-}
-
-static int
-grub_zfs_set_bootenv (void *arg, const grub_envblk_t envblk)
-{
-  zpool_handle_t *zhp = arg;
-  nvlist_t *nvl;
-  int rc;
-  if (nvlist_alloc (&nvl, NV_UNIQUE_NAME, 0) != 0)
-      grub_util_error (_("cannot allocate nvlist"));
-  if (nvlist_add_uint64(nvl, "version", VB_NVLIST) != 0)
-      grub_util_error (_("cannot write to nvlist"));
-  grub_envblk_iterate (envblk, nvl, nvlist_add_cb);
-  rc = zpool_set_bootenv (zhp, nvl);
-  nvlist_free (nvl);
-  if (rc != 0)
-    rc = libzfs_errno (zpool_get_handle (zhp));
-  return rc;
+  int error = zpool_get_bootenv (zhp, buf, size, offset);
+  if (error != -1)
+    return error;
+  error = libzfs_errno(zpool_get_handle(zhp));
+  return error;
 }
 
 #endif
 
 fs_envblk_spec_t fs_envblk_table[] = {
 #if defined(HAVE_LIBZFS) && defined(HAVE_LIBNVPAIR) && defined(HAVE_LIBZFS_BOOTENV)
-  { "zfs", grub_zfs_get_bootenv, grub_zfs_set_bootenv, grub_zfs_init, grub_zfs_fini},
+  { "zfs", grub_zfs_get_bootenv, zpool_set_bootenv, grub_zfs_init, grub_zfs_fini},
 #endif
   { NULL, NULL, NULL, NULL, NULL }
 };
@@ -325,7 +224,7 @@ open_envblk_file (const char *name)
       grub_util_create_envblk_file (name);
       fp = grub_util_fopen (name, "rb");
       if (! fp)
-	grub_util_error (_("cannot open `%s': %s"), name,
+        grub_util_error (_("cannot open `%s': %s"), name,
 			 strerror (errno));
     }
 
@@ -358,23 +257,41 @@ static grub_envblk_t
 open_envblk (const char *name)
 {
   char *buf = NULL;
-  size_t size;
+  off_t off = 0;
+  size_t size = GRUB_ENVBLK_DEFAULT_SIZE;
   grub_envblk_t envblk;
-  int rc;
 
   if (fs_envblk == NULL)
     return open_envblk_file(name);
 
-  rc = fs_envblk->spec->fs_read(fs_envblk->data, &buf, &size);
-  if (rc != 0)
+  /*
+   * For normal grubenv files, we can just use the size of the file to
+   * allocate our buffer, but envblks don't necessarily advertise their size
+   * directly. We need to instead read and realloc a larger buffer until we
+   * have read in the entire file.
+   */
+  while (1)
     {
-      grub_util_error (_("cannot read envblock: %s"), strerror (errno));
-      return NULL;
+      int rc;
+
+      buf = xrealloc(buf, size);
+      rc = fs_envblk->spec->fs_read(fs_envblk->data, buf + off, size, off);
+      if (rc < 0)
+	{
+	  grub_util_error (_("cannot read envblock: %s"), strerror (errno));
+	  free(buf);
+	  return NULL;
+	}
+      if (rc < size)
+	{
+	  envblk = grub_envblk_open (buf, rc + off);
+	  if (! envblk)
+	    grub_util_error ("%s", _("invalid environment block"));
+	  return envblk;
+	}
+      off += size;
+      size *= 2;
     }
-  envblk = grub_envblk_open (buf, size);
-  if (! envblk)
-    grub_util_error ("%s", _("invalid environment block"));
-  return envblk;
 }
 
 static void
@@ -426,13 +343,13 @@ write_envblk_file (const char *name, grub_envblk_t envblk)
 }
 
 static void
-write_envblk (const char *name, const grub_envblk_t envblk)
+write_envblk (const char *name, grub_envblk_t envblk)
 {
   int err = 0;
   if (fs_envblk == NULL)
     return write_envblk_file(name, envblk);
 
-  if ((err = fs_envblk->spec->fs_write (fs_envblk->data, envblk)) != 0)
+  if ((err = fs_envblk->spec->fs_write (fs_envblk->data, grub_envblk_buffer (envblk))) != 0)
     grub_util_error (_("cannot write to envblock: %s"), strerror (err));
 }
 
@@ -571,37 +488,37 @@ probe_fs_envblk (fs_envblk_spec_t *spec)
     {
       grub_device_t dev = grub_device_open (*curdrive);
       if (!dev)
-        continue;
+	continue;
       if (dev->disk)
-        have_abstraction |= probe_abstraction (dev->disk);
+	have_abstraction |= probe_abstraction (dev->disk);
       grub_device_close (dev);
     }
 
   for (p = spec; p->fs_name; p++)
     {
       if (strcmp (grub_fs->name, p->fs_name) == 0 && !have_abstraction)
-        {
-          grub_util_info ("Detected envblock support in %s, leveraging", grub_fs->name);
-          fs_envblk = xmalloc (sizeof (fs_envblk_t));
-          fs_envblk->spec = p;
-          fs_envblk->fs = grub_fs;
-          err = p->fs_init (grub_dev, &fs_envblk->data);
+	{
+	  grub_util_info ("Detected envblock support in %s, leveraging", grub_fs->name);
+	  fs_envblk = xmalloc (sizeof (fs_envblk_t));
+	  fs_envblk->spec = p;
+	  fs_envblk->fs = grub_fs;
+	  err = p->fs_init (grub_dev, &fs_envblk->data);
 
-          if (err != 0)
-            {
-              grub_util_info ("Envblock init failed, continuing %d", err);
-              free(fs_envblk);
-              continue;
-            }
+	  if (err != 0)
+	    {
+	      grub_util_info ("Envblock init failed, continuing %d", err);
+	      free(fs_envblk);
+	      continue;
+	    }
 
-          grub_device_close (grub_dev);
-          free (grub_drives);
-          grub_gcry_fini_all ();
-          grub_fini_all ();
-          grub_util_biosdisk_fini ();
+	  grub_device_close (grub_dev);
+	  free (grub_drives);
+	  grub_gcry_fini_all ();
+	  grub_fini_all ();
+	  grub_util_biosdisk_fini ();
 
-          return fs_envblk;
-        }
+	  return fs_envblk;
+	}
     }
 
   free (grub_drives);
