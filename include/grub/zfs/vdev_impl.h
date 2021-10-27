@@ -23,39 +23,34 @@
 #ifndef _SYS_VDEV_IMPL_H
 #define	_SYS_VDEV_IMPL_H
 
-#define	VDEV_PAD_SIZE		(8 << 10)
+#define	VDEV_SKIP_SIZE		(8 << 10)
+#define	VDEV_BOOT_HEADER_SIZE	(8 << 10)
 #define	VDEV_PHYS_SIZE		(112 << 10)
 #define	VDEV_UBERBLOCK_RING	(128 << 10)
+
+/* ZFS boot block */
+#define	VDEV_BOOT_MAGIC		0x2f5b007b10cULL
+#define	VDEV_BOOT_VERSION	1		/* version number	*/
+
+typedef struct vdev_boot_header {
+	grub_uint64_t	vb_magic;		/* VDEV_BOOT_MAGIC	*/
+	grub_uint64_t	vb_version;		/* VDEV_BOOT_VERSION	*/
+	grub_uint64_t	vb_offset;		/* start offset	(bytes) */
+	grub_uint64_t	vb_size;		/* size (bytes)		*/
+	char		vb_pad[VDEV_BOOT_HEADER_SIZE - 4 * sizeof (grub_uint64_t)];
+} vdev_boot_header_t;
 
 typedef struct vdev_phys {
 	char		vp_nvlist[VDEV_PHYS_SIZE - sizeof (zio_eck_t)];
 	zio_eck_t	vp_zbt;
 } vdev_phys_t;
 
-typedef enum vbe_vers {
-	/* The bootenv file is stored as ascii text in the envblock */
-	VB_RAW = 0,
-
-	/*
-	 * The bootenv file is converted to an nvlist and then packed into the
-	 * envblock.
-	 */
-	VB_NVLIST = 1
-} vbe_vers_t;
-
-typedef struct vdev_boot_envblock {
-	grub_uint64_t	vbe_version;
-	char		vbe_bootenv[VDEV_PAD_SIZE - sizeof (grub_uint64_t) -
-			sizeof (zio_eck_t)];
-	zio_eck_t	vbe_zbt;
-} vdev_boot_envblock_t;
-
 typedef struct vdev_label {
-	char		vl_pad1[VDEV_PAD_SIZE];			/*  8K */
-	vdev_boot_envblock_t	vl_be;				/*  8K */
+	char		vl_pad[VDEV_SKIP_SIZE];			/*   8K	*/
+	vdev_boot_header_t vl_boot_header;			/*   8K	*/
 	vdev_phys_t	vl_vdev_phys;				/* 112K	*/
 	char		vl_uberblock[VDEV_UBERBLOCK_RING];	/* 128K	*/
-} vdev_label_t;						/* 256K total */
+} vdev_label_t;							/* 256K total */
 
 /*
  * Size and offset of embedded boot loader region on each label.
