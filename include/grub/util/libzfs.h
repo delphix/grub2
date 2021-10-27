@@ -42,8 +42,8 @@ extern nvlist_t *zpool_get_config (zpool_handle_t *, nvlist_t **);
 
 extern libzfs_handle_t *zpool_get_handle (zpool_handle_t *);
 
-extern int zpool_set_bootenv (zpool_handle_t *, const nvlist_t*);
-extern int zpool_get_bootenv (zpool_handle_t *, nvlist_t **);
+extern int zpool_set_bootenv (zpool_handle_t *, const char *);
+extern int zpool_get_bootenv (zpool_handle_t *, char *, size_t, off_t);
 
 extern int libzfs_errno (libzfs_handle_t *);
 
