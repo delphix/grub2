@@ -1814,14 +1814,6 @@ if test x"$libzfs_excuse" = x ; then
   LIBNVPAIR="-lnvpair"
   AC_DEFINE([HAVE_LIBNVPAIR], [1],
             [Define to 1 if you have the NVPAIR library.])
-
-  AC_CHECK_LIB([zfs], [zpool_get_bootenv],
-               [libzfs_have_bootenv="yes"],
-	       [])
-  if test x"$libzfs_have_bootenv" = xyes ; then
-    AC_DEFINE([HAVE_LIBZFS_BOOTENV], [1],
-              [Define to 1 if you have a version of the ZFS library with bootenv support.])
-  fi
 fi
 
 AC_SUBST([LIBZFS])

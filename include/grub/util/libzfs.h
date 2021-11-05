@@ -40,24 +40,6 @@ extern int zpool_get_physpath (zpool_handle_t *, const char *);
 
 extern nvlist_t *zpool_get_config (zpool_handle_t *, nvlist_t **);
 
-extern libzfs_handle_t *zpool_get_handle (zpool_handle_t *);
-
-extern int zpool_set_bootenv (zpool_handle_t *, const nvlist_t*);
-extern int zpool_get_bootenv (zpool_handle_t *, nvlist_t **);
-
-extern int libzfs_errno (libzfs_handle_t *);
-
-/*
- * libzfs errors
- */
-typedef enum zfs_error {
-	EZFS_SUCCESS = 0,	/* no error -- success */
-	EZFS_NOMEM = 2000,	/* out of memory */
-	EZFS_IOC_NOTSUPPORTED = 2079,  /* operation not supported by zfs module */
-	EZFS_REBUILDING,	/* resilvering (sequential reconstrution) */
-	EZFS_UNKNOWN = 2089
-} zfs_error_t;
-
 #endif /* ! HAVE_LIBZFS_H */
 
 libzfs_handle_t *grub_get_libzfs_handle (void);

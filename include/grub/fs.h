@@ -96,18 +96,6 @@ struct grub_fs
   /* Whether blocklist installs have a chance to work.  */
   int blocklist_install;
 #endif
-
-  /*
-   * The envblk functions are defined on filesystems that need to handle
-   * grub-writable files in a special way. This is most commonly the case for
-   * CoW filesystems like btrfs and ZFS.  The normal read and close functions
-   * should detect that they are being called on a special file and act
-   * appropriately.
-   */
-  grub_err_t (*fs_envblk_open) (struct grub_file *file);
-  grub_ssize_t (*fs_envblk_read) (struct grub_file *file, char *buf, grub_size_t len);
-  grub_err_t (*fs_envblk_write) (struct grub_file *file, char *buf, grub_size_t len);
-  grub_err_t (*fs_envblk_close) (struct grub_file *file);
 };
 typedef struct grub_fs *grub_fs_t;
 
