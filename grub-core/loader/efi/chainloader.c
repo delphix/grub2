@@ -1096,6 +1096,7 @@ grub_cmd_chainloader (grub_command_t cmd __attribute__ ((unused)),
 
       return 0;
     }
+  // -1 fall-through to fail
 
   grub_file_close (file);
   grub_device_close (dev);
