@@ -1,3 +1,13 @@
 #!/bin/sh
 set -e
+
+#
+# We don't use this script in the Delphix product to update grub.
+# Instead, we call "grub-mkconfig" explicitly via the product's upgrade
+# code. Additionally, we've seen cases where this is called by package
+# hooks, and result in errors. As a result, we modify the script to be a
+# no-op here, rather than attempt to fix all callers of the script.
+#
+exit 0
+
 exec grub-mkconfig -o /boot/grub/grub.cfg "$@"
