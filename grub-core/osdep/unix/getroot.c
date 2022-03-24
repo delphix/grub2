@@ -296,7 +296,7 @@ grub_util_find_root_devices_from_poolname (char *poolname)
 		&& !sscanf (name, "raidz1%u", &dummy)
 		&& !sscanf (name, "raidz2%u", &dummy)
 		&& !sscanf (name, "raidz3%u", &dummy)
-		&& !strcmp (state, "ONLINE"))
+		&& (!strcmp (state, "ONLINE") || !strcmp (state, "DEGRADED")))
 	      {
 		if (ndevices >= devices_allocated)
 		  {
