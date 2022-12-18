@@ -276,7 +276,10 @@ while [ "x${xen_list}" != "x" ] ; do
 
 	initrd=
 	if test -n "${initrd_early}" || test -n "${initrd_real}"; then
-	    initrd="${initrd_early} ${initrd_real}"
+	    # Xen assumes the real initrd is the first module after the kernel.
+	    # Additional (later) initrds can also be used for microcode update,
+	    # with Xen option 'ucode=<scan|module number> (non-default anyway).
+	    initrd="${initrd_real} ${initrd_early}"
 
 	    initrd_display=
 	    for i in ${initrd}; do
