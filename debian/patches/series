@@ -99,3 +99,13 @@ suse-grub.texi-add-net_bootp6-document.patch
 ubuntu-verifiers-last.patch
 ubuntu-os-prober-auto.patch
 grub-sort-version.patch
+Revert-kern-ieee1275-init-ppc64-Display-upper_mem_limit-w.patch
+Revert-kern-ieee1275-init-ppc64-Fix-a-comment.patch
+Revert-kern-ieee1275-ieee1275-Display-successful-memory-c.patch
+Revert-loader-powerpc-ieee1275-Use-new-allocation-functio.patch
+Revert-kern-ieee1275-cmain-ppc64-Introduce-flags-to-ident.patch
+Revert-kern-ieee1275-init-ppc64-Rename-regions_claim-to-g.patch
+Revert-kern-ieee1275-init-ppc64-Add-support-for-alignment.patch
+Revert-kern-ieee1275-init-ppc64-Return-allocated-address-.patch
+Revert-kern-ieee1275-init-ppc64-Decide-by-request-whether.patch
+Revert-kern-ieee1275-init-ppc64-Introduce-a-request-for-r.patch
