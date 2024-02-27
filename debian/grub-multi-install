@@ -246,6 +246,15 @@ usable_efi_system_partitions()
 ###############################################################################
 #                            MAGIC SCRIPT
 ###############################################################################
+
+# Just do regular installation to /boot/efi on cloud images
+db_get grub-efi/cloud_style_installation
+if [ "$RET" = true ]; then
+  grub-install "$@"
+  touch /boot/grub/grub.cfg
+  exit 0
+fi
+
 FALLBACK_MOUNTPOINT=/var/lib/grub/esp
 
 # Initial install/upgrade from /boot/efi?

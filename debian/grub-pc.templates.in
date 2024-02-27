@@ -155,3 +155,8 @@ Template: grub-pc/hidden_timeout
 Type: boolean
 Default: @DEFAULT_HIDDEN_TIMEOUT_BOOL@
 Description: Hide the GRUB timeout; for internal use
+
+Template: grub-pc/cloud_style_installation
+Type: boolean
+Default: false
+_Description: Choose installation target based on the device containing /boot?

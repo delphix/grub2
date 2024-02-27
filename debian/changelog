@@ -1,3 +1,19 @@
+grub2 (2.12-1ubuntu3) noble; urgency=medium
+
+  * Improve GRUB reinstallation in cloud images (LP: #2054103):
+    - Add debconf options "grub-{efi,pc}/cloud_style_installation"
+    - d/postinst.in: Make empty "grub-pc/install_devices" non-fatal in
+      noninteractive mode
+  * Determine GRUB_DISTRIBUTOR from os-release and fall back to build-time
+    dpkg vendor (LP: #2034253)
+  * d/p/grub-install-efi-title.patch: Use case-sensitive GRUB distributor as
+    EFI option title (LP: #2026310)
+  * Unreleased changes from Debian:
+    - d/p/revert-term-ns8250-spcr.patch: Revert ACPI SPCR table support
+      (#1062073)
+
+ -- Mate Kukri <mate.kukri@canonical.com>  Tue, 27 Feb 2024 10:54:26 +0000
+
 grub2 (2.12-1ubuntu2) noble; urgency=medium
 
   * Revert patchset "ppc64: Restrict memory allocations" (LP: #2053117)

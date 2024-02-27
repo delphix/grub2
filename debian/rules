@@ -206,6 +206,7 @@ endif
 # rebuild grub, need a programmatic way to get the vendor, as it's used by build-efi-images
 # to create the monolithic Grub image and thus is needed to create the partitions on the EFI
 # media. Add it to the control file user metadata: XB-Efi-Vendor: $vendor
+DPKG_VENDOR ?= $(shell dpkg-vendor --query vendor)
 SB_EFI_VENDOR ?= $(shell dpkg-vendor --query vendor | tr '[:upper:]' '[:lower:]')
 
 %:
@@ -416,6 +417,7 @@ platform_subst = \
 	if [ -e debian/$(1) ]; then \
 		debian/platform-subst \
 			PACKAGE="$(2)" \
+			DPKG_VENDOR="$(DPKG_VENDOR)" \
 			DEFAULT_CMDLINE="$(DEFAULT_CMDLINE)" \
 			DEFAULT_TIMEOUT="$(DEFAULT_TIMEOUT)" \
 			DEFAULT_HIDDEN_TIMEOUT_BOOL="$(DEFAULT_HIDDEN_TIMEOUT_BOOL)" \
@@ -596,6 +598,7 @@ ifneq (,$(filter grub-emu,$(BUILD_PACKAGES)))
 endif
 ifneq (,$(filter grub2-common,$(BUILD_PACKAGES)))
 	sed -i \
+		-e "s/@DPKG_VENDOR@/$(DPKG_VENDOR)/g" \
 		-e "s/@DEFAULT_CMDLINE@/$(DEFAULT_CMDLINE)/g" \
 		-e "s/@DEFAULT_TIMEOUT@/$(DEFAULT_TIMEOUT)/g" \
 		debian/grub2-common/usr/share/grub/default/grub
