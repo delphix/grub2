@@ -540,7 +540,7 @@ devices_equal (const_efidp a, const_efidp b)
 int
 grub_install_efivar_register_efi (grub_device_t efidir_grub_dev,
 				  const char *efidir, const char *efifile_path,
-				  const char *efi_distributor)
+				  const char *efi_distributor, const char *efi_title)
 {
   const char *efidir_disk;
   int efidir_part;
@@ -619,7 +619,7 @@ grub_install_efivar_register_efi (grub_device_t efidir_grub_dev,
       if (entry->num < 0)
 	continue;
       label = (const char *) efi_loadopt_desc (load_option, entry->data_size);
-      if (strcasecmp (label, efi_distributor) != 0)
+      if (strcasecmp (label, efi_title) != 0 && strcasecmp (label, efi_distributor) != 0)
 	continue;
 
       path = efi_loadopt_path (load_option, entry->data_size);
@@ -671,7 +671,7 @@ grub_install_efivar_register_efi (grub_device_t efidir_grub_dev,
   if (entry_num == -1)
     entry_num = find_free_boot_num (entries);
   entry = make_boot_variable (entry_num, efidir_disk, efidir_part,
-			      efifile_path, efi_distributor);
+			      efifile_path, efi_title);
   if (!entry)
     goto err;
 
