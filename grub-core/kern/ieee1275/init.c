@@ -331,9 +331,9 @@ count_free (grub_uint64_t addr, grub_uint64_t len, grub_memory_type_t type,
   return 0;
 }
 
-int
-grub_regions_claim (grub_uint64_t addr, grub_uint64_t len,
-		    grub_memory_type_t type, void *data)
+static int
+regions_claim (grub_uint64_t addr, grub_uint64_t len, grub_memory_type_t type,
+	       void *data)
 {
   struct regions_claim_request *rcr = data;
   grub_uint64_t linux_rmo_save;
@@ -568,7 +568,7 @@ heap_init (grub_uint64_t addr, grub_uint64_t len, grub_memory_type_t type,
   };
   int ret;
 
-  ret = grub_regions_claim (addr, len, type, &rcr);
+  ret = regions_claim (addr, len, type, &rcr);
 
   *(grub_uint32_t *) data = rcr.total;
 
@@ -586,7 +586,7 @@ region_claim (grub_uint64_t addr, grub_uint64_t len, grub_memory_type_t type,
   };
   int ret;
 
-  ret = grub_regions_claim (addr, len, type, &rcr);
+  ret = regions_claim (addr, len, type, &rcr);
 
   *(grub_uint32_t *) data = rcr.total;
 
