@@ -102,6 +102,11 @@ _Description: Continue without installing GRUB?
  loader, then you should continue anyway. Otherwise, you should install
  GRUB somewhere.
 
+Template: grub-efi/cloud_style_installation
+Type: boolean
+Default: false
+_Description: Choose installation target based on the device containing /boot?
+
 # still unused
 Template: grub2/kfreebsd_cmdline
 Type: string
