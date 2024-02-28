@@ -986,7 +986,7 @@ int
 main (int argc, char *argv[])
 {
   int is_efi = 0;
-  const char *efi_distributor = NULL;
+  const char *efi_distributor = NULL, *efi_title = NULL;
   const char *efi_suffix = NULL, *efi_suffix_upper = NULL;
   char *efi_file = NULL;
   char **grub_devices;
@@ -1290,6 +1290,13 @@ main (int argc, char *argv[])
 	efi_distributor = "ubuntu";
       else if (strcmp (efi_distributor, "devuan") == 0)
 	efi_distributor = "debian";
+      efi_title = config.grub_distributor;
+      if (!efi_title || efi_title[0] == '\0')
+	efi_title = "GRUB";
+      else if (strcasecmp (efi_title, "kubuntu") == 0)
+	efi_title = "Ubuntu";
+      else if (strcasecmp (efi_title, "devuan") == 0)
+	efi_title = "Debian";
       switch (platform)
 	{
 	case GRUB_INSTALL_PLATFORM_I386_EFI:
@@ -2153,7 +2160,7 @@ main (int argc, char *argv[])
 	      int ret;
 	      ret = grub_install_register_efi (
 		  efidir_grub_dev, efidir, "\\System\\Library\\CoreServices",
-		  efi_distributor);
+		  efi_distributor, efi_title);
 	      if (ret)
 	        grub_util_error (_("failed to register the EFI boot entry: %s"),
 				 strerror (ret));
@@ -2188,7 +2195,10 @@ main (int argc, char *argv[])
 	    if (grub_util_is_regular (shim_signed))
 	      {
 		char *chained_base, *chained_dst;
-		char *mok_src, *mok_dst, *bootcsv_src, *bootcsv_dst;
+		char *mok_src, *mok_dst, *bootcsv_dst, *bootcsv_utf8;
+		grub_ssize_t bootcsv_utf16_len;
+		grub_uint16_t *bootcsv_utf16;
+		FILE *bootcsv_dst_f;
 
 		/* Install grub as our chained bootloader */
 		chained_base = xasprintf ("grub%s.efi", efi_suffix);
@@ -2222,11 +2232,15 @@ main (int argc, char *argv[])
 		free (mok_dst);
 
 		/* Also try to install boot.csv for fallback */
-		bootcsv_src = grub_util_path_concat (2, "/usr/lib/shim/",
-						     bootcsv);
 		bootcsv_dst = grub_util_path_concat (2, efidir, bootcsv);
-		grub_install_copy_file (bootcsv_src, bootcsv_dst, 0);
-		free (bootcsv_src);
+		bootcsv_utf8 = xasprintf("shim%s.efi,%s,,This is the boot entry for %s\n",
+			 		 efi_suffix, efi_title, efi_title);
+		bootcsv_utf16_len = grub_utf8_to_utf16_alloc (bootcsv_utf8, &bootcsv_utf16, NULL);
+		bootcsv_dst_f = grub_util_fopen (bootcsv_dst, "wb");
+		fwrite (bootcsv_utf16, bootcsv_utf16_len, sizeof *bootcsv_utf16, bootcsv_dst_f);
+		fclose (bootcsv_dst_f);
+		free (bootcsv_utf16);
+		free (bootcsv_utf8);
 		free (bootcsv_dst);
 	      }
 	    else
@@ -2274,7 +2288,8 @@ main (int argc, char *argv[])
 			  (part ? ",": ""), (part ? : ""));
 	  grub_free (part);
 	  ret = grub_install_register_efi (efidir_grub_dev, efidir,
-					   efifile_path, efi_distributor);
+					   efifile_path, efi_distributor,
+					   efi_title);
 	  if (ret)
 	    grub_util_error (_("failed to register the EFI boot entry: %s"),
 			     strerror (ret));
