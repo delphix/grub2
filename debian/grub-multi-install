@@ -248,7 +248,7 @@ usable_efi_system_partitions()
 ###############################################################################
 
 # Just do regular installation to /boot/efi on cloud images
-db_get grub-efi/cloud_style_installation
+db_get grub-efi/cloud_style_installation || true
 if [ "$RET" = true ]; then
   grub-install "$@"
   touch /boot/grub/grub.cfg
