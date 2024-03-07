@@ -1,3 +1,9 @@
+grub2 (2.12-1ubuntu5) noble; urgency=medium
+
+  * No-change rebuild for libefivar1t64 on riscv64.
+
+ -- Steve Langasek <steve.langasek@ubuntu.com>  Thu, 07 Mar 2024 09:18:17 +0000
+
 grub2 (2.12-1ubuntu4) noble; urgency=medium
 
   * d/grub-multi-install: Treat missing `cloud_style_installation` debconf as
