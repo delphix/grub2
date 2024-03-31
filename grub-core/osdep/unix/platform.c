@@ -78,11 +78,13 @@ get_ofpathname (const char *dev)
 int
 grub_install_register_efi (grub_device_t efidir_grub_dev, const char *efidir,
 			   const char *efifile_path,
-			   const char *efi_distributor)
+			   const char *efi_distributor,
+			   const char *efi_title)
 {
 #ifdef HAVE_EFIVAR
   return grub_install_efivar_register_efi (efidir_grub_dev, efidir,
-					   efifile_path, efi_distributor);
+					   efifile_path, efi_distributor,
+					   efi_title);
 #else
   grub_util_error ("%s",
 		   _("GRUB was not built with efivar support; "
