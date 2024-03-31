@@ -1,3 +1,9 @@
+grub2 (2.12-1ubuntu6) noble; urgency=medium
+
+  * No-change rebuild for CVE-2024-3094
+
+ -- Steve Langasek <steve.langasek@ubuntu.com>  Sun, 31 Mar 2024 08:54:41 +0000
+
 grub2 (2.12-1ubuntu5) noble; urgency=medium
 
   * No-change rebuild for libefivar1t64 on riscv64.
