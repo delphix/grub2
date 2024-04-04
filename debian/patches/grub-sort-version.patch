@@ -6,9 +6,24 @@ We need to have support for GRUB_FLAVOUR_ORDER and it's arguably
 the easiest way to hook this in, although you might be able to
 write this as an awk script or something.
 ---
+ util/grub-mkconfig.in     |  3 ++-
  util/grub-mkconfig_lib.in | 15 +--------------
- 1 file changed, 1 insertion(+), 14 deletions(-)
+ 2 files changed, 3 insertions(+), 15 deletions(-)
 
+diff --git a/util/grub-mkconfig.in b/util/grub-mkconfig.in
+index 46b036b..0b1adf5 100644
+--- a/util/grub-mkconfig.in
++++ b/util/grub-mkconfig.in
+@@ -270,7 +270,8 @@ export GRUB_DEFAULT \
+   GRUB_RECORDFAIL_TIMEOUT \
+   GRUB_RECOVERY_TITLE \
+   GRUB_FORCE_PARTUUID \
+-  GRUB_DISABLE_INITRD
++  GRUB_DISABLE_INITRD \
++  GRUB_FLAVOUR_ORDER
+ 
+ if test "x${grub_cfg}" != "x"; then
+   rm -f "${grub_cfg}.new"
 diff --git a/util/grub-mkconfig_lib.in b/util/grub-mkconfig_lib.in
 index 121df9a..cabac83 100644
 --- a/util/grub-mkconfig_lib.in

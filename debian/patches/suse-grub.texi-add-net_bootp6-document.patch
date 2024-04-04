@@ -13,10 +13,10 @@ Patch-Name: suse-grub.texi-add-net_bootp6-document.patch
  1 file changed, 17 insertions(+)
 
 diff --git a/docs/grub.texi b/docs/grub.texi
-index 584f6dc..4e6fb8d 100644
+index c2682be..c332de3 100644
 --- a/docs/grub.texi
 +++ b/docs/grub.texi
-@@ -5982,6 +5982,7 @@ Note: The command is not allowed when lockdown is enforced (@pxref{Lockdown}).
+@@ -5973,6 +5973,7 @@ Note: The command is not allowed when lockdown is enforced (@pxref{Lockdown}).
  * net_add_dns::                 Add a DNS server
  * net_add_route::               Add routing entry
  * net_bootp::                   Perform a bootp/DHCP autoconfiguration
@@ -24,7 +24,7 @@ index 584f6dc..4e6fb8d 100644
  * net_del_addr::                Remove IP address from interface
  * net_del_dns::                 Remove a DNS server
  * net_del_route::               Remove a route entry
-@@ -6107,6 +6108,22 @@ Sets environment variable @samp{net_}@var{<card>}@samp{_boot_file}
+@@ -6098,6 +6099,22 @@ Sets environment variable @samp{net_}@var{<card>}@samp{_boot_file}
  
  @end deffn
  

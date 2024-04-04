@@ -15,7 +15,7 @@ Signed-off-by: Mathieu Trudel-Lapierre <mathieu.trudel-lapierre@canonical.com>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/grub-core/Makefile.core.def b/grub-core/Makefile.core.def
-index c3ad031..3d98edf 100644
+index 7b49f77..ae5c558 100644
 --- a/grub-core/Makefile.core.def
 +++ b/grub-core/Makefile.core.def
 @@ -569,7 +569,7 @@ image = {
