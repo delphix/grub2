@@ -16,7 +16,7 @@ Patch-Name: ubuntu-support-initrd-less-boot.patch
  3 files changed, 25 insertions(+), 4 deletions(-)
 
 diff --git a/docs/grub.texi b/docs/grub.texi
-index b4825b7..584f6dc 100644
+index 990d8c7..c2682be 100644
 --- a/docs/grub.texi
 +++ b/docs/grub.texi
 @@ -1615,6 +1615,19 @@ This option sets the English text of the string that will be displayed in

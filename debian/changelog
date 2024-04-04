@@ -1,3 +1,17 @@
+grub2 (2.12-1ubuntu7) noble; urgency=medium
+
+  * d/p/grub-sort-version.patch: Also patch grub-mkconfig to export GRUB_FLAVOUR_ORDER
+  * d/grub-sort-version: Update regex to correctly match kernel flavour
+  * d/grub-sort-version: Append `-0` to abi strings before passing to python-apt (Fixes LP: #2041827)
+  * debian/: Add tests for grub-sort-version
+  * Revert peimage to re-use GRUB's image handle (LP: #2057679) (LP: #2054127)
+  * Increase SBAT level to "grub.ubuntu,2" and "grub.peimage,2"
+  * d/build-efi-images: Make sure downstream didn't remove peimage SBAT entry
+  * SECURITY UPDATE: Use-after-free in peimage module [LP: #2054127]
+    - CVE-2024-2312
+
+ -- Mate Kukri <mate.kukri@canonical.com>  Thu, 04 Apr 2024 11:12:35 +0100
+
 grub2 (2.12-1ubuntu6) noble; urgency=medium
 
   * No-change rebuild for CVE-2024-3094
