@@ -37,7 +37,6 @@ Build-Depends: debhelper-compat (= 13),
  bash-completion,
  libefiboot-dev [i386 amd64 ia64 x32 armel armhf arm64 riscv64],
  libefivar-dev [i386 amd64 ia64 x32 armel armhf arm64 riscv64],
-Build-Conflicts: autoconf2.13, libzfs-dev, libnvpair-dev
 Standards-Version: 3.9.6
 Homepage: https://www.gnu.org/software/grub/
 Vcs-Git: https://git.launchpad.net/~ubuntu-core-dev/grub/+git/ubuntu
