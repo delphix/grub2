@@ -141,6 +141,7 @@ SB_EFI_VENDOR ?= $(shell dpkg-vendor --query vendor | tr '[:upper:]' '[:lower:]'
 	dh $@ --with=bash_completion,systemd
 
 override_dh_auto_configure: $(patsubst %,configure/%,$(BUILD_PACKAGES))
+	dh_auto_configure -- --enable-mm-debug
 
 override_dh_auto_build: $(patsubst %,build/%,$(BUILD_PACKAGES))
 
