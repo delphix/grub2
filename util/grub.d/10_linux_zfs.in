@@ -998,6 +998,7 @@ echo
                 fi
             fi
 
+            root=$(findmnt / | grep '^/' | awk '{print $2}' | sed 's@^rpool/@@')
             case "${section}" in
                 main)
                     title="${name}"
@@ -1005,7 +1006,7 @@ echo
                     main_dataset="${dataset}"
 
                     kernel_version=$(basename "${kernel}" | sed -e "s,^[^0-9]*-,,g")
-                    zfs_linux_entry 0 "${title}" "simple" "${dataset}" "${device}" "${initrd}" "${kernel}" "${kernel_version}"
+                    zfs_linux_entry 0 "${title}" "simple" "rpool/${root}" "${device}" "${initrd}" "${kernel}" "${kernel_version}"
                     at_least_one_entry=1
                 ;;
                 advanced)
@@ -1021,12 +1022,12 @@ echo
 
                     kernel_version=$(basename "${kernel}" | sed -e "s,^[^0-9]*-,,g")
                     title="$(gettext_printf "%s%s, with Linux %s" "${last_booted_kernel_marker}" "${name}" "${kernel_version}")"
-                    zfs_linux_entry 1 "${title}" "advanced" "${dataset}" "${device}" "${initrd}" "${kernel}" "${kernel_version}"
+                    zfs_linux_entry 1 "${title}" "advanced" "rpool/${root}" "${device}" "${initrd}" "${kernel}" "${kernel_version}"
 
                     GRUB_DISABLE_RECOVERY=${GRUB_DISABLE_RECOVERY:-}
                     if [ "${GRUB_DISABLE_RECOVERY}" != "true" ]; then
                         title="$(gettext_printf "%s%s, with Linux %s (%s)" "${last_booted_kernel_marker}" "${name}" "${kernel_version}" "$(gettext "${GRUB_RECOVERY_TITLE}")")"
-                        zfs_linux_entry 1 "${title}" "recovery" "${dataset}" "${device}" "${initrd}" "${kernel}" "${kernel_version}"
+                        zfs_linux_entry 1 "${title}" "recovery" "rpool/${root}" "${device}" "${initrd}" "${kernel}" "${kernel_version}"
                     fi
                     at_least_one_entry=1
                 ;;
