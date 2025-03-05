@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: grub_debian_po\n"
 "Report-Msgid-Bugs-To: grub2@packages.debian.org\n"
-"POT-Creation-Date: 2024-01-29 10:53+0000\n"
+"POT-Creation-Date: 2024-02-21 16:42+0000\n"
 "PO-Revision-Date: 2012-04-05 15:38+0700\n"
 "Last-Translator: Khoem Sokhem <khoemsokhem@khmeros.info>\n"
 "Language-Team: Khmer <support@khmeros.info>\n"
@@ -285,6 +285,12 @@ msgstr ""
 "ជា​ទូទៅ អ្នក​គួរ​តែ​បញ្ចប់​ការ​បម្លែង​ទៅ GRUB 2 លុះត្រា​តែ​ផ្នែក​ចាប់ផ្ដើម​ត្រូវ​បាន​បង្កើត​ដោយ​ការ​ដំឡើង "
 "GRUB 2 នៅ​លើ​ប្រព័ន្ធ​ប្រតិបត្តិការ​ផ្សេង ។"
 
+#. Type: boolean
+#. Description
+#: ../grub-pc.templates.in:15001 ../templates.in:11001
+msgid "Choose installation target based on the device containing /boot?"
+msgstr ""
+
 #. Type: string
 #. Description
 #: ../templates.in:1001
@@ -432,13 +438,13 @@ msgstr ""
 
 #. Type: string
 #. Description
-#: ../templates.in:11001
+#: ../templates.in:12001
 msgid "kFreeBSD command line:"
 msgstr "ពាក្យ​បញ្ជា kFreeBSD ៖"
 
 #. Type: string
 #. Description
-#: ../templates.in:11001
+#: ../templates.in:12001
 msgid ""
 "The following kFreeBSD command line was extracted from /etc/default/grub or "
 "the `kopt' parameter in GRUB Legacy's menu.lst. Please verify that it is "
@@ -449,13 +455,13 @@ msgstr ""
 
 #. Type: string
 #. Description
-#: ../templates.in:12001
+#: ../templates.in:13001
 msgid "kFreeBSD default command line:"
 msgstr "ពាក្យ​បញ្ជា​លំនាំដើម​របស់ kFreeBSD ៖"
 
 #. Type: string
 #. Description
-#: ../templates.in:12001
+#: ../templates.in:13001
 msgid ""
 "The following string will be used as kFreeBSD parameters for the default "
 "menu entry but not for the recovery mode."
@@ -465,19 +471,19 @@ msgstr ""
 
 #. Type: title
 #. Description
-#: ../templates.in:13001
+#: ../templates.in:14001
 msgid "unsigned kernels"
 msgstr ""
 
 #. Type: note
 #. Description
-#: ../templates.in:14001
+#: ../templates.in:15001
 msgid "Cannot upgrade Secure Boot enforcement policy due to unsigned kernels"
 msgstr ""
 
 #. Type: note
 #. Description
-#: ../templates.in:14001
+#: ../templates.in:15001
 msgid ""
 "Your system has UEFI Secure Boot enabled in firmware, and the following "
 "kernels present on your system are unsigned:"
@@ -485,13 +491,13 @@ msgstr ""
 
 #. Type: note
 #. Description
-#: ../templates.in:14001
+#: ../templates.in:15001
 msgid " ${unsigned_versions}"
 msgstr ""
 
 #. Type: note
 #. Description
-#: ../templates.in:14001
+#: ../templates.in:15001
 msgid ""
 "These kernels cannot be verified under Secure Boot.  To ensure your system "
 "remains bootable, GRUB will not be upgraded on your disk until these kernels "

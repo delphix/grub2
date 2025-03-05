@@ -1,3 +1,59 @@
+grub2 (2.12-1ubuntu7.1) noble; urgency=medium
+
+  * riscv: use time register in grub_efi_get_time_ms() (LP: #2076651)
+  * efi/chainloader: Do not print device path of chainloaded file (LP: #2073634)
+
+ -- Mate Kukri <mate.kukri@canonical.com>  Wed, 11 Sep 2024 14:15:05 +0100
+
+grub2 (2.12-1ubuntu7) noble; urgency=medium
+
+  * d/p/grub-sort-version.patch: Also patch grub-mkconfig to export GRUB_FLAVOUR_ORDER
+  * d/grub-sort-version: Update regex to correctly match kernel flavour
+  * d/grub-sort-version: Append `-0` to abi strings before passing to python-apt (Fixes LP: #2041827)
+  * debian/: Add tests for grub-sort-version
+  * Revert peimage to re-use GRUB's image handle (LP: #2057679) (LP: #2054127)
+  * Increase SBAT level to "grub.ubuntu,2" and "grub.peimage,2"
+  * d/build-efi-images: Make sure downstream didn't remove peimage SBAT entry
+  * SECURITY UPDATE: Use-after-free in peimage module [LP: #2054127]
+    - CVE-2024-2312
+
+ -- Mate Kukri <mate.kukri@canonical.com>  Thu, 04 Apr 2024 11:12:35 +0100
+
+grub2 (2.12-1ubuntu6) noble; urgency=medium
+
+  * No-change rebuild for CVE-2024-3094
+
+ -- Steve Langasek <steve.langasek@ubuntu.com>  Sun, 31 Mar 2024 08:54:41 +0000
+
+grub2 (2.12-1ubuntu5) noble; urgency=medium
+
+  * No-change rebuild for libefivar1t64 on riscv64.
+
+ -- Steve Langasek <steve.langasek@ubuntu.com>  Thu, 07 Mar 2024 09:18:17 +0000
+
+grub2 (2.12-1ubuntu4) noble; urgency=medium
+
+  * d/grub-multi-install: Treat missing `cloud_style_installation` debconf as
+    false (LP: #2055294)
+
+ -- Mate Kukri <mate.kukri@canonical.com>  Wed, 28 Feb 2024 15:55:10 +0000
+
+grub2 (2.12-1ubuntu3) noble; urgency=medium
+
+  * Improve GRUB reinstallation in cloud images (LP: #2054103):
+    - Add debconf options "grub-{efi,pc}/cloud_style_installation"
+    - d/postinst.in: Make empty "grub-pc/install_devices" non-fatal in
+      noninteractive mode
+  * Determine GRUB_DISTRIBUTOR from os-release and fall back to build-time
+    dpkg vendor (LP: #2034253)
+  * d/p/grub-install-efi-title.patch: Use case-sensitive GRUB distributor as
+    EFI option title (LP: #2026310)
+  * Unreleased changes from Debian:
+    - d/p/revert-term-ns8250-spcr.patch: Revert ACPI SPCR table support
+      (#1062073)
+
+ -- Mate Kukri <mate.kukri@canonical.com>  Tue, 27 Feb 2024 10:54:26 +0000
+
 grub2 (2.12-1ubuntu2) noble; urgency=medium
 
   * Revert patchset "ppc64: Restrict memory allocations" (LP: #2053117)

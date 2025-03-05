@@ -28,7 +28,7 @@ class KernelABI:
         if self._index != other._index:
             # Ordering is reversed, what should be considered highest comes first.
             return self._index > other._index
-        return apt_pkg.version_compare(self.abi, other.abi) < 0
+        return apt_pkg.version_compare(f"{self.abi}-0", f"{other.abi}-0") < 0
 
 
 def main() -> None:
@@ -43,7 +43,7 @@ def main() -> None:
 
     order = []
     for flavour in os.environ.get("GRUB_FLAVOUR_ORDER", "").split():
-        order.append(re.compile(f"[0-9]*-{flavour}$"))
+        order.append(re.compile(f"[\\s\\S]*-{flavour}(\\s*\\d*)$"))
 
     versions = [KernelABI(line.rstrip(), order) for line in sys.stdin]
     versions.sort(reverse=args.reverse)
