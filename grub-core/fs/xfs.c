@@ -327,6 +327,8 @@ static int grub_xfs_sb_valid(struct grub_xfs_data *data)
 	}
       return 1;
     }
+
+  grub_error (GRUB_ERR_BAD_FS, "unsupported XFS filesystem version");
   return 0;
 }
 
@@ -595,6 +597,17 @@ grub_xfs_read_block (grub_fshelp_node_t node, grub_disk_addr_t fileblock)
       do
         {
           grub_uint64_t i;
+	  grub_addr_t keys_end, data_end;
+
+	  if (grub_mul (sizeof (grub_uint64_t), nrec, &keys_end) ||
+	      grub_add ((grub_addr_t) keys, keys_end, &keys_end) ||
+	      grub_add ((grub_addr_t) node->data, node->data->data_size, &data_end) ||
+	      keys_end > data_end)
+	    {
+	      grub_error (GRUB_ERR_BAD_FS, "invalid number of XFS root keys");
+	      grub_free (leaf);
+	      return 0;
+	    }
 
           for (i = 0; i < nrec; i++)
             {
@@ -705,6 +718,7 @@ static char *
 grub_xfs_read_symlink (grub_fshelp_node_t node)
 {
   grub_ssize_t size = grub_be_to_cpu64 (node->inode.size);
+  grub_size_t sz;
 
   if (size < 0)
     {
@@ -726,7 +740,12 @@ grub_xfs_read_symlink (grub_fshelp_node_t node)
 	if (node->data->hascrc)
 	  off = 56;
 
-	symlink = grub_malloc (size + 1);
+	if (grub_add (size, 1, &sz))
+	  {
+	    grub_error (GRUB_ERR_OUT_OF_RANGE, N_("symlink size overflow"));
+	    return 0;
+	  }
+	symlink = grub_malloc (sz);
 	if (!symlink)
 	  return 0;
 
@@ -776,11 +795,17 @@ static int iterate_dir_call_hook (grub_uint64_t ino, const char *filename,
 {
   struct grub_fshelp_node *fdiro;
   grub_err_t err;
+  grub_size_t sz;
 
-  fdiro = grub_malloc (grub_xfs_fshelp_size(ctx->diro->data) + 1);
+  if (grub_add (grub_xfs_fshelp_size(ctx->diro->data), 1, &sz))
+    {
+      grub_error (GRUB_ERR_OUT_OF_RANGE, N_("directory data size overflow"));
+      grub_print_error ();
+      return 0;
+    }
+  fdiro = grub_malloc (sz);
   if (!fdiro)
     {
-      grub_print_error ();
       return 0;
     }
 
@@ -792,7 +817,6 @@ static int iterate_dir_call_hook (grub_uint64_t ino, const char *filename,
   err = grub_xfs_read_inode (ctx->diro->data, ino, &fdiro->inode);
   if (err)
     {
-      grub_print_error ();
       grub_free (fdiro);
       return 0;
     }
@@ -832,9 +856,13 @@ grub_xfs_iterate_dir (grub_fshelp_node_t dir,
 	/* Synthesize the direntries for `.' and `..'.  */
 	if (iterate_dir_call_hook (diro->ino, ".", &ctx))
 	  return 1;
+	else if (grub_errno)
+	  return 0;
 
 	if (iterate_dir_call_hook (parent, "..", &ctx))
 	  return 1;
+	else if (grub_errno)
+	  return 0;
 
 	for (i = 0; i < head->count &&
 	     (grub_uint8_t *) de < ((grub_uint8_t *) dir + grub_xfs_fshelp_size (dir->data)); i++)
@@ -844,7 +872,11 @@ grub_xfs_iterate_dir (grub_fshelp_node_t dir,
 	    grub_uint8_t c;
 
 	    if ((inopos + (smallino ? 4 : 8)) > (grub_uint8_t *) dir + grub_xfs_fshelp_size (dir->data))
-	      return grub_error (GRUB_ERR_BAD_FS, "not a correct XFS inode");
+	      {
+		grub_error (GRUB_ERR_BAD_FS, "invalid XFS inode");
+		return 0;
+	      }
+
 
 	    /* inopos might be unaligned.  */
 	    if (smallino)
@@ -870,6 +902,9 @@ grub_xfs_iterate_dir (grub_fshelp_node_t dir,
 		return 1;
 	      }
 	    de->name[de->len] = c;
+
+	    if (grub_errno)
+	      return 0;
 
 	    de = grub_xfs_inline_next_de(dir->data, head, de);
 	  }
@@ -953,7 +988,10 @@ grub_xfs_iterate_dir (grub_fshelp_node_t dir,
 
 		filename = (char *)(direntry + 1);
 		if (filename + direntry->len + 1 > (char *) end)
-		  return grub_error (GRUB_ERR_BAD_FS, "invalid XFS directory entry");
+		  {
+		    grub_error (GRUB_ERR_BAD_FS, "invalid XFS directory entry");
+		    return 0;
+		  }
 
 		/* The byte after the filename is for the filetype, padding, or
 		   tag, which is not used by GRUB.  So it can be overwritten. */
@@ -964,6 +1002,11 @@ grub_xfs_iterate_dir (grub_fshelp_node_t dir,
 		  {
 		    grub_free (dirblock);
 		    return 1;
+		  }
+		else if (grub_errno)
+		  {
+		    grub_free (dirblock);
+		    return 0;
 		  }
 
 		/*
@@ -1043,11 +1086,13 @@ grub_xfs_mount (grub_disk_t disk)
 	       grub_cpu_to_be64(data->sblock.rootino));
 
   grub_xfs_read_inode (data, data->diropen.ino, &data->diropen.inode);
+  if (grub_errno)
+    goto fail;
 
   return data;
  fail:
 
-  if (grub_errno == GRUB_ERR_OUT_OF_RANGE)
+  if (grub_errno == GRUB_ERR_OUT_OF_RANGE || grub_errno == GRUB_ERR_NONE)
     grub_error (GRUB_ERR_BAD_FS, "not an XFS filesystem");
 
   grub_free (data);
@@ -1281,6 +1326,7 @@ static struct grub_fs grub_xfs_fs =
 
 GRUB_MOD_INIT(xfs)
 {
+  grub_xfs_fs.mod = mod;
   grub_fs_register (&grub_xfs_fs);
   my_mod = mod;
 }
