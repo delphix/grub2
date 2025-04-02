@@ -95,16 +95,12 @@ import_pools() {
 
 # List all the dataset with a root mountpoint
 get_root_datasets() {
-    local pools="$(zpool list | awk '{if (NR>1) print $1}')"
-
-    for p in ${pools}; do
-        local rel_pool_root=$(zpool get -H altroot ${p} | awk '{print $3}')
-        if [ "${rel_pool_root}" = "-" ]; then
-            rel_pool_root="/"
-        fi
-
-        zfs list -H -o name,canmount,mountpoint -t filesystem | grep -E '^'"${p}"'(\s|/[[:print:]]*\s)(on|noauto)\s'"${rel_pool_root}"'$' | awk '{print $1}'
-    done
+    #
+    # On Delphix, we generate the grub config only for the root filesystem. When switching root filesystems,
+    # our upgrade logic chroot's into the new root, and then runs grub-mkconfig. Thus, we can replace the
+    # implementation provided by upstream, with a much more simple command.
+    #
+    zfs list -H -o name /
 }
 
 # find if given datasets can be mounted for directory and return its path (snapshot or real path)
@@ -546,11 +542,14 @@ bootlist() {
         # get information from current root dataset
         boot_list="${boot_list}$(get_dataset_info "${dataset}" ${mntdir})\n"
 
+        #
+        # We don't ever boot from a snapshot on Delphix, so this logic has been commented out.
+        #
         # get information from snapshots of this root dataset
-        snapshots="$(zfs list -H -o name -t snapshot "${dataset}"|while read snapshot_dataset; do
-            get_dataset_info "${snapshot_dataset}" ${mntdir}
-        done)"
-        [ -n "${snapshots}" ] && boot_list="${boot_list}${snapshots}\n"
+        #snapshots="$(zfs list -H -o name -t snapshot "${dataset}"|while read snapshot_dataset; do
+        #    get_dataset_info "${snapshot_dataset}" ${mntdir}
+        #done)"
+        #[ -n "${snapshots}" ] && boot_list="${boot_list}${snapshots}\n"
     done
     echo "${boot_list}"
 }
