@@ -823,6 +823,15 @@ zfs_linux_entry () {
     kernel_additional_args="${9:-}"
     boot_devices="${10:-}"
 
+    #
+    # We replace the dataset's pool name and replace it with "rpool" here. We do that, so it works when
+    # the zpool of the datast is imported with a temporary name, which we do when building the intial
+    # appliance image(s). Otherwise, the grub configuration will reference the zpool's temporary name,
+    # rather than it's real name; causing the bootloader to fail, as it'll attempt to import the root
+    # pool via the temporary name and fail to import.
+    #
+    dataset=$(echo "$dataset" | sed 's|^[^/]*/|rpool/|')
+
     submenu_indentation="$(printf %${submenu_level}s | tr " " "${grub_tab}")"
 
     echo "${submenu_indentation}menuentry '$(echo "${title}" | grub_quote)' ${CLASS} \${menuentry_id_option} 'gnulinux-${dataset}-${kernel_version}' {"
