@@ -100,12 +100,7 @@ get_root_datasets() {
     # our upgrade logic chroot's into the new root, and then runs grub-mkconfig. Thus, we can replace the
     # implementation provided by upstream, with a much more simple command.
     #
-    # Additionally, we hardcode "rpool" here, so that it works when the zpool is imported with a temporary name,
-    # which we do when building the initial appliance image(s). Otherwise, the grub configuration will reference
-    # the zpool's temporary name, rather than it's real name; causing the bootloader to fail as, it'll attempt to
-    # import the root pool via the temporary name, not the real name.
-    #
-    zfs list -H -o name / | sed 's|^[^/]*/|rpool/|'
+    zfs list -H -o name /
 }
 
 # find if given datasets can be mounted for directory and return its path (snapshot or real path)
@@ -827,6 +822,15 @@ zfs_linux_entry () {
     kernel_version="$8"
     kernel_additional_args="${9:-}"
     boot_devices="${10:-}"
+
+    #
+    # We replace the dataset's pool name and replace it with "rpool" here. We do that, so it works when
+    # the zpool of the datast is imported with a temporary name, which we do when building the intial
+    # appliance image(s). Otherwise, the grub configuration will reference the zpool's temporary name,
+    # rather than it's real name; causing the bootloader to fail, as it'll attempt to import the root
+    # pool via the temporary name and fail to import.
+    #
+    dataset=$(echo "$dataset" | sed 's|^[^/]*/|rpool/|')
 
     submenu_indentation="$(printf %${submenu_level}s | tr " " "${grub_tab}")"
 
