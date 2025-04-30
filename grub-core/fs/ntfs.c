@@ -27,6 +27,7 @@
 #include <grub/fshelp.h>
 #include <grub/ntfs.h>
 #include <grub/charset.h>
+#include <grub/lockdown.h>
 
 GRUB_MOD_LICENSE ("GPLv3+");
 
@@ -363,7 +364,7 @@ retry:
 	      goto retry;
 	    }
 	}
-      return grub_error (GRUB_ERR_BAD_FS, "run list overflown");
+      return grub_error (GRUB_ERR_BAD_FS, "run list overflow");
     }
   ctx->curr_vcn = ctx->next_vcn;
   ctx->next_vcn += read_run_data (run, c1, 0);	/* length of current VCN */
@@ -1320,11 +1321,16 @@ static struct grub_fs grub_ntfs_fs =
 
 GRUB_MOD_INIT (ntfs)
 {
-  grub_fs_register (&grub_ntfs_fs);
+  if (!grub_is_lockdown ())
+    {
+      grub_ntfs_fs.mod = mod;
+      grub_fs_register (&grub_ntfs_fs);
+    }
   my_mod = mod;
 }
 
 GRUB_MOD_FINI (ntfs)
 {
-  grub_fs_unregister (&grub_ntfs_fs);
+  if (!grub_is_lockdown ())
+    grub_fs_unregister (&grub_ntfs_fs);
 }
