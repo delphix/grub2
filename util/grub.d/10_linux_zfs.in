@@ -948,40 +948,6 @@ generate_grub_menu() {
 
     print_menu_prologue
 
-    cat<<'EOF'
-function zsyshistorymenu {
-	# $1: root dataset (eg rpool/ROOT/ubuntu_2zhm07@autozsys_k56fr6)
-	# $2: boot device id (eg 411f29ce1557bfed)
-	# $3: initrd (eg /BOOT/ubuntu_2zhm07@autozsys_k56fr6/initrd.img-5.4.0-21-generic)
-	# $4: kernel (eg /BOOT/ubuntu_2zhm07@autozsys_k56fr6/vmlinuz-5.4.0-21-generic)
-	# $5: kernel_version (eg 5.4.0-21-generic)
-
-	set root_dataset="${1}"
-	set boot_device="${2}"
-	set initrd="${3}"
-	set kernel="${4}"
-	set kversion="${5}"
-
-EOF
-    boot_devices=$(echo "${menu_metadata}" | cut -d"$(printf '\t')" -f6 | sort -u)
-
-    title=$(gettext_printf "Revert system only")
-    zfs_linux_entry 1 "${title}" "simple" '${root_dataset}' '${boot_device}' '${initrd}' '${kernel}' '${kversion}' '' "${boot_devices}"
-
-    title="$(gettext_printf "Revert system and user data")"
-    zfs_linux_entry 1 "${title}" "simple" '${root_dataset}' '${boot_device}' '${initrd}' '${kernel}' '${kversion}' 'zsys-revert=userdata' "${boot_devices}"
-
-    GRUB_DISABLE_RECOVERY="${GRUB_DISABLE_RECOVERY:-}"
-    if [ "${GRUB_DISABLE_RECOVERY}" != "true" ]; then
-        title="$(gettext_printf "Revert system only (%s)" "$(gettext "${GRUB_RECOVERY_TITLE}")")"
-        zfs_linux_entry 1 "${title}" "recovery" '${root_dataset}' '${boot_device}' '${initrd}' '${kernel}' '${kversion}' '' "${boot_devices}"
-
-        title="$(gettext_printf "Revert system and user data (%s)" "$(gettext "${GRUB_RECOVERY_TITLE}")")"
-        zfs_linux_entry 1 "${title}" "recovery" '${root_dataset}' '${boot_device}' '${initrd}' '${kernel}' '${kversion}' 'zsys-revert=userdata' "${boot_devices}"
-    fi
-echo "}"
-echo
-
     # IFS is set to TAB (ASCII 0x09)
     echo "${menu_metadata}" |
     {
